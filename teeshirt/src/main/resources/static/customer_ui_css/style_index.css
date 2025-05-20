@@ -1,15 +1,40 @@
-.product {
-    width: 250px;
+
+.new-product, .hot-product, .discount-product {
+    margin-top: 70px;
+    margin-bottom: 40px;
+}
+.new-product-header, .hot-product-header, .discount-product-header {
+    color: #333;
+    position: relative;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.new-product-header::before,
+.hot-product-header::before,
+.discount-product-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 100%;
+    background-color: #ff4d6d;
 }
 
 .product-pic {
+    border-radius: 5px;
     position: relative;
     overflow: hidden;
 }
 
 .product-pic img {
     width: 100%;
-    height: 300px;
     object-fit: cover;
     display: block;
     transition: transform 1s ease;
@@ -20,7 +45,8 @@
     position: absolute;
     bottom: 0;
     left: 50%;
-    transform: translate(-50%, 100%); /* Ban đầu ẩn dưới sản phẩm */
+    transform: translate(-50%, 100%);
+    /* Ban đầu ẩn dưới sản phẩm */
     min-width: 120px;
     text-align: center;
     background-color: #fff;
@@ -29,21 +55,26 @@
     font-size: 16px;
     padding: 10px 15px;
     border-radius: 50px;
-    transition: all 0.5s ease; /* Hiệu ứng trượt */
+    transition: all 0.5s ease;
+    /* Hiệu ứng trượt */
     z-index: 1;
 }
+
 .product-btn:hover {
-    background-color: #000; /* Màu nền khi hover */
+    background-color: #000;
+    /* Màu nền khi hover */
     color: #fff;
 }
 
 /* Hover effect: Image zooms in slightly, Quick View slides up */
 .product-pic:hover img {
-    transform: scale(1.1); /* Zoom nhẹ khi hover */
+    transform: scale(1.1);
+    /* Zoom nhẹ khi hover */
 }
 
 .product-pic:hover .product-btn {
-    transform: translate(-50%, -20px); /* Trượt lên khi hover */
+    transform: translate(-50%, -20px);
+    /* Trượt lên khi hover */
 }
 
 /* Product text styling */
@@ -85,11 +116,12 @@
 .btn-addwish-b2 {
     display: block;
     position: relative;
-    width: 24px;
-    height: 24px;
+    width: 19px;
+    height: 16px;
 }
 
-.icon-heart1, .icon-heart2 {
+.icon-heart1,
+.icon-heart2 {
     position: absolute;
     top: 0;
     left: 0;

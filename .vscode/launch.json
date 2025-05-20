@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TeeshirtApplication<teeshirt>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.datn.teeshirt.TeeshirtApplication",
+            "projectName": "teeshirt",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

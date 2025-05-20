@@ -1,13 +1,4 @@
-/* Đặt lại CSS */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 header {
     position: fixed;
@@ -33,30 +24,6 @@ header {
     text-shadow: none;
 }
 
-/* Ví dụ để không bị header che */
-.banner {
-    height: 100vh;
-}
-
-.limiter-menu-desktop {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    background-color: transparent;
-}
-
-/* Logo */
-.logo {
-    display: flex;
-    align-items: center;
-    height: 65%;
-}
-
-.logo img {
-    max-width: 100%;
-    max-height: 100%;
-}
-
 /* Main menu */
 .menu-desktop {
     display: flex;
@@ -79,12 +46,12 @@ header {
 }
 
 .main-menu>li>a {
-    font-family: Poppins-Medium;
     text-decoration: none;
     font-size: 20px;
     color: #333;
     padding: 5px 0px;
     transition: all 0.4s;
+    font-family: "Open Sans", sans-serif;
 }
 
 .main-menu>li:hover>a {
@@ -114,7 +81,6 @@ header {
 }
 
 .sub-menu a {
-    font-family: Poppins-Regular;
     font-size: 14px;
     line-height: 1.5;
     color: #555;
@@ -123,6 +89,7 @@ header {
     width: 100%;
     transition: all 0.4s;
     text-decoration: none;
+    font-family: "Open Sans", sans-serif;
 }
 
 .main-menu>li:hover>.sub-menu,
@@ -152,34 +119,63 @@ header {
 .icon-group a {
     text-decoration: none;
 }
-.footer {
-        background-color: #f8f9fa;
-        font-family: Poppins-Regular;
+
+/* Container styling */
+.categories-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Category column styling */
+.category-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+.category-column h3 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0056b3;
+    /* Màu xanh giống trong hình */
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.category-column h3:hover {
+    text-decoration: underline;
+}
+
+.category-column ul {
+    list-style: none;
+}
+
+.category-column li {
+    margin-bottom: 10px;
+}
+
+.category-column li a {
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.category-column li a:hover {
+    color: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .categories-container {
+        flex-direction: column;
+        gap: 30px;
     }
-    .footer-heading {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #555;
+
+    .category-column {
+        min-width: 100%;
     }
-    .promo {
-        color: #555;
-    }
-    .footer-heading::after {
-        content: '';
-        display: block;
-        width: 50px;
-        height: 2px;
-        background-color: #007bff;
-        margin-top: 10px;
-    }
-    .list-unstyled li a {
-        color: #555;
-        text-decoration: none;
-    }
-    .list-unstyled li a:hover {
-        text-decoration: underline;
-    }
-    .block-6 h3 {
-        font-size: 1.25rem;
-        font-weight: 500;
-    }
+}
