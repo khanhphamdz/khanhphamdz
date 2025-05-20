@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{customer/layout/layout::view(~{::title}, ~{::main})}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Products Slider</title>
+    <!-- Swiper CSS -->
+
+</head>
+
+<body>
+    <main class="container mt-5">
+        <section class="py-5" style="background-color: #ffffff;">
+            <div>
+                <h2 class="text-center mb-5">Tại sao chọn Tee Shirt Vibe?</h2>
+                <div class="row text-center">
+    
+                    <!-- Đặc trưng 1 -->
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-card p-4 rounded-4 h-100">
+                            <i class="fas fa-tshirt fa-3x text-primary mb-3"></i>
+                            <h5 class="mb-2">Thiết kế cá tính</h5>
+                            <p class="mb-0">Bắt trend, nổi bật nhưng vẫn giữ chất riêng.</p>
+                        </div>
+                    </div>
+    
+                    <!-- Đặc trưng 2 -->
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-card p-4 rounded-4 h-100">
+                            <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                            <h5 class="mb-2">Chất liệu thân thiện</h5>
+                            <p class="mb-0">Cotton mềm mại, thoáng mát, thân thiện với làn da.</p>
+                        </div>
+                    </div>
+    
+                    <!-- Đặc trưng 3 -->
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-card p-4 rounded-4 h-100">
+                            <i class="fas fa-shipping-fast fa-3x text-info mb-3"></i>
+                            <h5 class="mb-2">Giao hàng nhanh</h5>
+                            <p class="mb-0">Chỉ từ 1-3 ngày, đảm bảo đúng hẹn.</p>
+                        </div>
+                    </div>
+    
+                    <!-- Đặc trưng 4 -->
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-card p-4 rounded-4 h-100">
+                            <i class="fas fa-sync-alt fa-3x text-warning mb-3"></i>
+                            <h5 class="mb-2">Đổi trả dễ dàng</h5>
+                            <p class="mb-0">Đổi trong 7 ngày nếu lỗi hoặc không vừa.</p>
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+        </section>
+        <!-- Swiper JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script>
+            // Initialize Swiper
+            const swiper = new Swiper('.hot-products-slider', {
+                slidesPerView: 4, // Show 4 products at a time
+                spaceBetween: 20, // Space between slides
+                loop: true, // Enable loop
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                mousewheel: false,
+                keyboard: true,
+                // Enable dragging
+                freeMode: true,
+                // Responsive breakpoints
+                breakpoints: {
+                    // When window width is <= 1024px
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 15,
+                    },
+                    // When window width is <= 768px
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 10,
+                    },
+                    // When window width is <= 480px
+                    480: {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                    },
+                },
+            });
+        </script>
+    </main>
+</body>
+
+</html>

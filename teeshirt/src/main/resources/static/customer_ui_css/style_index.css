@@ -1,0 +1,111 @@
+.product {
+    width: 250px;
+}
+
+.product-pic {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-pic img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    transition: transform 1s ease;
+}
+
+/* Quick View button styling */
+.product-btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 100%); /* Ban đầu ẩn dưới sản phẩm */
+    min-width: 120px;
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 50px;
+    transition: all 0.5s ease; /* Hiệu ứng trượt */
+    z-index: 1;
+}
+.product-btn:hover {
+    background-color: #000; /* Màu nền khi hover */
+    color: #fff;
+}
+
+/* Hover effect: Image zooms in slightly, Quick View slides up */
+.product-pic:hover img {
+    transform: scale(1.1); /* Zoom nhẹ khi hover */
+}
+
+.product-pic:hover .product-btn {
+    transform: translate(-50%, -20px); /* Trượt lên khi hover */
+}
+
+/* Product text styling */
+.product-txt {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-top: 14px;
+}
+
+.product-txt-child1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-txt-child1 a {
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
+
+.product-txt-child1 a:hover {
+    color: #6c7ae0;
+}
+
+.product-txt-child1 span {
+    font-size: 14px;
+    color: #e74c3c;
+}
+
+/* Heart icon styling */
+.product-txt-child2 {
+    position: relative;
+    padding-top: 3px;
+}
+
+.btn-addwish-b2 {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.icon-heart1, .icon-heart2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+}
+
+.icon-heart2 {
+    opacity: 0;
+}
+
+.btn-addwish-b2:hover .icon-heart1 {
+    opacity: 0;
+}
+
+.btn-addwish-b2:hover .icon-heart2 {
+    opacity: 1;
+}

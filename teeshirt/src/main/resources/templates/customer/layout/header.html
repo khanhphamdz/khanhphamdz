@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transparent Header Scroll</title>
+</head>
+
+<body>
+  
+  <header id="main-header" class="menu-toggle transparent-header py-3">
+    <div class="container d-flex align-items-center justify-content-between">
+      <!-- Logo -->
+      <a href="#" class="logo fw-bold fs-4 text-dark text-decoration-none">
+        TEE<span style="color:#666">VIBE</span>
+      </a>
+
+      <!-- Menu desktop -->
+      <ul class="main-menu d-flex mb-0 list-unstyled align-items-center">
+        <li class="me-4"><a href="" class="menu-link">Home</a></li>
+        <li class="me-4">
+          <a href="" class="menu-link">Shop</a>
+          <ul class="sub-menu">
+            <li><a href="index.html">Homepage 1</a></li>
+            <li><a href="home-02.html">Homepage 2</a></li>
+            <li><a href="home-03.html">Homepage 3</a></li>
+          </ul>
+        </li>
+        <li class="me-4 position-relative">
+          <a href="" class="menu-link">Features</a>
+        </li>
+        <li class="me-4"><a href="" class="menu-link">Blog</a></li>
+        <li class="me-4"><a href="" class="menu-link">About</a></li>
+        <li><a href="" class="menu-link">Contact</a></li>
+      </ul>
+
+      <!-- Icons -->
+      <div class="icon-group d-flex align-items-center">
+        <a href="#" class="text-dark position-relative me-3">
+          <i class="fas fa-search fs-5"></i>
+        </a>
+        <a href="#" class="text-dark position-relative me-3">
+          <i class="fas fa-heart fs-5"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">0</span>
+        </a>
+        <a href="#" class="text-dark position-relative me-3">
+          <i class="fa-solid fa-user fs-5"></i>
+        </a>
+        <a href="#" class="text-dark position-relative ">
+            <i class="fas fa-shopping-cart fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">2</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Giả lập banner -->
+  <div class="banner">
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+          aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+          aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+          aria-label="Slide 3"></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="/images/slide-01.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="/images/slide-06.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="/images/slide-03.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+        data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+
+   
+  <script>
+    window.addEventListener('scroll', function () {
+      const header = document.getElementById('main-header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+        header.classList.remove('transparent-header');
+      } else {
+        header.classList.remove('scrolled');
+        header.classList.add('transparent-header');
+      }
+    });
+  </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
