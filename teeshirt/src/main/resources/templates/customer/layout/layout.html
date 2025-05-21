@@ -12,14 +12,47 @@
   <link rel="stylesheet" href="/customer_ui_css/layout/style_footer.css">
   <link rel="stylesheet" href="/customer_ui_css/layout/style_layout.css">
   <link rel="stylesheet" href="/customer_ui_css/style_index.css">
-  
+  <style>
+    #back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #back-to-top:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 
 <body>
   <header th:replace="~{/customer/layout/header}"></header>
   <main th:replace="${content}"></main>
-  <!-- Back to top -->
+  <button id="back-to-top"><i class="fa-solid fa-up-long"></i></button>
   <footer th:replace="~{/customer/layout/footer}"></footer>
+  <script>
+    window.addEventListener('scroll', function () {
+      const btnBackToTop = document.getElementById('back-to-top');
+      if (window.scrollY > 500) {
+        btnBackToTop.style.display = 'block';
+      } else {
+        btnBackToTop.style.display = 'none';
+      }
+    });
+    document.getElementById('back-to-top').addEventListener('click', function () {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
 </body>
 
 </html>
