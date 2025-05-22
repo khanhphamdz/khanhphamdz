@@ -118,6 +118,10 @@ header {
 
 .icon-group a {
     text-decoration: none;
+    color: #666;
+}
+.icon-group i {
+    color: #666;
 }
 .btn-search {
     background-color: transparent;
