@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng | Tee Shirt Vibe</title>
+</head>
+<body>
+    <main class="container mt-5" style="padding-top: 100px;">
+        <div class="row g-3">
+            <div class="col-8 p-3">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center mb-3">
+                    <h3>Giỏ hàng</h3>
+                    <span class="badge bg-secondary">1 sản phẩm</span>
+                </div>
+                <div class="cart-list-items">
+                    <div class="cart-item d-flex align-items-center justify-content-between mb-3 p-2 border-bottom">
+                        <div class="card-item-img">
+                            <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894537/tsv_brown_umzvjc.png" alt="Esprit Ruffle Shirt" class="img-fluid">
+                        </div>
+                        <div class="cart-item-info justify-content-center d-flex flex-column ms-3">
+                            <div class="cart-item-info-name">
+                                <span class="fw-bold">Esprit Ruffle Shirt</span>
+                            </div>
+                            <div class="cart-item-info-price text-success fw-bold mt-1">
+                                Giá: <span>1,000,000 VNĐ</span>
+                            </div>
+                            <div class="cart-item-info-size mt-1">
+                                Kích cỡ: <span class="text-muted">XL</span>
+                            </div>
+                            <div class="cart-item-info-quantity d-flex align-items-center mt-2">
+                                <button class="quantity-btn btn btn-outline-secondary"><i class="fa-solid fa-minus"></i></button>
+                                <input type="text" class="quantity-input form-control mx-2" value="1" min="1" style="width: 70px;">
+                                <button class="quantity-btn btn btn-outline-secondary"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <span class="cart-item-total-amount fw-bold text-primary ms-3">
+                            1,000,000 VNĐ
+                        </span>
+                        <div class="cart-item-actions ms-3">
+                            <button class="btn btn-danger btn-sm">Xóa <i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="summary-card p-3">
+                    <h3 class="mb-4">Tóm tắt đơn hàng</h3>
+                    <div class="summary-item mb-2 d-flex align-items-center justify-content-between">
+                        <span>Tạm tính:</span>
+                        <span>1,000,000 VNĐ</span>
+                    </div>
+                    <div class="summary-item mb-2 d-flex align-items-center justify-content-between">
+                        <span>Phí vận chuyển:</span>
+                        <span>50,000 VNĐ</span>
+                    </div>
+                    <hr>
+                    <div class="summary-item mb-3 d-flex align-items-center justify-content-between">
+                        <span class="fw-bold">Tổng cộng:</span>
+                        <span class="fw-bold text-danger">1,050,000 VNĐ</span>
+                    </div>
+                    <button class="btn btn-success w-100 mt-3 mb-2">Tiến hành thanh toán</button>
+                    <button class="btn btn-outline-secondary w-100">Cập nhật giỏ hàng</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

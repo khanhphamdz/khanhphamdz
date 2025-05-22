@@ -8,6 +8,13 @@
 
 <body>
     <main class="container mt-4" style="padding-top: 100px;">
+        <nav aria-label="breadcrumb" style="margin-top: 10px; margin-bottom: 30px;">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Library</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Data</li>
+            </ol>
+        </nav>
         <div class="row">
             <!-- Cột Filter -->
             <div class="col-md-2">
@@ -77,16 +84,16 @@
                             <div class="accordion-body p-0 pt-3 pb-3">
                                 <div class="list-size">
                                     <!-- Các size -->
-                                    <input type="checkbox" id="size-xs" class="size-option" />
+                                    <input type="checkbox" id="size-xs" class="size-option-prl" />
                                     <label for="size-xs" class="size-label">XS</label>
 
-                                    <input type="checkbox" id="size-s" class="size-option" />
+                                    <input type="checkbox" id="size-s" class="size-option-prl" />
                                     <label for="size-s" class="size-label">S</label>
 
-                                    <input type="checkbox" id="size-m" class="size-option" />
+                                    <input type="checkbox" id="size-m" class="size-option-prl" />
                                     <label for="size-m" class="size-label">M</label>
 
-                                    <input type="checkbox" id="size-l" class="size-option" />
+                                    <input type="checkbox" id="size-l" class="size-option-prl" />
                                     <label for="size-l" class="size-label">L</label>
                                 </div>
                             </div>
@@ -151,7 +158,7 @@
                         <div class="product-pic">
                             <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
                                 alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
+                            <a href="/detail" class="product-btn">
                                 Quick View
                             </a>
                         </div>

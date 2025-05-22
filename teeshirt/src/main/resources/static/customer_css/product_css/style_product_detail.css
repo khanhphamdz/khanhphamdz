@@ -1,0 +1,383 @@
+/*
+  Gallery sản phẩm: ảnh lớn và các thumbnail
+*/
+.product-gallery {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.main-image {
+  width: 100%;
+  min-width: 600px;
+  max-width: 600px;
+  max-height: 760px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.thumbnail-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.thumbnail:hover,
+.thumbnail.active {
+  border-color: gray;
+}
+
+/*
+  Thông tin sản phẩm: box trắng, bo góc, bóng nhẹ
+*/
+
+.product-title {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: black;
+}
+
+.product-price {
+  font-size: 1.8rem;
+  color: var(--secondary-color);
+  font-weight: bolder;
+  margin-bottom: 20px;
+}
+
+.product-description {
+  margin-bottom: 30px;
+  color: #666;
+}
+
+/*
+  Tùy chọn màu sắc và kích thước sản phẩm
+*/
+.color-options,
+.size-options {
+  margin-bottom: 20px;
+}
+
+/*
+  Hiển thị các màu theo hàng ngang, cách đều
+*/
+.color-options {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/*
+  Từng lựa chọn màu và size là inline-block, có thể click
+*/
+.color-option,
+.size-option {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+/*
+  Căn giữa vòng tròn màu và tên màu
+*/
+.color-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+/*
+  Vòng tròn màu sắc, hiệu ứng khi hover/chọn
+*/
+.color-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  display: inline-block;
+  margin-right: 5px;
+  transition: all 0.3s ease;
+}
+
+.color-circle:hover,
+.color-circle.active {
+  border-color: gray;
+  transform: scale(1.1);
+}
+
+/*
+  Tùy chọn size: bo góc, đổi màu khi chọn/hover
+*/
+.size-options {
+  margin-bottom: 20px;
+}
+
+.size-option {
+  display: inline-block;
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.size-option:hover,
+.size-option.active {
+  background-color: rgb(94, 161, 220);
+  color: white;
+  border-color: rgb(94, 161, 220);
+}
+
+/*
+  Bộ chọn số lượng sản phẩm
+*/
+.quantity-selector {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.quantity-btn {
+  width: 35px;
+  height: 35px;
+  border: none;
+  background: #f8f9fa;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.quantity-btn:hover {
+  background-color: #e9ecef;
+}
+
+.quantity-input {
+  width: 50px;
+  height: 35px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/*
+  Nút hành động (thêm giỏ hàng, yêu thích...)
+*/
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background-color: rgb(94, 161, 220);
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-success {
+  color: #fff;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/*
+  Thông tin cam kết sản phẩm
+*/
+.product-meta {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 30px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.meta-item i {
+  margin-right: 10px;
+  color: var(--secondary-color);
+}
+
+/*
+  Sản phẩm liên quan
+*/
+.related-products {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #ddd;
+}
+
+.related-product-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.related-product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.related-product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.related-product-info {
+  padding: 15px;
+}
+
+.related-product-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.related-product-price {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+
+/* Product Reviews */
+.product-reviews {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ddd;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.average-rating {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rating-number {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.stars {
+  color: #ffd700;
+}
+
+.total-reviews {
+  color: #666;
+}
+
+.reviews {
+  margin-bottom: 2rem;
+}
+
+.review-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.review-author {
+  font-weight: bold;
+}
+
+.review-date {
+  color: #666;
+}
+
+.review-rating {
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+}
+
+/* Write Review Form */
+.write-review {
+  background: #f9f9f9;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.write-review h3 {
+  margin-bottom: 1rem;
+}
+
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stars-input {
+  color: #ddd;
+  cursor: pointer;
+}
+
+.stars-input i:hover,
+.stars-input i.active {
+  color: #ffd700;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.breadcrumb-item a{
+  color: gray;
+  text-decoration: none;
+}

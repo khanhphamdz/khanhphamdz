@@ -163,7 +163,7 @@
     border: none !important;
 }
 
-.size-option {
+.size-option-prl {
     display: none;
 }
 
@@ -179,7 +179,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-.size-option:checked+.size-label {
+.size-option-prl:checked+.size-label {
     background-color: blueviolet;
     color: #fff;
     font-weight: bold;
