@@ -11,8 +11,7 @@
 
 /* Danh sách sản phẩm */
 .card-header {
-    padding: 15px;
-    background-color: lightblue;
+    background-color: light;
     border-radius: 5px 5px 0 0;
 }
 
@@ -83,21 +82,22 @@
     display: block;
 }
 
-.btn-success {
+.btn-checkout {
     background-color: #28a745;
     border: none;
+    color: white;
 }
 
-.btn-success:hover {
+.btn-checkout:hover {
     background-color: #218838;
 }
 
-.btn-outline-secondary {
+.btn-update-cart {
     color: #6c757d;
     border-color: #6c757d;
 }
 
-.btn-outline-secondary:hover {
+.btn-update-cart:hover {
     background-color: #6c757d;
     color: #fff;
 }
