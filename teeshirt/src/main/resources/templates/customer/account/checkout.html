@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanh toán | TeeVibe</title>
+</head>
+
+<body>
+  <main class="checkout-container container" style="padding-top: 120px;">
+    <h1 class="checkout-title">Thanh toán đơn hàng</h1>
+    <div class="row g-4">
+      <!-- Cột trái: Đơn hàng -->
+      <div class="col-lg-6 order-lg-2">
+        <div class="form-section">
+          <h2>Đơn hàng của bạn</h2>
+          <div class="order-summary">
+            <!-- Mã giảm giá -->
+            <div class="discount-section mb-3">
+              <label for="discount-select" class="form-label"><strong>Mã giảm giá</strong></label>
+              <div class="input-group">
+                <select id="discount-select" class="form-select">
+                  <option value="">Chọn mã giảm giá</option>
+                  <option value="SALE10">SALE10 - Giảm 10%</option>
+                  <option value="SALE20">SALE20 - Giảm 20%</option>
+                </select>
+                <button type="button" id="apply-discount" class="btn btn-outline-primary">Áp dụng</button>
+              </div>
+              <div id="discount-message" class="text-success mt-1" style="display:none;"></div>
+            </div>
+            <div class="order-item">
+              <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894537/tsv_black.png" alt="Áo thun đen"
+                class="order-thumb" />
+              <div class="order-info">
+                <div class="order-name">TeeShirtVibe Basic Tee (Đen, Size M)</div>
+                <div class="order-qty">Số lượng: 1</div>
+              </div>
+              <div class="order-price">1.299.000 ₫</div>
+            </div>
+            <div class="order-total">
+              <span>Tổng cộng:</span>
+              <span class="order-total-price">1.299.000 ₫</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Cột phải: Thông tin khách hàng + Thanh toán -->
+      <div class="col-lg-6 order-lg-1">
+        <form class="checkout-form">
+          <div class="form-section">
+            <h2>Thông tin khách hàng</h2>
+            <div class="form-group">
+              <label for="name">Họ và tên</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Số điện thoại</label>
+              <input type="tel" id="phone" name="phone" required />
+            </div>
+            <div class="form-group">
+              <label for="province">Tỉnh/Thành phố</label>
+              <select id="province" name="province" required class="form-select">
+                <option value="">Chọn tỉnh/thành phố</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="district">Quận/Huyện</label>
+              <select id="district" name="district" required class="form-select">
+                <option value="">Chọn quận/huyện</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ward">Phường/Xã</label>
+              <select id="ward" name="ward" required class="form-select">
+                <option value="">Chọn phường/xã</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="address-detail">Địa chỉ chi tiết</label>
+              <input type="text" id="address-detail" name="address-detail" required />
+            </div>
+          </div>
+          <div class="form-section">
+            <h2>Phương thức thanh toán</h2>
+            <div class="form-group radio-group">
+              <label><input type="radio" name="payment" value="cod" checked /> Thanh toán khi nhận hàng (COD)</label>
+              <label><input type="radio" name="payment" value="bank" /> Chuyển khoản ngân hàng</label>
+            </div>
+          </div>
+          <button type="submit" class="checkout-btn">Đặt hàng</button>
+        </form>
+        <div class="checkout-success" id="checkout-success">
+          <div class="success-icon">✔</div>
+          <div class="success-message">Đặt hàng thành công! Cảm ơn bạn đã mua sắm tại TeeVibe.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

@@ -24,4 +24,14 @@ public class HomeController {
     public String cart() {
         return "/customer/account/shopping-cart";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "/customer/account/login-register";
+    }
+
+    @GetMapping("/checkout")
+    public String checkoutcheckout() {
+        return "/customer/account/checkout";
+    }
 }
