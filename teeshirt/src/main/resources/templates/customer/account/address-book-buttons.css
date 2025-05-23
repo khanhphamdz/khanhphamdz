@@ -1,0 +1,31 @@
+/* address-book-buttons.css */
+.btn,
+.btn:focus {
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.btn-dark:hover,
+.btn-dark:focus {
+  background-color: #0d6efd !important; /* Bootstrap primary blue */
+  border-color: #0d6efd !important;
+  color: #fff !important;
+}
+.btn-outline-dark:hover,
+.btn-outline-dark:focus {
+  background-color: #e7f1ff !important; /* Light blue shade */
+  border-color: #0d6efd !important;
+  color: #0d6efd !important;
+}
+.btn-link.text-primary:hover,
+.btn-link.text-primary:focus {
+  color: #0d6efd !important;
+  text-decoration: underline;
+}
+.btn-link.text-danger:hover,
+.btn-link.text-danger:focus {
+  color: #0d6efd !important;
+}
+.btn-dark:active,
+.btn-outline-dark:active {
+  background-color: #0b5ed7 !important;
+  border-color: #0b5ed7 !important;
+}
