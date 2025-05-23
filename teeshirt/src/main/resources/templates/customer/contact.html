@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ - Tee Shirt Vibe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@100;300;500;700&family=Noto+Sans:ital,wght@0,400;0,500;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Lora', 'Noto Sans', serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+            overflow-x: hidden;
+            line-height: 1.8;
+            margin: 0;
+        }
+        .hero-banner {
+            background: url('https://img6.thuthuatphanmem.vn/uploads/2022/10/24/hinh-nen-meo-4k-dep-cho-may-tinh_093805198.jpg') no-repeat center;
+            background-size: cover;
+            height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+            z-index: 2;
+        }
+        .hero-banner h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 6rem;
+            letter-spacing: 6px;
+            z-index: 3;
+            text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.9);
+        }
+        .parallax {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 1;
+        }
+        .contact-container {
+            max-width: 1400px;
+            margin: 0 auto 100px;
+            padding: 60px;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 5;
+        }
+        .map iframe {
+            width: 100%;
+            height: 450px;
+            border-radius: 20px;
+            border: 6px solid #ffffff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transition: transform 0.4s ease;
+        }
+        .map iframe:hover {
+            transform: scale(1.05);
+        }
+        .contact-info div {
+            padding: 30px;
+            border-radius: 20px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            text-align: center;
+        }
+        .contact-info div:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 24px 40px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #2c2c2c, #4a4a4a);
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            padding: 14px 40px;
+            color: #ffffff;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            z-index: 5;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #4a4a4a, #666666);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+        .faq-item {
+            padding: 30px;
+            border-left: 6px solid #2c2c2c;
+            margin-bottom: 30px;
+            background: #f2f4f8;
+            border-radius: 16px;
+            transition: transform 0.4s ease;
+            position: relative;
+            z-index: 5;
+        }
+        .faq-item:hover {
+            transform: translateX(12px);
+        }
+        .faq-item::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: #2c2c2c;
+            border-radius: 50%;
+            position: absolute;
+            left: -12px;
+            top: 30px;
+        }
+        .faq-item h5 {
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+        .faq-item h5:hover {
+            color: #666666;
+        }
+        .faq-item p {
+            display: none;
+            font-size: 1.1rem;
+            color: #4a4a4a;
+        }
+        .faq-item.active p {
+            display: block;
+        }
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 3.4rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 2.6rem;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 0;
+        }
+        @media (max-width: 768px) {
+            .hero-banner {
+                height: 500px;
+            }
+            .hero-banner h1 {
+                font-size: 3.2rem;
+            }
+            .contact-container {
+                padding: 30px;
+            }
+            .map iframe {
+                height: 300px;
+            }
+            .contact-info div {
+                padding: 20px;
+            }
+            .faq-item {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 2.4rem;
+            }
+            h3 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="hero-banner animate__animated animate__zoomIn">
+        <div class="parallax"></div>
+        <h1>Liên Hệ Với Tee Shirt Vibe</h1>
+    </div>
+
+    <div class="container contact-container animate__animated animate__fadeIn">
+        <h2>Gửi Tin Nhắn Cho Chúng Tôi</h2>
+        <div class="row g-5">
+            <div class="col-md-6">
+                <form id="contactForm">
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Họ Tên</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="message" class="form-label">Tin Nhắn</label>
+                        <textarea class="form-control" id="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gửi Tin Nhắn</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="map animate__animated animate__fadeInRight">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447614078541!2d106.6980896146228!3d10.7763899923177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f38f747b7b7%3A0xb7e7f40f8c9b3b9!2sHo%20Chi%20Minh%20City%2C%20Vietnam!5e0!3m2!1sen!2sus!4v1634567890123"></iframe>
+                </div>
+                <div class="contact-info mt-4">
+                    <div class="animate__animated animate__fadeInUp"><strong>Điện Thoại:</strong> +84 123 456 7890</div>
+                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.2s;"><strong>Email:</strong> lienhe@teeshirtvibe.vn</div>
+                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.4s;"><strong>Địa Chỉ:</strong> 123 Đường Lê Lợi, Quận 1, TP.HCM</div>
+                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.6s;"><strong>Giờ Mở Cửa:</strong> 9:00 - 21:00, Thứ 2 - Chủ Nhật</div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5">
+            <h3>Câu Hỏi Thường Gặp</h3>
+            <div class="faq-item animate__animated animate__slideInLeft">
+                <h5 onclick="toggleFAQ(this)">Làm thế nào để chọn kích thước phù hợp?</h5>
+                <p>Vui lòng tham khảo bảng kích thước trên trang sản phẩm hoặc liên hệ chúng tôi để được tư vấn.</p>
+            </div>
+            <div class="faq-item animate__animated animate__slideInLeft" style="animation-delay: 0.2s;">
+                <h5 onclick="toggleFAQ(this)">Chính sách đổi trả là gì?</h5>
+                <p>Chúng tôi hỗ trợ đổi trả miễn phí trong 30 ngày nếu sản phẩm còn nguyên vẹn và chưa qua sử dụng.</p>
+            </div>
+            <div class="faq-item animate__animated animate__slideInLeft" style="animation-delay: 0.4s;">
+                <h5 onclick="toggleFAQ(this)">Có hỗ trợ giao hàng quốc tế không?</h5>
+                <p>Hiện tại, chúng tôi giao hàng trong Việt Nam. Liên hệ để biết thêm về giao hàng quốc tế trong tương lai.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#ffffff' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true, anim: { enable: true } },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: 1, direction: 'none', random: true }
+                },
+                interactivity: { detectsOn: 'canvas', modes: { repulse: { distance: 150 } } },
+                retina_detect: true
+            });
+
+            $('#contactForm').on('submit', function(e) {
+                e.preventDefault();
+                alert('Tin nhắn đã được gửi thành công!');
+                $(this)[0].reset();
+                gsap.from('.contact-container', { opacity: 0, y: 50, duration: 1, ease: 'power3.out' });
+            });
+
+            // GSAP animations
+            gsap.from('.hero-banner h1', {
+                opacity: 0,
+                y: -50,
+                duration: 2,
+                ease: 'power4.out'
+            });
+
+            gsap.from('.map', {
+                opacity: 0,
+                x: 100,
+                duration: 1.5,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.map',
+                    start: 'top 80%'
+                }
+            });
+
+            gsap.from('.contact-info div', {
+                opacity: 0,
+                y: 50,
+                stagger: 0.2,
+                duration: 1.5,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.contact-info',
+                    start: 'top 80%'
+                }
+            });
+
+            gsap.from('.faq-item', {
+                opacity: 0,
+                x: -150,
+                stagger: 0.25,
+                duration: 1.5,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.faq-item',
+                    start: 'top 80%'
+                }
+            });
+
+            gsap.from('.btn-primary', {
+                opacity: 0,
+                scale: 0.8,
+                duration: 1.2,
+                ease: 'elastic.out(1, 0.3)',
+                scrollTrigger: {
+                    trigger: '.btn-primary',
+                    start: 'top 90%'
+                }
+            });
+
+            $(window).scroll(function() {
+                var scroll = $(window).scrollTop();
+                $('.parallax').css('transform', 'translate3d(0, ' + scroll * 0.3 + 'px, 0)');
+            });
+
+            function toggleFAQ(element) {
+                $(element).parent().toggleClass('active');
+                gsap.from($(element).next('p'), { opacity: 0, y: 20, duration: 0.5, ease: 'power3.out' });
+            }
+        });
+    </script>
+</body>
+</html>
