@@ -31,7 +31,12 @@ public class HomeController {
     }
 
     @GetMapping("/checkout")
-    public String checkoutcheckout() {
+    public String checkout() {
         return "/customer/account/checkout";
+    }
+
+    @GetMapping("/about")
+    public String about() {
+        return "/customer/about";
     }
 }

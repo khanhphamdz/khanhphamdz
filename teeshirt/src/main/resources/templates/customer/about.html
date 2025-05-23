@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Về chúng tôi - TeeVibe</title>
-  <link rel="stylesheet" href="about.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
+
 <body>
-  <main class="about-main container">
+  <main class="about-main container" style="padding-top: 100px;">
     <div class="row py-5 align-items-center">
       <!-- Phần giới thiệu -->
       <div class="col-md-6 mb-4 mb-md-0">
@@ -18,44 +17,60 @@
           <p class="about-subtitle mb-4">Nơi cảm hứng thời trang và cá tính hội tụ</p>
           <p class="about-text">
             TeeShirtVibe không chỉ là một thương hiệu áo thun – đó là cách chúng tôi thổi hồn vào từng phong cách sống.
-Chúng tôi tin rằng một chiếc áo thun không chỉ để mặc, mà để thể hiện chất riêng của mỗi người.
+            Chúng tôi tin rằng một chiếc áo thun không chỉ để mặc, mà để thể hiện chất riêng của mỗi người.
 
-Ra đời từ niềm đam mê thời trang đường phố và nghệ thuật thị giác, TeeShirtVibe mang đến những thiết kế graphic tee độc bản – nổi bật, phá cách và luôn “bắt vibe” đúng gu của bạn. Mỗi sản phẩm là sự kết hợp giữa sự sáng tạo táo bạo và chất lượng tinh tế, dành cho những ai không ngại thể hiện cá tính giữa đám đông.
+            Ra đời từ niềm đam mê thời trang đường phố và nghệ thuật thị giác, TeeShirtVibe mang đến những thiết kế
+            graphic tee độc bản – nổi bật, phá cách và luôn “bắt vibe” đúng gu của bạn. Mỗi sản phẩm là sự kết hợp giữa
+            sự sáng tạo táo bạo và chất lượng tinh tế, dành cho những ai không ngại thể hiện cá tính giữa đám đông.
 
-TeeShirtVibe dành cho:
+            TeeShirtVibe dành cho:
 
-  <p>👉 Những người trẻ dám khác biệt.</p>
+          <p>👉 Những người trẻ dám khác biệt.</p>
 
-  <p>👉 Những tâm hồn yêu nghệ thuật và tự do.</p>
+          <p>👉 Những tâm hồn yêu nghệ thuật và tự do.</p>
 
-  <p>👉 Và cho chính bạn – người luôn muốn “mặc đúng chất mình”.</p>
+          <p>👉 Và cho chính bạn – người luôn muốn “mặc đúng chất mình”.</p>
 
 
           </p>
           <p>🔥 TeeShirtVibe – Wear Your Vibe.</p>
         </section>
-        <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993690/graphic_tsv_3_cv0par.png" alt="TeeShirtVibe Style" class="about-img-intro img-fluid rounded shadow my-3" style="max-width:320px; width:100%; height:auto; display:block; margin-left:auto; margin-right:auto;" />
+        <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993690/graphic_tsv_3_cv0par.png"
+          alt="TeeShirtVibe Style" class="about-img-intro img-fluid rounded shadow my-3"
+          style="max-width:320px; width:100%; height:auto; display:block; margin-left:auto; margin-right:auto;" />
       </div>
       <!-- Phần sứ mệnh -->
       <div class="col-md-6">
         <section class="about-mission h-100 d-flex flex-column justify-content-center">
-          <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747992885/graphic_tsv_uadrf8.png" alt="TeeVibe Team" class="about-img img-fluid rounded shadow mb-4" style="max-width: 350px; width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto;" />
+          <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747992885/graphic_tsv_uadrf8.png"
+            alt="TeeVibe Team" class="about-img img-fluid rounded shadow mb-4"
+            style="max-width: 350px; width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto;" />
           <h2 class="about-heading">Sứ mệnh của chúng tôi</h2>
           <div class="about-mission-text mb-3">
             <p>
-              TeeShirtVibe không chỉ tạo ra những chiếc áo thun, mà còn lan tỏa tinh thần tự do, phá cách của streetwear Việt. Chúng tôi muốn mỗi sản phẩm đều là một tuyên ngôn cá tính, một tác phẩm nghệ thuật đường phố mà bạn có thể khoác lên mình mỗi ngày.
+              TeeShirtVibe không chỉ tạo ra những chiếc áo thun, mà còn lan tỏa tinh thần tự do, phá cách của streetwear
+              Việt. Chúng tôi muốn mỗi sản phẩm đều là một tuyên ngôn cá tính, một tác phẩm nghệ thuật đường phố mà bạn
+              có thể khoác lên mình mỗi ngày.
             </p>
             <p>
-              Sứ mệnh của chúng tôi là đưa cá tính, nghệ thuật và sự sáng tạo lên từng chiếc áo, để mỗi bạn trẻ đều có thể tự tin thể hiện chất riêng, dám khác biệt và dám nổi bật giữa đám đông. Chúng tôi tin rằng thời trang không chỉ là xu hướng, mà còn là tiếng nói, là phong cách sống và là nguồn cảm hứng bất tận cho cộng đồng yêu streetwear.
+              Sứ mệnh của chúng tôi là đưa cá tính, nghệ thuật và sự sáng tạo lên từng chiếc áo, để mỗi bạn trẻ đều có
+              thể tự tin thể hiện chất riêng, dám khác biệt và dám nổi bật giữa đám đông. Chúng tôi tin rằng thời trang
+              không chỉ là xu hướng, mà còn là tiếng nói, là phong cách sống và là nguồn cảm hứng bất tận cho cộng đồng
+              yêu streetwear.
             </p>
             <p>
-              TeeShirtVibe luôn không ngừng đổi mới, cập nhật những ý tưởng táo bạo, kết hợp cùng chất liệu cao cấp và quy trình sản xuất thân thiện môi trường. Chúng tôi mong muốn trở thành biểu tượng của sự sáng tạo, tự do và kết nối những tâm hồn trẻ trung, đam mê nghệ thuật trên khắp Việt Nam.
+              TeeShirtVibe luôn không ngừng đổi mới, cập nhật những ý tưởng táo bạo, kết hợp cùng chất liệu cao cấp và
+              quy trình sản xuất thân thiện môi trường. Chúng tôi mong muốn trở thành biểu tượng của sự sáng tạo, tự do
+              và kết nối những tâm hồn trẻ trung, đam mê nghệ thuật trên khắp Việt Nam.
             </p>
           </div>
           <ul class="about-list">
-            <li><i class="fa-solid fa-check text-success me-2"></i>Lan tỏa tinh thần tự do, phá cách của streetwear Việt</li>
-            <li><i class="fa-solid fa-check text-success me-2"></i>Đưa cá tính và nghệ thuật đường phố lên từng chiếc áo</li>
-            <li><i class="fa-solid fa-check text-success me-2"></i>Truyền cảm hứng cho thế hệ trẻ dám khác biệt, dám thể hiện chất riêng</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Lan tỏa tinh thần tự do, phá cách của streetwear Việt
+            </li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Đưa cá tính và nghệ thuật đường phố lên từng chiếc áo
+            </li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Truyền cảm hứng cho thế hệ trẻ dám khác biệt, dám thể
+              hiện chất riêng</li>
           </ul>
         </section>
       </div>
@@ -88,4 +103,5 @@ TeeShirtVibe dành cho:
     </section>
   </main>
 </body>
+
 </html>
