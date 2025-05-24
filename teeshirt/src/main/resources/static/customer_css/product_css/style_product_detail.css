@@ -11,6 +11,7 @@
   min-width: 600px;
   max-width: 600px;
   max-height: 760px;
+  min-height: 760px;
   border-radius: 10px;
   margin-bottom: 15px;
 }

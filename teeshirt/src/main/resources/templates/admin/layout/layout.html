@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="view(title, content)">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Admin Sidebar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            height: 60px;
+            background: #00c4cc;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 900;
+            transition: all 0.3s ease;
+        }
+
+        .header.collapsed {
+            left: 80px;
+        }
+
+        .header .search-bar {
+            width: 300px;
+            margin-right: 20px;
+        }
+
+        .header .user-profile {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .header .user-profile img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #fff;
+            padding: 1rem;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            color: #fff;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #d1d5db;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: #4b5563;
+            color: #fff;
+        }
+
+        .sidebar i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+
+        .sidebar-toggler {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        .sidebar-toggler i {
+            color: #fff;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 90px 30px 30px;
+            transition: all 0.3s ease;
+        }
+
+        .main-content.collapsed {
+            margin-left: 80px;
+        }
+
+        .card {
+            background: #fff;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card.blue {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .card.green {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .chart-container {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .daily-sales {
+            background: #0d6efd;
+            color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            background: #00c4cc;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+        }
+
+        .btn-custom:hover {
+            background: #00a2a8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div id="header" class="header">
+        <div class="search-bar">
+            <input type="text" class="form-control" placeholder="Search...">
+        </div>
+        <div class="user-profile">
+            <img src="https://via.placeholder.com/30" alt="User">
+            <span>Hi, Hirzian</span>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <button class="sidebar-toggler" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="/admin"><i class="fa-solid fa-house"></i><span
+                    class="nav-text">Dashboard</span></a>
+            <a class="nav-link" href="/counter-sale"><i class="fa-solid fa-money-bill"></i><span class="nav-text">Bán
+                    hàng tại quầy</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-shirt"></i><span class="nav-text">Quản lý sản
+                    phẩm</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-cart-shopping"></i><span class="nav-text">Quản lý đơn
+                    hàng</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-users"></i><span class="nav-text">Quản lý nhân
+                    viên</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-user-tie"></i><span class="nav-text">Quản lý khách
+                    hàng</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-comments"></i><span class="nav-text">Quản lý phản hồi và
+                    đánh giá</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-rotate"></i><span class="nav-text">Trả hàng</span></a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-gift"></i><span class="nav-text">Giảm giá</span></a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="main-content">
+        <main th:replace="${content}"></main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Toggle sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('main-content').classList.toggle('collapsed');
+            document.getElementById('header').classList.toggle('collapsed');
+            localStorage.setItem('sidebar-collapsed', document.getElementById('sidebar').classList.contains('collapsed'));
+        }
+
+        // Load state
+        document.addEventListener('DOMContentLoaded', () => {
+            const collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            if (collapsed) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('main-content').classList.add('collapsed');
+                document.getElementById('header').classList.add('collapsed');
+            }
+
+            // Highlight current page
+            const current = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === current) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <!-- JavaScript for Charts and Interactivity -->
+    <script>
+        // Revenue Chart
+        const revenueChart = new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: ['18/05', '19/05', '20/05', '21/05', '22/05', '23/05', '24/05'],
+                datasets: [
+                    {
+                        label: 'Doanh thu tại quầy',
+                        data: [5000000, 6000000, 4500000, 7000000, 8000000, 5500000, 9000000],
+                        borderColor: '#1E90FF',
+                        backgroundColor: 'rgba(30, 144, 255, 0.2)',
+                        fill: true
+                    },
+                    {
+                        label: 'Doanh thu online',
+                        data: [3000000, 4000000, 3500000, 5000000, 4500000, 6000000, 7000000],
+                        borderColor: '#FF6347',
+                        backgroundColor: 'rgba(255, 99, 71, 0.2)',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Doanh thu (VNĐ)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Ngày'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doanh thu theo thời gian'
+                    }
+                }
+            }
+        });
+
+        // Order Status Chart
+        const orderStatusChart = new Chart(document.getElementById('orderStatusChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Đang xử lý', 'Hoàn tất', 'Đã hủy'],
+                datasets: [
+                    {
+                        label: 'Trạng thái đơn hàng',
+                        data: [36, 72, 12],
+                        backgroundColor: ['#FFCE56', '#36A2EB', '#FF6384'],
+                        borderColor: ['#D4A017', '#2E8BC0', '#D53F5A'],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phân bố trạng thái đơn hàng'
+                    }
+                }
+            }
+        });
+
+        // Function to update dashboard based on time filter
+        function updateDashboard() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            // Giả lập cập nhật dữ liệu (thay bằng API thực tế)
+            if (timeFilter === 'today') {
+                document.getElementById('totalRevenue').textContent = '50,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '40';
+                document.getElementById('productsSold').textContent = '120';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '30';
+                document.getElementById('onlineOrders').textContent = '10';
+            } else if (timeFilter === 'week') {
+                document.getElementById('totalRevenue').textContent = '150,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '120';
+                document.getElementById('productsSold').textContent = '350';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '80';
+                document.getElementById('onlineOrders').textContent = '40';
+            } else {
+                document.getElementById('totalRevenue').textContent = '450,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '360';
+                document.getElementById('productsSold').textContent = '950';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '240';
+                document.getElementById('onlineOrders').textContent = '120';
+            }
+
+            // Cập nhật biểu đồ (giả lập, thay bằng dữ liệu thực tế)
+            revenueChart.data.datasets[0].data = timeFilter === 'today' ? [2000000, 3000000, 2500000, 4000000, 5000000, 3500000, 6000000] : [5000000, 6000000, 4500000, 7000000, 8000000, 5500000, 9000000];
+            revenueChart.data.datasets[1].data = timeFilter === 'today' ? [1000000, 1500000, 2000000, 2500000, 3000000, 4000000, 5000000] : [3000000, 4000000, 3500000, 5000000, 4500000, 6000000, 7000000];
+            revenueChart.update();
+
+            orderStatusChart.data.datasets[0].data = timeFilter === 'today' ? [12, 24, 4] : [36, 72, 12];
+            orderStatusChart.update();
+        }
+    </script>
+    <script>
+        // Fake data for products
+        const products = [
+            { id: 1, name: 'Áo thun nam', variants: [{ id: 1, color: 'Đen', size: 'M', price: 150000, stock: 50, barcode: 'THN001' }, { id: 2, color: 'Trắng', size: 'L', price: 150000, stock: 30 }] },
+            { id: 2, name: 'Áo polo', variants: [{ id: 3, color: 'Xanh', size: 'S', price: 200000, stock: 20, barcode: 'POL001' }] },
+            { id: 3, name: 'Áo sơ mi', variants: [{ id: 4, color: 'Trắng', size: 'M', price: 250000, stock: 15, barcode: 'SMI001' }] }
+        ];
+
+        let cart = [];
+        let currentMode = 'quick';
+
+        // Initialize mode selector for managers
+        function initModeSelector() {
+            const userRole = 'manager'; // Replace with actual role check (e.g., from session)
+            if (userRole === 'manager') {
+                document.getElementById('modeSelector').style.display = 'block';
+            }
+        }
+
+        // Change mode
+        function changeMode() {
+            currentMode = document.getElementById('saleMode').value;
+            const customerInfo = document.getElementById('customerInfo');
+            if (currentMode === 'quick') {
+                customerInfo.style.display = 'none';
+            } else {
+                customerInfo.style.display = 'block';
+            }
+            if (currentMode === 'delivery') {
+                // Add delivery form (not implemented here for simplicity)
+                alert('Chế độ giao hàng cần thêm form địa chỉ!');
+            }
+            updateCart();
+        }
+
+        // Search product
+        document.getElementById('productSearch').addEventListener('input', function () {
+            const searchText = this.value.toLowerCase();
+            const matchingProducts = products.filter(p => p.name.toLowerCase().includes(searchText) || p.variants.some(v => v.barcode === searchText));
+            if (matchingProducts.length === 1 && matchingProducts[0].variants.length === 1 && this.value) {
+                addToCart(matchingProducts[0].variants[0]);
+                this.value = '';
+            }
+        });
+
+        // Add to cart
+        function addToCart(variant) {
+            const existingItem = cart.find(item => item.variant.id === variant.id);
+            if (existingItem) {
+                if (existingItem.quantity < variant.stock) existingItem.quantity++;
+            } else {
+                cart.push({ variant, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        // Update cart display
+        function updateCart() {
+            const tbody = document.getElementById('selectedProductsBody');
+            tbody.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.variant.name || item.variant.product.name}</td>
+                        <td>${item.variant.color}, ${item.variant.size}</td>
+                        <td><input type="number" class="form-control" value="${item.quantity}" min="1" max="${item.variant.stock}" onchange="updateQuantity(${item.variant.id}, this.value)"></td>
+                        <td>${item.variant.price.toLocaleString()} VNĐ</td>
+                        <td><button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.variant.id})">Xóa</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+                total += item.variant.price * item.quantity;
+            });
+            document.getElementById('totalAmount').textContent = total.toLocaleString() + ' VNĐ';
+            document.getElementById('finalAmount').textContent = total.toLocaleString() + ' VNĐ';
+            calculateChange();
+        }
+
+        // Update quantity
+        function updateQuantity(variantId, quantity) {
+            const item = cart.find(item => item.variant.id === variantId);
+            if (item && quantity <= item.variant.stock && quantity > 0) {
+                item.quantity = parseInt(quantity);
+            } else {
+                alert('Số lượng không hợp lệ hoặc vượt tồn kho!');
+            }
+            updateCart();
+        }
+
+        // Remove from cart
+        function removeFromCart(variantId) {
+            cart = cart.filter(item => item.variant.id !== variantId);
+            updateCart();
+        }
+
+        // Clear cart
+        function clearCart() {
+            cart = [];
+            updateCart();
+        }
+
+        // Apply coupon
+        function applyCoupon() {
+            const couponCode = document.getElementById('couponCode').value;
+            let discount = 0;
+            if (couponCode === 'DISCOUNT10') discount = 10000; // Fake discount
+            const total = parseInt(document.getElementById('totalAmount').textContent.replace(/[^0-9]/g, '')) || 0;
+            const discountedAmount = total - discount;
+            document.getElementById('discountAmount').textContent = discount.toLocaleString() + ' VNĐ';
+            document.getElementById('finalAmount').textContent = discountedAmount.toLocaleString() + ' VNĐ';
+            calculateChange();
+        }
+
+        // Calculate change
+        function calculateChange() {
+            const amountPaid = parseInt(document.getElementById('amountPaid').value) || 0;
+            const finalAmount = parseInt(document.getElementById('finalAmount').textContent.replace(/[^0-9]/g, '')) || 0;
+            const change = amountPaid - finalAmount;
+            document.getElementById('changeAmount').textContent = (change > 0 ? change : 0).toLocaleString() + ' VNĐ';
+        }
+
+        // Process payment
+        function processPayment() {
+            if (cart.length === 0) {
+                alert('Vui lòng thêm sản phẩm vào giỏ hàng!');
+                return;
+            }
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const customerId = document.getElementById('customerSelect').value || null;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const finalAmount = parseInt(document.getElementById('finalAmount').textContent.replace(/[^0-9]/g, '')) || 0;
+            const amountPaid = parseInt(document.getElementById('amountPaid').value) || 0;
+
+            if (amountPaid < finalAmount) {
+                alert('Số tiền khách trả không đủ!');
+                return;
+            }
+
+            // Fake order creation
+            const orderId = new Date().getTime();
+            console.log({
+                orderId,
+                customerId,
+                customerInfo: customerId ? null : { name: customerName, phone: customerPhone },
+                totalAmount: finalAmount,
+                paymentMethod,
+                paymentStatus: 'completed',
+                items: cart.map(item => ({ variantId: item.variant.id, quantity: item.quantity, price: item.variant.price }))
+            });
+
+            alert(`Đơn hàng #${orderId} đã được tạo thành công!`);
+            cart = [];
+            updateCart();
+        }
+
+        // Print invoice
+        function printInvoice() {
+            if (cart.length === 0) {
+                alert('Không có đơn hàng để in!');
+                return;
+            }
+            const invoiceContent = `
+                <h3>In hóa đơn</h3>
+                <p>Thời gian: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</p>
+                <table>
+                    <thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Giá</th></tr></thead>
+                    <tbody>${cart.map(item => `
+                        <tr><td>${item.variant.name || item.variant.product.name} (${item.variant.color}, ${item.variant.size})</td><td>${item.quantity}</td><td>${item.variant.price.toLocaleString()} VNĐ</td></tr>
+                    `).join('')}</tbody>
+                </table>
+                <p>Tổng tiền: ${document.getElementById('finalAmount').textContent}</p>
+            `;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>In hóa đơn</title></head><body>' + invoiceContent + '</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Initialize
+        initModeSelector();
+        updateCart();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

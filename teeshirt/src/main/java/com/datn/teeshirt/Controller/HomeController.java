@@ -39,4 +39,24 @@ public class HomeController {
     public String about() {
         return "/customer/about";
     }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "/customer/contact";
+    }
+
+    @GetMapping("/account")
+    public String account() {
+        return "/customer/account/account";
+    }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "/admin/index";
+    }
+
+    @GetMapping("/counter-sale")
+    public String counter_sale() {
+        return "/admin/counter-sales";
+    }
 }

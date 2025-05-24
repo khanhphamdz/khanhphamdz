@@ -1,0 +1,115 @@
+
+.map iframe {
+    width: 100%;
+    height: 450px;
+    border-radius: 20px;
+    border: 6px solid #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 0.4s ease;
+}
+.map iframe:hover {
+    transform: scale(1.05);
+}
+.contact-info div {
+    padding: 30px;
+    border-radius: 20px;
+    background: #f9f9f9;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    text-align: center;
+}
+.contact-info div:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.15);
+}
+.btn-primary {
+    background: linear-gradient(90deg, #2c2c2c, #4a4a4a);
+    border: none;
+    font-weight: 500;
+    padding: 14px 40px;
+    color: #ffffff;
+    border-radius: 12px;
+    transition: all 0.4s ease;
+    z-index: 5;
+}
+.btn-primary:hover {
+    background: linear-gradient(90deg, #4a4a4a, #666666);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+.faq-item {
+    padding: 30px;
+    border-left: 6px solid #2c2c2c;
+    margin-bottom: 30px;
+    background: #f2f4f8;
+    border-radius: 16px;
+    transition: transform 0.4s ease;
+    position: relative;
+    z-index: 5;
+}
+.faq-item:hover {
+    transform: translateX(12px);
+}
+.faq-item::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: #2c2c2c;
+    border-radius: 50%;
+    position: absolute;
+    left: -12px;
+    top: 30px;
+}
+.faq-item h5 {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+.faq-item h5:hover {
+    color: #666666;
+}
+.faq-item p {
+    display: none;
+    font-size: 1.1rem;
+    color: #4a4a4a;
+}
+.faq-item.active p {
+    display: block;
+}
+.contact-container h2 {
+    font-weight: 500;
+    font-size: 3.4rem;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.faq h3 {
+    font-weight: 500;
+    font-size: 2.6rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+@media (max-width: 768px) {
+    .contact-container {
+        padding: 30px;
+    }
+    .map iframe {
+        height: 300px;
+    }
+    .contact-info div {
+        padding: 20px;
+    }
+    .faq-item {
+        padding: 20px;
+    }
+    .faq h2 {
+        font-size: 2.4rem;
+    }
+    .faq h3 {
+        font-size: 1.8rem;
+    }
+}

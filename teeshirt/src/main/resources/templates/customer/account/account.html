@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
 
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div class="container mt-5">
+    <main class="container" style="padding-top: 100px;">
         <div class="row g-3">
             <div class="col-3 p-3 nav flex-column nav-pills gap-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <button class="nav-link active text-start" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="true"><i class="fa-solid fa-user"></i> Thông tin tài khoản <i class="fa-solid fa-arrow-right float-end"></i></button>
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
     <!-- Modal Cập nhật thông tin cá nhân -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
