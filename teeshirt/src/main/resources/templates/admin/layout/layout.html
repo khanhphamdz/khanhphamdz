@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="view(title, content)">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:replace="${title}">Tee Shirt Vibe - Dashboard</title>
     <link rel="stylesheet" href="/admin_css/style_layout.css" />
+    <link rel="stylesheet" href="/admin_css/emplotee-management.css" />
+    <link rel="stylesheet" href="/admin_css/order-managememt.css" />
     <!-- Boxiocns CDN Link -->
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,124 +17,103 @@
 
 <body>
     <div class="sidebar">
-        <div class="logo-details text-center">
-            <span class="logo_name w-100">Tee Shirt Vibe</span>
+        <div class="logo-details w-100">
+            <span class="logo_name w-100 text-center">Tee Shirt Vibe</span>
         </div>
         <ul class="nav-links">
             <li>
-                <a href="#">
-                    <i class="bx bx-grid-alt"></i>
+                <a href="/admin">
+                    <i class="fa-solid fa-house"></i>
                     <span class="link_name">Dashboard</span>
                 </a>
             </li>
             <li>
                 <div class="iocn-link">
                     <a href="#">
-                        <i class="bx bx-collection"></i>
-                        <span class="link_name">Category</span>
+                        <i class="fa-solid fa-money-bill"></i>
+                        <span class="link_name">Bán hàng tại quầy</span>
                     </a>
-                    <i class="bx bxs-chevron-down arrow"></i>
                 </div>
-                <ul class="sub-menu">
-                    <li><a class="link_name" href="#">Category</a></li>
-                    <li><a href="#">HTML & CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                    <li><a href="#">PHP & MySQL</a></li>
-                </ul>
             </li>
             <li>
                 <div class="iocn-link">
                     <a href="#">
-                        <i class="bx bx-book-alt"></i>
-                        <span class="link_name">Posts</span>
+                        <i class="fa-solid fa-shirt"></i>
+                        <span class="link_name">Quản lý sản phẩm</span>
                     </a>
                     <i class="bx bxs-chevron-down arrow"></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a class="link_name" href="#">Posts</a></li>
-                    <li><a href="#">Web Design</a></li>
-                    <li><a href="#">Login Form</a></li>
-                    <li><a href="#">Card Design</a></li>
+                    <li><a href="#">Sản phẩm</a></li>
+                    <li><a href="#">Kích cỡ</a></li>
+                    <li><a href="#">Màu sắc</a></li>
                 </ul>
             </li>
+
             <li>
-                <a href="#">
-                    <i class="bx bx-pie-chart-alt-2"></i>
-                    <span class="link_name">Analytics</span>
+                <a href="/order">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="link_name">Đơn hàng</span>
                 </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">Analytics</a></li>
-                </ul>
             </li>
             <li>
-                <a href="#">
-                    <i class="bx bx-line-chart"></i>
-                    <span class="link_name">Chart</span>
+                <a href="/employee">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="link_name">Nhân viên</span>
                 </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">Chart</a></li>
-                </ul>
             </li>
             <li>
                 <div class="iocn-link">
                     <a href="#">
-                        <i class="bx bx-plug"></i>
-                        <span class="link_name">Plugins</span>
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span class="link_name">Khách hàng</span>
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-comments"></i>
+                    <span class="link_name">Đánh giá</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span class="link_name">Trả hàng</span>
+                </a>
+            </li>
+            <li>
+                <div class="iocn-link">
+                    <a href="#">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span class="link_name">Giảm giá</span>
                     </a>
                     <i class="bx bxs-chevron-down arrow"></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a class="link_name" href="#">Plugins</a></li>
-                    <li><a href="#">UI Face</a></li>
-                    <li><a href="#">Pigments</a></li>
-                    <li><a href="#">Box Icons</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="bx bx-compass"></i>
-                    <span class="link_name">Explore</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">Explore</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="bx bx-history"></i>
-                    <span class="link_name">History</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">History</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="bx bx-cog"></i>
-                    <span class="link_name">Setting</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">Setting</a></li>
+                    <li><a href="#">Đợt giảm giá</a></li>
+                    <li><a href="#">Phiếu giảm giá</a></li>
                 </ul>
             </li>
             <li>
                 <div class="profile-details">
                     <div class="profile-content">
-                        <img src="image/profile.jpg" alt="profileImg" />
+                        <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1748244107/Screenshot_2025-01-17_100744_ktodkf.png"
+                            alt="profileImg" />
                     </div>
                     <div class="name-job">
-                        <div class="profile_name">Prem Shahi</div>
-                        <div class="job">Web Desginer</div>
+                        <div class="profile_name">Trans H Hà</div>
+                        <div class="job">Nhân viên </div>
                     </div>
                     <i class="bx bx-log-out"></i>
                 </div>
             </li>
         </ul>
     </div>
-    <section class="home-section">
+    <section class="home-section p-0 m-0">
         <div class="home-content d-flex flex-column">
             <div class="home-content-header w-100">
-                <i class="bx bx-menu pt-3"></i>
+                <i class="bx bx-menu"></i>
             </div>
             <!-- Main Content -->
             <main th:replace="${content}"></main>
@@ -454,6 +435,339 @@
         // Initialize
         initModeSelector();
         updateCart();
+    </script>
+    <!-- JavaScript for order -->
+    <script>
+        // Fake data for orders
+        let orders = [
+            { id: '#ORD001', customer: 'Nguyễn Văn A', status: 'cho-xac-nhan', createdAt: '24/05/2025 14:00', source: 'online', paymentMethod: 'cash', totalAmount: 300000, items: [{ name: 'Áo thun nam', quantity: 2, price: 150000 }] },
+            { id: '#ORD002', customer: 'Trần Thị B', status: 'hoan-tat', createdAt: '24/05/2025 13:30', source: 'counter', paymentMethod: 'card', totalAmount: 200000, items: [{ name: 'Áo polo', quantity: 1, price: 200000 }] },
+            { id: '#ORD003', customer: 'Lê Văn C', status: 'da-huy', createdAt: '23/05/2025 16:00', source: 'online', paymentMethod: 'mobile', totalAmount: 250000, items: [{ name: 'Áo sơ mi', quantity: 1, price: 250000 }] },
+            { id: '#ORD004', customer: 'Phạm Thị D', status: 'dang-chuan-bi', createdAt: '24/05/2025 15:00', source: 'online', paymentMethod: 'card', totalAmount: 450000, items: [{ name: 'Áo khoác', quantity: 1, price: 450000 }] },
+            { id: '#ORD005', customer: 'Hoàng Văn E', status: 'dang-giao', createdAt: '24/05/2025 12:00', source: 'online', paymentMethod: 'card', totalAmount: 600000, items: [{ name: 'Áo len', quantity: 2, price: 300000 }] },
+            { id: '#ORD006', customer: 'Ngô Thị F', status: 'tra-hang', createdAt: '23/05/2025 09:00', source: 'counter', paymentMethod: 'cash', totalAmount: 350000, items: [{ name: 'Áo thun nữ', quantity: 1, price: 350000 }] },
+            { id: '#ORD007', customer: 'Vũ Văn G', status: 'cho-xac-nhan', createdAt: '24/05/2025 16:30', source: 'online', paymentMethod: 'card', totalAmount: 800000, items: [{ name: 'Áo vest', quantity: 1, price: 800000 }] }
+        ];
+
+        // Load orders table
+        function loadOrders(filteredOrders = orders) {
+            const tbody = document.getElementById('orderTable');
+            tbody.innerHTML = '';
+            filteredOrders.forEach((order, index) => {
+                // Chuyển trạng thái và nguồn sang tiếng Việt
+                let statusVN = '';
+                switch (order.status) {
+                    case 'cho-xac-nhan': statusVN = 'Chờ xác nhận'; break;
+                    case 'dang-chuan-bi': statusVN = 'Đang chuẩn bị hàng'; break;
+                    case 'dang-giao': statusVN = 'Đang giao hàng'; break;
+                    case 'hoan-tat': statusVN = 'Hoàn tất'; break;
+                    case 'da-huy': statusVN = 'Đã hủy'; break;
+                    case 'tra-hang': statusVN = 'Trả hàng'; break;
+                    default: statusVN = order.status;
+                }
+                let sourceVN = '';
+                switch (order.source) {
+                    case 'counter': sourceVN = 'Tại quầy'; break;
+                    case 'online': sourceVN = 'Online'; break;
+                    default: sourceVN = order.source;
+                }
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${order.id}</td>
+                        <td>${order.customer}</td>
+                        <td>${statusVN}</td>
+                        <td>${order.createdAt}</td>
+                        <td>${sourceVN}</td>
+                        <td>${order.totalAmount.toLocaleString()} VNĐ</td>
+                        <td>
+                            <button class="btn btn-sm btn-info btn-action" onclick="openOrderDetail('${order.id}')">Xem</button>
+                            <button class="btn btn-sm btn-warning btn-action" onclick="updateOrderStatus('${order.id}')">Cập nhật</button>
+                            ${order.status !== 'da-huy' ? '<button class="btn btn-sm btn-danger btn-action" onclick="openCancelOrder(\'' + order.id + '\')">Hủy</button>' : ''}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Filter orders
+        function filterOrders() {
+            const date = document.getElementById('filterDate').value;
+            const status = document.getElementById('filterStatus').value;
+            const source = document.getElementById('filterSource').value;
+
+            let filteredOrders = orders;
+            if (date) filteredOrders = filteredOrders.filter(o => o.createdAt.startsWith(date.split('-').reverse().join('/')));
+            if (status) filteredOrders = filteredOrders.filter(o => o.status === status);
+            if (source) filteredOrders = filteredOrders.filter(o => o.source === source);
+
+            loadOrders(filteredOrders);
+        }
+
+        // Open order detail modal
+        function openOrderDetail(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            document.getElementById('detailOrderId').textContent = order.id;
+            document.getElementById('detailCustomer').textContent = order.customer;
+            document.getElementById('detailCreatedAt').textContent = order.createdAt;
+            document.getElementById('detailSource').textContent = order.source === 'counter' ? 'Tại quầy' : 'Online';
+            document.getElementById('detailStatus').textContent = order.status;
+            document.getElementById('detailPaymentMethod').textContent = order.paymentMethod;
+            document.getElementById('detailTotalAmount').textContent = order.totalAmount.toLocaleString() + ' VNĐ';
+
+            // Hiển thị các option trạng thái phù hợp
+            const newStatusSelect = document.getElementById('newStatus');
+            if (order.source === 'counter') {
+                // Nếu là đơn hàng tại quầy, chỉ hiện thị 2 trạng thái
+                newStatusSelect.innerHTML = `
+                    <option value="hoan-tat">Hoàn tất</option>
+                    <option value="tra-hang">Trả hàng</option>
+                `;
+            } else {
+                // Nếu là đơn online, hiển thị tất cả trạng thái
+                newStatusSelect.innerHTML = `
+                    <option value="cho-xac-nhan">Chờ xác nhận</option>
+                    <option value="dang-chuan-bi">Đang chuẩn bị hàng</option>
+                    <option value="dang-giao">Đang giao hàng</option>
+                    <option value="hoan-tat">Hoàn tất</option>
+                    <option value="da-huy">Đã hủy</option>
+                    <option value="tra-hang">Trả hàng</option>
+                `;
+            }
+            newStatusSelect.value = order.status;
+
+            const itemsBody = document.getElementById('orderItems');
+            itemsBody.innerHTML = order.items.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price.toLocaleString()} VNĐ</td>
+                    <td>${(item.quantity * item.price).toLocaleString()} VNĐ</td>
+                </tr>
+            `).join('');
+            document.getElementById('orderDetailModal').modal('show');
+        }
+
+        // Update order status
+        function updateOrderStatus(orderId) {
+            openOrderDetail(orderId);
+            // Save status will be handled in saveStatus()
+        }
+
+        // Save status
+        function saveStatus() {
+            const orderId = document.getElementById('detailOrderId').textContent;
+            const newStatus = document.getElementById('newStatus').value;
+            const order = orders.find(o => o.id === orderId);
+
+            // Kiểm tra nếu là đơn hàng tại quầy
+            if (order.source === 'counter' && !['hoan-tat', 'tra-hang'].includes(newStatus)) {
+                alert('Đơn hàng tại quầy chỉ có thể có trạng thái Hoàn tất hoặc Trả hàng!');
+                return;
+            }
+
+            order.status = newStatus;
+            document.getElementById('detailStatus').textContent = newStatus;
+            alert(`Trạng thái đơn hàng ${orderId} đã được cập nhật thành ${newStatus}!`);
+            filterOrders();
+            document.getElementById('orderDetailModal').modal('hide');
+        }
+
+        // Open cancel order modal
+        function openCancelOrder(orderId) {
+            document.getElementById('cancelOrderId').textContent = orderId;
+            document.getElementById('cancelOrderModal').modal('show');
+        }
+
+        // Confirm cancel
+        function confirmCancel() {
+            const orderId = document.getElementById('cancelOrderId').textContent;
+            const reason = document.getElementById('cancelReason').value;
+            if (!reason) {
+                alert('Vui lòng nhập lý do hủy!');
+                return;
+            }
+            const order = orders.find(o => o.id === orderId);
+            order.status = 'da-huy';
+            order.note = reason;
+            alert(`Đơn hàng ${orderId} đã được hủy với lý do: ${reason}`);
+            filterOrders();
+            document.getElementById('cancelOrderModal').modal('hide');
+        }
+
+        // Filter orders by tab
+        function filterByTab(status) {
+            let filteredOrders = orders;
+            if (status !== 'all') {
+                filteredOrders = orders.filter(order => order.status === status);
+            }
+            loadOrders(filteredOrders);
+
+            // Cập nhật trạng thái active cho tab
+            document.querySelectorAll('#orderStatusTabs .nav-link').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`tab-${status}`).classList.add('active');
+        }
+
+        // Reset filters
+        function resetOrderFilters() {
+            document.getElementById('filterDate').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterSource').value = '';
+            filterOrders();
+        }
+
+        // Load initial data
+        loadOrders();
+    </script>
+    <script>
+        // Fake data for employees
+        let employees = [
+            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active', joinDate: '01/05/2025' },
+            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active', joinDate: '10/05/2025' },
+            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive', joinDate: '15/05/2025' },
+            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active', joinDate: '20/05/2025' },
+            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive', joinDate: '22/05/2025' }
+        ];
+
+        // Load employees table
+        function loadEmployees(filteredEmployees = employees) {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = '';
+            filteredEmployees.forEach((employee, index) => {
+                // Format mã nhân viên: NV + 3 số
+                const maNV = `NV${employee.id.toString().padStart(3, '0')}`;
+                // Nếu chưa có trường gender thì mặc định Nam/Nữ xen kẽ
+                let gender = employee.gender;
+                if (!gender) gender = index % 2 === 0 ? 'Nam' : 'Nữ';
+                const row = `
+        <tr>
+            <td class="text-center">${maNV}</td>
+            <td>${employee.name}</td>
+            <td>${employee.phone}</td>
+            <td>${employee.cccd || ''}</td>
+            <td>${employee.birthday ? employee.birthday.split('-').reverse().join('/') : (employee.joinDate || '')}</td>
+            <td>${gender}</td>
+            <td>${employee.status === 'active' ? 'Hoạt động' : 'Nghỉ việc'}</td>
+            <td style="min-width:120px;">
+                <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(${employee.id})">Sửa</button>
+                <button class="btn btn-sm btn-danger btn-action${employee.status !== 'active' ? ' invisible' : ''}" onclick="openDeleteEmployeeModal(${employee.id})">Nghỉ việc</button>
+            </td>
+        </tr>
+    `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Filter employees
+        function filterEmployees() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const birthdayFrom = document.getElementById('filterBirthdayFrom').value;
+            const birthdayTo = document.getElementById('filterBirthdayTo').value;
+
+            let filteredEmployees = employees;
+            if (name) filteredEmployees = filteredEmployees.filter(e => e.name.toLowerCase().includes(name));
+            if (status) filteredEmployees = filteredEmployees.filter(e => e.status === status);
+            if (birthdayFrom) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) >= new Date(birthdayFrom));
+            if (birthdayTo) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) <= new Date(birthdayTo));
+
+            loadEmployees(filteredEmployees);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterBirthdayFrom').value = '';
+            document.getElementById('filterBirthdayTo').value = '';
+            loadEmployees();
+        }
+
+        // Open Add Employee Modal
+        function openAddEmployeeModal() {
+            document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeJoinDate').value = '2025-05-24'; // Default to today
+        }
+
+        // Open Edit Employee Modal
+        function openEditEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            // Đổ dữ liệu vào modal sửa
+            document.getElementById('editEmployeeId').value = employee.id;
+            document.getElementById('editEmployeeName').value = employee.name;
+            document.getElementById('editEmployeePhone').value = employee.phone;
+            document.getElementById('editEmployeeEmail').value = employee.email;
+            document.getElementById('editEmployeeBirthday').value = employee.birthday || '';
+            document.getElementById('editEmployeeCCCD').value = employee.cccd || '';
+            if (employee.gender === 'Nam') {
+                document.getElementById('editGenderMale').checked = true;
+            } else {
+                document.getElementById('editGenderFemale').checked = true;
+            }
+            // Hiển thị modal sửa
+            var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+            editModal.show();
+        }
+
+        // Save Employee
+        function saveEmployee() {
+            const id = document.getElementById('employeeId').value;
+            const name = document.getElementById('employeeName').value;
+            const phone = document.getElementById('employeePhone').value;
+            const email = document.getElementById('employeeEmail').value;
+            const role = document.getElementById('employeeRole').value;
+            const joinDate = document.getElementById('employeeJoinDate').value.split('-').reverse().join('/');
+
+            if (!name || !phone || !email || !role || !joinDate) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+
+            if (id) {
+                // Update employee
+                const employee = employees.find(e => e.id === parseInt(id));
+                employee.name = name;
+                employee.phone = phone;
+                employee.email = email;
+                employee.role = role;
+                employee.joinDate = joinDate;
+            } else {
+                // Add new employee
+                const newId = employees.length ? employees[employees.length - 1].id + 1 : 1;
+                employees.push({ id: newId, name, phone, email, role, joinDate, status: 'active' });
+            }
+
+            loadEmployees();
+            document.getElementById('employeeModal').modal('hide');
+        }
+
+        // Open Delete Employee Modal
+        function openDeleteEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('deleteEmployeeName').textContent = employee.name;
+            document.getElementById('deleteEmployeeModal').modal('show');
+        }
+
+        // Confirm Delete
+        function confirmDelete() {
+            const id = employees.find(e => e.name === document.getElementById('deleteEmployeeName').textContent).id;
+            const employee = employees.find(e => e.id === id);
+            employee.status = 'inactive';
+            loadEmployees();
+            document.getElementById('deleteEmployeeModal').modal('hide');
+        }
+
+        // Load initial data
+        loadEmployees();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

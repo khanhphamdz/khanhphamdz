@@ -1,44 +1,6 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
+<!DOCTYPE html>
+<html lang="en" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
 
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,132 +9,132 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="order-management.css">
 </head>
+
 <body>
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <div class="sidebar col-md-2 d-none d-md-block">
-            <h4 class="text-center">Tee Shirt Vibe</h4>
-            <hr>
-            <a href="#">Dashboard</a>
-            <a href="#">Bán hàng tại quầy</a>
-            <a href="#">Quản lý sản phẩm</a>
-            <a href="#">Quản lý đơn hàng</a>
-            <a href="#">Quản lý nhân viên</a>
-            <a href="#">Quản lý khách hàng</a>
-            <a href="#">Quản lý giảm giá</a>
-            <a href="#">Quản lý phản hồi</a>
-            <a href="#">Quản lý hoàn trả</a>
-        </div>
-
-        <!-- Main Content -->
-        <div class="d-flex flex-column p-3 w-100">
-            <!-- Header -->
-            <h3 class="fw-bold text-center mb-3">Quản lý đơn hàng</h3>
-            <!-- Card bộ lọc tìm kiếm -->
-            <div class="card mb-4" >
-                <div class="card-body">
-                    <form class="row g-4 align-items-end justify-content-center">
-                        <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
-                            <div class="d-flex align-items-center">
-                                <label for="filterDate" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Ngày tạo:</label>
-                                <input type="date" class="form-control rounded-pill px-3 text-center" id="filterDate"  onchange="filterOrders()">
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <label for="filterStatus" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Trạng thái:</label>
-                                <select class="form-select rounded-pill px-3 text-center" id="filterStatus" onchange="filterOrders()" >
-                                    <option value="">Tất cả</option>
-                                    <option value="cho-xac-nhan">Chờ xác nhận</option>
-                                    <option value="dang-chuan-bi">Đang chuẩn bị hàng</option>
-                                    <option value="dang-giao">Đang giao hàng</option>
-                                    <option value="hoan-tat">Hoàn tất</option>
-                                    <option value="da-huy">Đã hủy</option>
-                                    <option value="tra-hang">Trả hàng</option>
-                                </select>
-                            </div>
+    <!-- Main Content -->
+    <main class="d-flex flex-column p-3 w-100">
+        <!-- Header -->
+        <h3 class="fw-bold text-center mb-3">Quản lý đơn hàng</h3>
+        <!-- Card bộ lọc tìm kiếm -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form class="row g-4 align-items-end justify-content-center">
+                    <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
+                        <div class="d-flex align-items-center">
+                            <label for="filterDate" class="form-label fw-semibold mb-0 me-2"
+                                style="min-width:90px;">Ngày tạo:</label>
+                            <input type="date" class="form-control rounded-pill px-3 text-center" id="filterDate"
+                                onchange="filterOrders()">
                         </div>
-                        <div class="col-md-8 d-flex flex-column gap-3 justify-content-center">
-                            <div class="d-flex align-items-center justify-content-center gap-3">
-                                <label for="filterSource" class="form-label fw-semibold mb-0 me-2" >Loại đơn:</label>
-                                <select class="form-select rounded-pill px-3 text-center" id="filterSource" onchange="filterOrders()" style="max-width: 200px;">
-                                    <option value="">Tất cả</option>
-                                    <option value="counter">Tại quầy</option>
-                                    <option value="online">Online</option>
-                                </select>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-                                <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold" onclick="filterOrders()">Tìm kiếm</button>
-                                <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold" onclick="resetOrderFilters()">Làm mới bộ lọc</button>
-                            </div>
+                        <div class="d-flex align-items-center">
+                            <label for="filterStatus" class="form-label fw-semibold mb-0 me-2"
+                                style="min-width:90px;">Trạng thái:</label>
+                            <select class="form-select rounded-pill px-3 text-center" id="filterStatus"
+                                onchange="filterOrders()">
+                                <option value="">Tất cả</option>
+                                <option value="cho-xac-nhan">Chờ xác nhận</option>
+                                <option value="dang-chuan-bi">Đang chuẩn bị hàng</option>
+                                <option value="dang-giao">Đang giao hàng</option>
+                                <option value="hoan-tat">Hoàn tất</option>
+                                <option value="da-huy">Đã hủy</option>
+                                <option value="tra-hang">Trả hàng</option>
+                            </select>
                         </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Thông tin bảng đơn hàng -->
-            <div class="card flex-grow-1 d-flex flex-column h-100">
-                <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2" style="margin-top: 8px;">
-                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách đơn hàng</h5>
-                </div>
-                <!-- Tabs trạng thái hóa đơn -->
-                <ul class="nav nav-pills mb-3 gap-3 px-2 mt-3 m-2" id="orderStatusTabs" role="tablist" style="overflow-x:auto;">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-all" data-bs-toggle="pill" data-status="all" type="button" role="tab" onclick="filterByTab('all')">Tất cả</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-cho-xac-nhan" data-bs-toggle="pill" data-status="cho-xac-nhan" type="button" role="tab" onclick="filterByTab('cho-xac-nhan')">Chờ xác nhận</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-dang-chuan-bi" data-bs-toggle="pill" data-status="dang-chuan-bi" type="button" role="tab" onclick="filterByTab('dang-chuan-bi')">Đang chuẩn bị hàng</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-dang-giao" data-bs-toggle="pill" data-status="dang-giao" type="button" role="tab" onclick="filterByTab('dang-giao')">Đang giao hàng</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-hoan-tat" data-bs-toggle="pill" data-status="hoan-tat" type="button" role="tab" onclick="filterByTab('hoan-tat')">Hoàn tất</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-da-huy" data-bs-toggle="pill" data-status="da-huy" type="button" role="tab" onclick="filterByTab('da-huy')">Đã hủy</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-tra-hang" data-bs-toggle="pill" data-status="tra-hang" type="button" role="tab" onclick="filterByTab('tra-hang')">Trả hàng</button>
-                    </li>
-                </ul>
-                <!-- End Tabs -->
-                <div class="card-body flex-grow-1 d-flex flex-column p-0 ">
-                    <div class="flex-grow-1 overflow-auto">
-                        <table class="table table-hover align-middle text-center mb-0">
-                            <thead class="bg-primary bg-gradient text-white">
-                                <tr>
-                                    <th class="text-center">#</th>
-                                    <th class="text-center">Mã đơn</th>
-                                    <th class="text-center">Khách hàng</th>
-                                    <th class="text-center">Trạng thái</th>
-                                    <th class="text-center">Ngày tạo</th>
-                                    <th class="text-center">Loại</th>
-                                    <th class="text-center">Tổng tiền</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orderTable">
-                                <!-- Dữ liệu sẽ được render bằng JS -->
-                            </tbody>
-                        </table>
                     </div>
-                    <!-- Pagination -->
-                    <nav class="mt-4 mb-2">
-                        <ul class="pagination justify-content-center mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                        </ul>
-                    </nav>
-                </div>
+                    <div class="col-md-8 d-flex flex-column gap-3 justify-content-center">
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <label for="filterSource" class="form-label fw-semibold mb-0 me-2">Loại đơn:</label>
+                            <select class="form-select rounded-pill px-3 text-center" id="filterSource"
+                                onchange="filterOrders()" style="max-width: 200px;">
+                                <option value="">Tất cả</option>
+                                <option value="counter">Tại quầy</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+                            <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold"
+                                onclick="filterOrders()">Tìm kiếm</button>
+                            <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold"
+                                onclick="resetOrderFilters()">Làm mới bộ lọc</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
-
+        <!-- Thông tin bảng đơn hàng -->
+        <div class="card flex-grow-1 d-flex flex-column h-100">
+            <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
+                style="margin-top: 8px;">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách đơn hàng</h5>
+            </div>
+            <!-- Tabs trạng thái hóa đơn -->
+            <ul class="nav nav-pills mb-3 gap-3 px-2 mt-3 m-2" id="orderStatusTabs" role="tablist"
+                style="overflow-x:auto;">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-all" data-bs-toggle="pill" data-status="all" type="button"
+                        role="tab" onclick="filterByTab('all')">Tất cả</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-cho-xac-nhan" data-bs-toggle="pill" data-status="cho-xac-nhan"
+                        type="button" role="tab" onclick="filterByTab('cho-xac-nhan')">Chờ xác nhận</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-dang-chuan-bi" data-bs-toggle="pill" data-status="dang-chuan-bi"
+                        type="button" role="tab" onclick="filterByTab('dang-chuan-bi')">Đang chuẩn bị hàng</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-dang-giao" data-bs-toggle="pill" data-status="dang-giao"
+                        type="button" role="tab" onclick="filterByTab('dang-giao')">Đang giao hàng</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-hoan-tat" data-bs-toggle="pill" data-status="hoan-tat"
+                        type="button" role="tab" onclick="filterByTab('hoan-tat')">Hoàn tất</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-da-huy" data-bs-toggle="pill" data-status="da-huy" type="button"
+                        role="tab" onclick="filterByTab('da-huy')">Đã hủy</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-tra-hang" data-bs-toggle="pill" data-status="tra-hang"
+                        type="button" role="tab" onclick="filterByTab('tra-hang')">Trả hàng</button>
+                </li>
+            </ul>
+            <!-- End Tabs -->
+            <div class="card-body flex-grow-1 d-flex flex-column p-0 ">
+                <div class="flex-grow-1 overflow-auto">
+                    <table class="table table-hover align-middle text-center mb-0">
+                        <thead class="bg-primary bg-gradient text-white">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Mã đơn</th>
+                                <th class="text-center">Khách hàng</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Ngày tạo</th>
+                                <th class="text-center">Loại</th>
+                                <th class="text-center">Tổng tiền</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderTable">
+                            <!-- Dữ liệu sẽ được render bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <nav class="mt-4 mb-2">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
     <!-- Modal Chi tiết đơn hàng -->
-    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -200,7 +162,7 @@
                         <tbody id="orderItems"></tbody>
                     </table>
                     <div class="mt-3">
-                        <select class="form-select" id="newStatus" >
+                        <select class="form-select" id="newStatus">
                             <option value="cho-xac-nhan">Chờ xác nhận</option>
                             <option value="dang-chuan-bi">Đang chuẩn bị hàng</option>
                             <option value="dang-giao">Đang giao hàng</option>
@@ -219,7 +181,8 @@
     </div>
 
     <!-- Modal Hủy đơn hàng -->
-    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -240,11 +203,13 @@
             </div>
         </div>
     </div>
+    </main>
+
 
     <!-- Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- JavaScript for Interactivity -->
+    <!-- JavaScript for order -->
     <script>
         // Fake data for orders
         let orders = [
@@ -264,7 +229,7 @@
             filteredOrders.forEach((order, index) => {
                 // Chuyển trạng thái và nguồn sang tiếng Việt
                 let statusVN = '';
-                switch(order.status) {
+                switch (order.status) {
                     case 'cho-xac-nhan': statusVN = 'Chờ xác nhận'; break;
                     case 'dang-chuan-bi': statusVN = 'Đang chuẩn bị hàng'; break;
                     case 'dang-giao': statusVN = 'Đang giao hàng'; break;
@@ -274,7 +239,7 @@
                     default: statusVN = order.status;
                 }
                 let sourceVN = '';
-                switch(order.source) {
+                switch (order.source) {
                     case 'counter': sourceVN = 'Tại quầy'; break;
                     case 'online': sourceVN = 'Online'; break;
                     default: sourceVN = order.source;
@@ -368,13 +333,13 @@
             const orderId = document.getElementById('detailOrderId').textContent;
             const newStatus = document.getElementById('newStatus').value;
             const order = orders.find(o => o.id === orderId);
-            
+
             // Kiểm tra nếu là đơn hàng tại quầy
             if (order.source === 'counter' && !['hoan-tat', 'tra-hang'].includes(newStatus)) {
                 alert('Đơn hàng tại quầy chỉ có thể có trạng thái Hoàn tất hoặc Trả hàng!');
                 return;
             }
-            
+
             order.status = newStatus;
             document.getElementById('detailStatus').textContent = newStatus;
             alert(`Trạng thái đơn hàng ${orderId} đã được cập nhật thành ${newStatus}!`);
@@ -411,7 +376,7 @@
                 filteredOrders = orders.filter(order => order.status === status);
             }
             loadOrders(filteredOrders);
-            
+
             // Cập nhật trạng thái active cho tab
             document.querySelectorAll('#orderStatusTabs .nav-link').forEach(tab => {
                 tab.classList.remove('active');
@@ -431,4 +396,5 @@
         loadOrders();
     </script>
 </body>
+
 </html>

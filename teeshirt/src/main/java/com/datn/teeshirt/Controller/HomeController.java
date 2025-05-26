@@ -59,4 +59,14 @@ public class HomeController {
     public String counter_sale() {
         return "/admin/counter-sales";
     }
+
+    @GetMapping("/order")
+    public String order() {
+        return "/admin/order-management";
+    }
+
+    @GetMapping("/employee")
+    public String employee() {
+        return "/admin/employee-management";
+    }
 }
