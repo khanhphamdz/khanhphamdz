@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý hoàn trả - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; color: #212529; font-family: 'Inter', 'Roboto', Arial, sans-serif; }
+        .main-content { padding: 2rem 0; }
+        .page-header {
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 2rem 2rem 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-header .header-title { display: flex; align-items: center; gap: 1rem; }
+        .page-header .header-title i { font-size: 2.2rem; color: #dc3545; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
+        .page-header p { margin-bottom: 0; color: #6c757d; font-size: 1rem; }
+        .back-to-dashboard { color: #495057; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; margin-bottom: 1.5rem; transition: color 0.2s; }
+        .back-to-dashboard:hover { color: #dc3545; }
+        .back-to-dashboard i { margin-right: 0.5rem; }
+        .stats-row { margin-bottom: 2rem; }
+        .stats-card { background: #fff; border: 1px solid #e9ecef; border-radius: 0.75rem; padding: 1.25rem 1rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .stats-card i { font-size: 1.7rem; margin-bottom: 0.5rem; color: #dc3545; }
+        .stats-card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stats-card p { color: #6c757d; font-size: 0.95rem; margin-bottom: 0; }
+        .search-box { position: relative; }
+        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+        .search-box input { padding-left: 2.2rem; }
+        .table { background: #fff; border-radius: 0.75rem; overflow: hidden; margin-bottom: 0; }
+        .table th, .table td { vertical-align: middle; text-align: center; }
+        .table th { font-weight: 700; background: #f1f3f4; border-bottom: 2px solid #e9ecef; }
+        .status-badge { padding: 0.4em 1em; border-radius: 1rem; font-size: 0.95rem; font-weight: 600; display: inline-block; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-completed { background: #cce5ff; color: #004085; }
+        .action-buttons .btn { margin: 0 2px; border-radius: 50%; width: 32px; height: 32px; padding: 0; line-height: 32px; display: inline-flex; align-items: center; justify-content: center; }
+        .action-buttons .btn-info { color: #0dcaf0; background: #e3f7fb; border: none; }
+        .action-buttons .btn-success { color: #198754; background: #e6f4ea; border: none; }
+        .action-buttons .btn-danger { color: #dc3545; background: #fbeaea; border: none; }
+        .action-buttons .btn:hover { opacity: 0.85; }
+        .pagination { margin-top: 2rem; }
+        .modal-header { background: #fff; border-bottom: 1px solid #e9ecef; color: #212529; }
+        .modal-title { font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+        <title>Quản lý hoàn trả - Admin Dashboard</title>
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <a th:href="@{/admin/dashboard}" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Quay lại Dashboard
+            </a>
+            <div class="page-header">
+                <div class="header-title">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                    <div>
+                        <h1 class="mb-1">Quản lý hoàn trả</h1>
+                        <p>Quản lý và theo dõi các yêu cầu hoàn trả</p>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#addRefundModal">
+                    <i class="fas fa-plus me-2"></i> Thêm hoàn trả mới
+                </button>
+            </div>
+            <div class="row stats-row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>15</h3>
+                        <p>Đang chờ xử lý</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>45</h3>
+                        <p>Đã duyệt</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>8</h3>
+                        <p>Đã từ chối</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-check-double"></i>
+                        <h3>32</h3>
+                        <p>Đã hoàn thành</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4 align-items-end">
+                <div class="col-md-6">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm hoàn trả...">
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <select class="form-select w-auto d-inline-block">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Đang chờ xử lý</option>
+                        <option value="approved">Đã duyệt</option>
+                        <option value="rejected">Đã từ chối</option>
+                        <option value="completed">Đã hoàn thành</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-2"></i>Mã hoàn trả</th>
+                            <th><i class="fas fa-shopping-cart me-2"></i>Mã đơn hàng</th>
+                            <th><i class="fas fa-user me-2"></i>Khách hàng</th>
+                            <th><i class="fas fa-money-bill-wave me-2"></i>Số tiền</th>
+                            <th><i class="fas fa-comment-alt me-2"></i>Lý do</th>
+                            <th><i class="fas fa-calendar-alt me-2"></i>Ngày yêu cầu</th>
+                            <th><i class="fas fa-toggle-on me-2"></i>Trạng thái</th>
+                            <th><i class="fas fa-cogs me-2"></i>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#REF001</td>
+                            <td>#ORD001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>500,000đ</td>
+                            <td>Sản phẩm bị lỗi</td>
+                            <td>01/03/2024</td>
+                            <td><span class="status-badge status-pending">Đang chờ xử lý</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-info" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success" title="Duyệt">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger" title="Từ chối">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#REF002</td>
+                            <td>#ORD002</td>
+                            <td>Trần Thị B</td>
+                            <td>750,000đ</td>
+                            <td>Không đúng kích thước</td>
+                            <td>02/03/2024</td>
+                            <td><span class="status-badge status-approved">Đã duyệt</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-info" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success" title="Duyệt">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger" title="Từ chối">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </main>
+    </div>
+    <div class="modal fade" id="addRefundModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Thêm hoàn trả mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-shopping-cart me-2"></i>Mã đơn hàng</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-money-bill-wave me-2"></i>Số tiền hoàn trả</label>
+                            <input type="number" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-comment-alt me-2"></i>Lý do hoàn trả</label>
+                            <textarea class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-toggle-on me-2"></i>Trạng thái</label>
+                            <select class="form-select" required>
+                                <option value="pending">Đang chờ xử lý</option>
+                                <option value="approved">Đã duyệt</option>
+                                <option value="rejected">Đã từ chối</option>
+                                <option value="completed">Đã hoàn thành</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Đóng
+                    </button>
+                    <button type="button" class="btn btn-danger">
+                        <i class="fas fa-save me-2"></i>Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html> 
