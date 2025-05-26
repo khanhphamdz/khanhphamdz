@@ -7,56 +7,66 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
     @GetMapping("/")
     public String home() {
-        return "/customer/index";
+        return "customer/index";
     }
 
     @GetMapping("/product")
     public String product() {
-        return "/customer/product/product-list";
+        return "customer/product/product-list";
     }
 
     @GetMapping("/detail")
     public String product_detail() {
-        return "/customer/product/product-detail";
+        return "customer/product/product-detail";
     }
 
     @GetMapping("/cart")
     public String cart() {
-        return "/customer/account/shopping-cart";
+        return "customer/account/shopping-cart";
     }
 
     @GetMapping("/login")
     public String login() {
-        return "/customer/account/login-register";
+        return "customer/account/login-register";
     }
 
     @GetMapping("/checkout")
     public String checkout() {
-        return "/customer/account/checkout";
+        return "customer/account/checkout";
     }
 
     @GetMapping("/about")
     public String about() {
-        return "/customer/about";
+        return "customer/about";
     }
 
     @GetMapping("/contact")
     public String contact() {
-        return "/customer/contact";
+        return "customer/contact";
     }
 
     @GetMapping("/account")
     public String account() {
-        return "/customer/account/account";
+        return "customer/account/account";
     }
 
     @GetMapping("/admin")
     public String admin() {
-        return "/admin/index";
+        return "admin/index";
     }
 
     @GetMapping("/counter-sale")
     public String counter_sale() {
-        return "/admin/counter-sales";
+        return "admin/counter-sales";
+    }
+
+    @GetMapping("/admin/promotion-management")
+    public String promotionManagement() {
+        return "admin/promotion-management";
+    }
+
+    @GetMapping("/admin/refund-management")
+    public String refundManagement() {
+        return "admin/refund-management";
     }
 }
