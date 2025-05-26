@@ -1,0 +1,422 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tee Shirt Vibe - Quản lý nhân viên</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="employee-management.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar col-md-2 d-none d-md-block">
+            <h4 class="text-center">Tee Shirt Vibe</h4>
+            <hr>
+            <a href="#">Dashboard</a>
+            <a href="#">Bán hàng tại quầy</a>
+            <a href="#">Quản lý sản phẩm</a>
+            <a href="#">Quản lý đơn hàng</a>
+            <a href="#">Quản lý nhân viên</a>
+            <a href="#">Quản lý khách hàng</a>
+            <a href="#">Quản lý giảm giá</a>
+            <a href="#">Quản lý phản hồi</a>
+            <a href="#">Quản lý hoàn trả</a >
+        </div>
+
+        <!-- Main Content -->
+        <div class="d-flex flex-column p-3 w-100">
+            <!-- Header -->
+            <h3 class="fw-bold text-center mb-3">Quản lý nhân viên</h3>
+            <!-- Card bộ lọc tìm kiếm -->
+            <div class="card mb-4" >
+                <div class="card-body">
+                    <form class="row g-4 align-items-end justify-content-center">
+                        <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
+                            <div class="d-flex align-items-center">
+            <label for="filterName" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Tìm kiếm:</label>
+            <input type="text" class="form-control rounded-pill px-3 text-center" id="filterName" placeholder="Tìm kiếm tên, SĐT, email..." onchange="filterEmployees()" style="max-width: 300px;">
+        </div>
+        <div class="d-flex align-items-center mt-2">
+            <label for="filterStatus" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Trạng thái:</label>
+            <select class="form-select rounded-pill px-3 text-center" id="filterStatus" onchange="filterEmployees()" style="max-width: 200px;">
+                <option value="">Tất cả</option>
+                <option value="active">Hoạt động</option>
+                <option value="inactive">Nghỉ việc</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-8 d-flex flex-column gap-3 justify-content-center">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+            <label for="filterBirthdayFrom" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Ngày sinh:</label>
+            <input type="date" class="form-control rounded-pill text-center" id="filterBirthdayFrom" onchange="filterEmployees()" style="max-width: 160px;">
+            <input type="date" class="form-control rounded-pill text-center" id="filterBirthdayTo" onchange="filterEmployees()" style="max-width: 160px;">
+        </div>
+        <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+            <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold" onclick="filterEmployees()">Tìm kiếm</button>
+            <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold" onclick="resetFilters()">Làm mới bộ lọc</button>
+        </div>
+    </div>
+</form>
+                </div>
+            </div>
+            <!-- Thông tin bảng nhân viên -->
+            <div class="card flex-grow-1 d-flex flex-column">
+                <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2" style="margin-top: 8px;">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách nhân viên</h5>
+                    <button type="button" class="btn btn-primary rounded-pill fw-bold px-3 py-1" style="font-size: 1rem;" onclick="openAddEmployeeModal()" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                        <i class="fa-solid fa-plus me-2"></i>Thêm nhân viên
+                    </button>
+                </div>
+                <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
+                    <div class="flex-grow-1 overflow-auto">
+                        <table class="table table-hover align-middle text-center mb-0">
+                            <thead class="bg-primary bg-gradient text-white">
+<tr>
+    <th class="text-center">Mã nhân viên</th>
+    <th class="text-center">Tên nhân viên</th>
+    <th class="text-center">Số điện thoại</th>
+    <th class="text-center">CCCD</th>
+    <th class="text-center">Ngày sinh</th>
+    <th class="text-center">Giới tính</th>
+    <th class="text-center">Trạng thái</th>
+    <th class="text-center">Hành động</th>
+</tr>
+                        </thead>
+                        <tbody id="employeeTable">
+                            <!-- Dữ liệu sẽ được render bằng JS -->
+                        </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <nav class="mt-4 mb-2">
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa nhân viên -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 p-2 p-md-4">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title w-100 text-center fw-bold mb-0" id="employeeModalLabel" style="font-size:2.2rem;">Cập nhật thông tin nhân viên</h2>
+                <button type="button" class="btn-close position-absolute end-0 me-3 mt-3" data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
+            </div>
+            <form id="employeeForm">
+                <div class="modal-body pt-2">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
+                        <input type="text" class="form-control rounded-pill" id="employeeName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
+                        <input type="tel" class="form-control rounded-pill" id="employeePhone" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                        <input type="email" class="form-control rounded-pill" id="employeeEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
+                        <input type="date" class="form-control rounded-pill" id="employeeBirthday" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="employeeGender" id="genderMale" value="Nam" required>
+                                <label class="form-check-label" for="genderMale">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="employeeGender" id="genderFemale" value="Nữ" required>
+                                <label class="form-check-label" for="genderFemale">Nữ</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
+                        <input type="text" class="form-control rounded-pill" id="employeeCCCD" pattern="[0-9]{12}" required>
+                    </div>
+                    <input type="hidden" id="employeeId">
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100" style="max-width:400px;">CẬP NHẬT <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal Sửa nhân viên -->
+    <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 p-2 p-md-4">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title w-100 text-center fw-bold mb-0" id="editEmployeeModalLabel" style="font-size:2.2rem;">Sửa thông tin nhân viên</h2>
+                <button type="button" class="btn-close position-absolute end-0 me-3 mt-3" data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
+            </div>
+            <form id="editEmployeeForm">
+                <div class="modal-body pt-2">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
+                        <input type="text" class="form-control rounded-pill" id="editEmployeeName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
+                        <input type="tel" class="form-control rounded-pill" id="editEmployeePhone" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                        <input type="email" class="form-control rounded-pill" id="editEmployeeEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
+                        <input type="date" class="form-control rounded-pill" id="editEmployeeBirthday" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="editEmployeeGender" id="editGenderMale" value="Nam" required>
+                                <label class="form-check-label" for="editGenderMale">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="editEmployeeGender" id="editGenderFemale" value="Nữ" required>
+                                <label class="form-check-label" for="editGenderFemale">Nữ</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
+                        <input type="text" class="form-control rounded-pill" id="editEmployeeCCCD" pattern="[0-9]{12}" required>
+                    </div>
+                    <input type="hidden" id="editEmployeeId">
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100" style="max-width:400px;">LƯU THAY ĐỔI <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal Xóa nhân viên -->
+    <div class="modal fade" id="deleteEmployeeModal" tabindex="-1" aria-labelledby="deleteEmployeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteEmployeeModalLabel">Xóa nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn chuyển trạng thái nhân viên <span id="deleteEmployeeName"></span> thành "Nghỉ việc"?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Fake data for employees
+        let employees = [
+            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active', joinDate: '01/05/2025' },
+            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active', joinDate: '10/05/2025' },
+            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive', joinDate: '15/05/2025' },
+            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active', joinDate: '20/05/2025' },
+            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive', joinDate: '22/05/2025' }
+        ];
+
+        // Load employees table
+        function loadEmployees(filteredEmployees = employees) {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = '';
+            filteredEmployees.forEach((employee, index) => {
+    // Format mã nhân viên: NV + 3 số
+    const maNV = `NV${employee.id.toString().padStart(3, '0')}`;
+    // Nếu chưa có trường gender thì mặc định Nam/Nữ xen kẽ
+    let gender = employee.gender;
+    if (!gender) gender = index % 2 === 0 ? 'Nam' : 'Nữ';
+    const row = `
+        <tr>
+            <td class="text-center">${maNV}</td>
+            <td>${employee.name}</td>
+            <td>${employee.phone}</td>
+            <td>${employee.cccd || ''}</td>
+            <td>${employee.birthday ? employee.birthday.split('-').reverse().join('/') : (employee.joinDate || '')}</td>
+            <td>${gender}</td>
+            <td>${employee.status === 'active' ? 'Hoạt động' : 'Nghỉ việc'}</td>
+            <td style="min-width:120px;">
+                <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(${employee.id})">Sửa</button>
+                <button class="btn btn-sm btn-danger btn-action${employee.status !== 'active' ? ' invisible' : ''}" onclick="openDeleteEmployeeModal(${employee.id})">Nghỉ việc</button>
+            </td>
+        </tr>
+    `;
+    tbody.innerHTML += row;
+});
+        }
+
+        // Filter employees
+        function filterEmployees() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const birthdayFrom = document.getElementById('filterBirthdayFrom').value;
+            const birthdayTo = document.getElementById('filterBirthdayTo').value;
+
+            let filteredEmployees = employees;
+            if (name) filteredEmployees = filteredEmployees.filter(e => e.name.toLowerCase().includes(name));
+            if (status) filteredEmployees = filteredEmployees.filter(e => e.status === status);
+            if (birthdayFrom) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) >= new Date(birthdayFrom));
+            if (birthdayTo) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) <= new Date(birthdayTo));
+
+            loadEmployees(filteredEmployees);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterBirthdayFrom').value = '';
+            document.getElementById('filterBirthdayTo').value = '';
+            loadEmployees();
+        }
+
+        // Open Add Employee Modal
+        function openAddEmployeeModal() {
+            document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeJoinDate').value = '2025-05-24'; // Default to today
+        }
+
+        // Open Edit Employee Modal
+        function openEditEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            // Đổ dữ liệu vào modal sửa
+            document.getElementById('editEmployeeId').value = employee.id;
+            document.getElementById('editEmployeeName').value = employee.name;
+            document.getElementById('editEmployeePhone').value = employee.phone;
+            document.getElementById('editEmployeeEmail').value = employee.email;
+            document.getElementById('editEmployeeBirthday').value = employee.birthday || '';
+            document.getElementById('editEmployeeCCCD').value = employee.cccd || '';
+            if (employee.gender === 'Nam') {
+                document.getElementById('editGenderMale').checked = true;
+            } else {
+                document.getElementById('editGenderFemale').checked = true;
+            }
+            // Hiển thị modal sửa
+            var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+            editModal.show();
+        }
+
+        // Save Employee
+        function saveEmployee() {
+            const id = document.getElementById('employeeId').value;
+            const name = document.getElementById('employeeName').value;
+            const phone = document.getElementById('employeePhone').value;
+            const email = document.getElementById('employeeEmail').value;
+            const role = document.getElementById('employeeRole').value;
+            const joinDate = document.getElementById('employeeJoinDate').value.split('-').reverse().join('/');
+
+            if (!name || !phone || !email || !role || !joinDate) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+
+            if (id) {
+                // Update employee
+                const employee = employees.find(e => e.id === parseInt(id));
+                employee.name = name;
+                employee.phone = phone;
+                employee.email = email;
+                employee.role = role;
+                employee.joinDate = joinDate;
+            } else {
+                // Add new employee
+                const newId = employees.length ? employees[employees.length - 1].id + 1 : 1;
+                employees.push({ id: newId, name, phone, email, role, joinDate, status: 'active' });
+            }
+
+            loadEmployees();
+            document.getElementById('employeeModal').modal('hide');
+        }
+
+        // Open Delete Employee Modal
+        function openDeleteEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('deleteEmployeeName').textContent = employee.name;
+            document.getElementById('deleteEmployeeModal').modal('show');
+        }
+
+        // Confirm Delete
+        function confirmDelete() {
+            const id = employees.find(e => e.name === document.getElementById('deleteEmployeeName').textContent).id;
+            const employee = employees.find(e => e.id === id);
+            employee.status = 'inactive';
+            loadEmployees();
+            document.getElementById('deleteEmployeeModal').modal('hide');
+        }
+
+        // Load initial data
+        loadEmployees();
+    </script>
+</body>
+</html>
