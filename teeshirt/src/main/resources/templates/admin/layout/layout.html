@@ -77,65 +77,22 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="/admin/refund-management">
                     <i class="fa-solid fa-rotate-left"></i>
                     <span class="link_name">Trả hàng</span>
                 </a>
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="/admin/promotion-management">
                         <i class="fa-solid fa-ticket"></i>
                         <span class="link_name">Giảm giá</span>
                     </a>
                     <i class="bx bxs-chevron-down arrow"></i>
                 </div>
                 <ul class="sub-menu">
-<<<<<<< HEAD
-                    <li><a href="#">Đợt giảm giá</a></li>
-                    <li><a href="#">Phiếu giảm giá</a></li>
-=======
-                    <li><a class="link_name" href="#">Plugins</a></li>
-                    <li><a href="#">UI Face</a></li>
-                    <li><a href="#">Pigments</a></li>
-                    <li><a href="#">Box Icons</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="bx bx-compass"></i>
-                    <span class="link_name">Explore</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">Explore</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="bx bx-history"></i>
-                    <span class="link_name">History</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="#">History</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="/admin/refund-management">
-                    <i class="bx bx-money-withdraw"></i>
-                    <span class="link_name">Quản lý hoàn trả</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/admin/refund-management">Quản lý hoàn trả</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="/admin/promotion-management">
-                    <i class="bx bx-gift"></i>
-                    <span class="link_name">Quản lý khuyến mãi</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="/admin/promotion-management">Quản lý khuyến mãi</a></li>
->>>>>>> 3a24ae3e5cfac66e0587b0255ee8c7710b9e063a
+                    <li><a href="/admin/promotion-management">Chương trình giảm giá</a></li>
+                    <li><a href="/admin/promotion-management">Phiếu giảm giá</a></li>
                 </ul>
             </li>
             <li>
@@ -638,182 +595,8 @@
             filterOrders();
             document.getElementById('cancelOrderModal').modal('hide');
         }
-
-        // Filter orders by tab
-        function filterByTab(status) {
-            let filteredOrders = orders;
-            if (status !== 'all') {
-                filteredOrders = orders.filter(order => order.status === status);
-            }
-            loadOrders(filteredOrders);
-
-            // Cập nhật trạng thái active cho tab
-            document.querySelectorAll('#orderStatusTabs .nav-link').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(`tab-${status}`).classList.add('active');
-        }
-
-        // Reset filters
-        function resetOrderFilters() {
-            document.getElementById('filterDate').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterSource').value = '';
-            filterOrders();
-        }
-
-        // Load initial data
-        loadOrders();
-    </script>
-    <script>
-        // Fake data for employees
-        let employees = [
-            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active', joinDate: '01/05/2025' },
-            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active', joinDate: '10/05/2025' },
-            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive', joinDate: '15/05/2025' },
-            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active', joinDate: '20/05/2025' },
-            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive', joinDate: '22/05/2025' }
-        ];
-
-        // Load employees table
-        function loadEmployees(filteredEmployees = employees) {
-            const tbody = document.getElementById('employeeTable');
-            tbody.innerHTML = '';
-            filteredEmployees.forEach((employee, index) => {
-                // Format mã nhân viên: NV + 3 số
-                const maNV = `NV${employee.id.toString().padStart(3, '0')}`;
-                // Nếu chưa có trường gender thì mặc định Nam/Nữ xen kẽ
-                let gender = employee.gender;
-                if (!gender) gender = index % 2 === 0 ? 'Nam' : 'Nữ';
-                const row = `
-        <tr>
-            <td class="text-center">${maNV}</td>
-            <td>${employee.name}</td>
-            <td>${employee.phone}</td>
-            <td>${employee.cccd || ''}</td>
-            <td>${employee.birthday ? employee.birthday.split('-').reverse().join('/') : (employee.joinDate || '')}</td>
-            <td>${gender}</td>
-            <td>${employee.status === 'active' ? 'Hoạt động' : 'Nghỉ việc'}</td>
-            <td style="min-width:120px;">
-                <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(${employee.id})">Sửa</button>
-                <button class="btn btn-sm btn-danger btn-action${employee.status !== 'active' ? ' invisible' : ''}" onclick="openDeleteEmployeeModal(${employee.id})">Nghỉ việc</button>
-            </td>
-        </tr>
-    `;
-                tbody.innerHTML += row;
-            });
-        }
-
-        // Filter employees
-        function filterEmployees() {
-            const name = document.getElementById('filterName').value.toLowerCase();
-            const status = document.getElementById('filterStatus').value;
-            const birthdayFrom = document.getElementById('filterBirthdayFrom').value;
-            const birthdayTo = document.getElementById('filterBirthdayTo').value;
-
-            let filteredEmployees = employees;
-            if (name) filteredEmployees = filteredEmployees.filter(e => e.name.toLowerCase().includes(name));
-            if (status) filteredEmployees = filteredEmployees.filter(e => e.status === status);
-            if (birthdayFrom) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) >= new Date(birthdayFrom));
-            if (birthdayTo) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) <= new Date(birthdayTo));
-
-            loadEmployees(filteredEmployees);
-        }
-
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('filterName').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterBirthdayFrom').value = '';
-            document.getElementById('filterBirthdayTo').value = '';
-            loadEmployees();
-        }
-
-        // Open Add Employee Modal
-        function openAddEmployeeModal() {
-            document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên';
-            document.getElementById('employeeForm').reset();
-            document.getElementById('employeeId').value = '';
-            document.getElementById('employeeJoinDate').value = '2025-05-24'; // Default to today
-        }
-
-        // Open Edit Employee Modal
-        function openEditEmployeeModal(id) {
-            const employee = employees.find(e => e.id === id);
-            // Đổ dữ liệu vào modal sửa
-            document.getElementById('editEmployeeId').value = employee.id;
-            document.getElementById('editEmployeeName').value = employee.name;
-            document.getElementById('editEmployeePhone').value = employee.phone;
-            document.getElementById('editEmployeeEmail').value = employee.email;
-            document.getElementById('editEmployeeBirthday').value = employee.birthday || '';
-            document.getElementById('editEmployeeCCCD').value = employee.cccd || '';
-            if (employee.gender === 'Nam') {
-                document.getElementById('editGenderMale').checked = true;
-            } else {
-                document.getElementById('editGenderFemale').checked = true;
-            }
-            // Hiển thị modal sửa
-            var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
-            editModal.show();
-        }
-
-        // Save Employee
-        function saveEmployee() {
-            const id = document.getElementById('employeeId').value;
-            const name = document.getElementById('employeeName').value;
-            const phone = document.getElementById('employeePhone').value;
-            const email = document.getElementById('employeeEmail').value;
-            const role = document.getElementById('employeeRole').value;
-            const joinDate = document.getElementById('employeeJoinDate').value.split('-').reverse().join('/');
-
-            if (!name || !phone || !email || !role || !joinDate) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                return;
-            }
-            if (!/^[0-9]{10}$/.test(phone)) {
-                alert('Số điện thoại phải là 10 chữ số!');
-                return;
-            }
-
-            if (id) {
-                // Update employee
-                const employee = employees.find(e => e.id === parseInt(id));
-                employee.name = name;
-                employee.phone = phone;
-                employee.email = email;
-                employee.role = role;
-                employee.joinDate = joinDate;
-            } else {
-                // Add new employee
-                const newId = employees.length ? employees[employees.length - 1].id + 1 : 1;
-                employees.push({ id: newId, name, phone, email, role, joinDate, status: 'active' });
-            }
-
-            loadEmployees();
-            document.getElementById('employeeModal').modal('hide');
-        }
-
-        // Open Delete Employee Modal
-        function openDeleteEmployeeModal(id) {
-            const employee = employees.find(e => e.id === id);
-            document.getElementById('deleteEmployeeName').textContent = employee.name;
-            document.getElementById('deleteEmployeeModal').modal('show');
-        }
-
-        // Confirm Delete
-        function confirmDelete() {
-            const id = employees.find(e => e.name === document.getElementById('deleteEmployeeName').textContent).id;
-            const employee = employees.find(e => e.id === id);
-            employee.status = 'inactive';
-            loadEmployees();
-            document.getElementById('deleteEmployeeModal').modal('hide');
-        }
-
-        // Load initial data
-        loadEmployees();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
-
 </html>

@@ -1,0 +1,18 @@
+/* Custom CSS for Admin Pages */
+
+/* Add custom styles here to fine-tune layout and appearance */
+
+/* Ensure consistent bottom padding for tab content */
+.tab-content .tab-pane .card .card-body {
+    padding-bottom: 1.5rem; /* Adjust as needed */
+}
+
+/* Ensure minimum height for tab panes to prevent jumping */
+.tab-content .tab-pane {
+    min-height: 400px; /* Adjust based on expected content height */
+}
+
+/* Add margin bottom to the card within tab panes for consistent spacing */
+.tab-content .tab-pane .card {
+    margin-bottom: 1.5rem; /* Add space below the card before the next element */
+} 
