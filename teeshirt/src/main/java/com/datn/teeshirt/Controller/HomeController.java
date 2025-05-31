@@ -1,4 +1,4 @@
-package com.datn.teeshirt.Controller;
+package com.datn.teeshirt.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

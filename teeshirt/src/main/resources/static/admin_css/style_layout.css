@@ -286,24 +286,3 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.main-content {
-  min-height: 100vh; /* Giữ nội dung không co lại */
-  background-color: #f8f9fa; /* Nền nhẹ giúp phân biệt */
-  padding-bottom: 60px; /* Tránh nội dung bị tràn ra khỏi layout nếu có footer */
-}
-
-.card-body {
-  overflow-x: auto; /* Tránh nhảy layout nếu bảng rộng hơn màn hình */
-}
-
-.table {
-  min-width: 800px; /* Giữ bảng có chiều rộng ổn định */
-}
-
-.stats-row .stats-card {
-  min-height: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
