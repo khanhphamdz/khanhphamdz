@@ -1,0 +1,242 @@
+/* Giao diện glassmorphism hiện đại cho Quản lý nhân viên */
+    
+body {
+    background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    min-height: 100vh;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+}
+
+.card {
+    border-radius: 28px !important;
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.22);
+}
+
+.card-header {
+    background: rgba(255,255,255,0.85);
+    border-radius: 28px 28px 0 0 !important;
+    border-bottom: 1.5px solid #e3e6f0;
+}
+
+.card-body {
+    background: transparent;
+    border-radius: 0 0 28px 28px !important;
+}
+
+h3, h5 {
+    color: #2563eb;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    text-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+
+.btn {
+    border-radius: 999px !important;
+    font-weight: 700;
+    font-size: 1.08rem;
+    letter-spacing: 0.5px;
+    transition: all 0.18s cubic-bezier(.4,2,.3,1);
+    box-shadow: 0 2px 12px rgba(37,99,235,0.09);
+    padding: 0.55rem 1.6rem;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #2563eb 60%, #38bdf8 100%);
+    border: none;
+    color: #fff;
+}
+
+.btn-success {
+    background: linear-gradient(90deg, #22c55e 60%, #4ade80 100%);
+    border: none;
+    color: #fff;
+}
+
+.btn-info {
+    background: linear-gradient(90deg, #0ea5e9 60%, #38bdf8 100%);
+    border: none;
+    color: #fff;
+}
+
+.btn-outline-danger {
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    background: #fff;
+}
+
+.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-danger:hover, .btn-outline-danger:hover {
+    filter: brightness(1.12);
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 6px 24px rgba(37,99,235,0.18);
+}
+
+.btn-outline-danger:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.table-responsive {
+    margin-top: 1rem;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(37,99,235,0.10);
+}
+
+.table {
+    background: rgba(255,255,255,0.92);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.table th {
+    background: linear-gradient(90deg, #2563eb 60%, #38bdf8 100%);
+    color: #fff;
+    font-weight: 800;
+    border: none;
+    font-size: 1.08rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+
+.table td {
+    vertical-align: middle;
+    background: rgba(248,250,252,0.85);
+    border: none;
+    font-size: 1.04rem;
+    transition: background 0.18s;
+}
+
+.table tr {
+    transition: background 0.18s;
+}
+
+.table tr:hover {
+    background: #e0e7ff;
+}
+.form-label {
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 0.5px;
+}
+
+.form-control, .form-select {
+    border-radius: 999px !important;
+    border: 1.5px solid #c7d2fe;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 1px 8px rgba(37,99,235,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 1.04rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.18rem rgba(37,99,235,0.13);
+    background: #fff;
+}
+
+input[type="date"] {
+    padding: 0.375rem 0.75rem;
+}
+
+.badge.bg-success {
+    background: linear-gradient(90deg, #22c55e 60%, #4ade80 100%) !important;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(90deg, #facc15 60%, #fde047 100%) !important;
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(90deg, #ef4444 60%, #f87171 100%) !important;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.badge.bg-info {
+    background: linear-gradient(90deg, #0ea5e9 60%, #38bdf8 100%) !important;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.modal-content {
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(37,99,235,0.18);
+    background: rgba(255,255,255,0.95);
+    border: 1.5px solid rgba(37,99,235,0.08);
+    backdrop-filter: blur(10px);
+}
+
+.modal-header, .modal-footer {
+    background: rgba(241,245,249,0.85);
+    border: none;
+    border-radius: 24px 24px 0 0;
+}
+
+.modal-footer {
+    border-radius: 0 0 24px 24px;
+}
+
+.form-check-input:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: #e0e7ff;
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 8px;
+}
+
+/* Hiệu ứng icon */
+i[class^="fa-"], i[class*=" fa-"] {
+    filter: drop-shadow(0 2px 6px rgba(56,189,248,0.12));
+    font-size: 1.1em;
+    vertical-align: middle;
+}
+
+/* Hiệu ứng cho filter form */
+form .form-control, form .form-select {
+    box-shadow: 0 2px 12px rgba(56,189,248,0.08);
+}
+
+form .form-control:focus, form .form-select:focus {
+    box-shadow: 0 0 0 0.18rem rgba(56,189,248,0.13);
+}
+
+/* Hiệu ứng hover cho hàng hành động */
+.table td .btn {
+    opacity: 0.85;
+}
+.table td .btn:hover {
+    opacity: 1;
+    filter: brightness(1.15);
+    transform: scale(1.07);
+}
+
+ 

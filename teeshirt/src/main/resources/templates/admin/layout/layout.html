@@ -590,6 +590,226 @@
             document.getElementById('cancelOrderModal').modal('hide');
         }
     </script>
+    <!-- quản lý nhân viên -->
+       <script>
+        // Khởi tạo Flatpickr với ngôn ngữ Tiếng Việt
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            locale: "vn",
+            placeholder: "Chọn ngày",
+            enableTime: false,
+            allowInput: true,
+            clickOpens: true
+        });
+
+        // Dữ liệu giả lập cho nhân viên
+        let employees = [
+            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active', joinDate: '01/05/2025', role: 'Nhân viên' },
+            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active', joinDate: '10/05/2025', role: 'Quản lý' },
+            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive', joinDate: '15/05/2025', role: 'Nhân viên' },
+            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active', joinDate: '20/05/2025', role: 'Nhân viên' },
+            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive', joinDate: '22/05/2025', role: 'Quản lý' }
+        ];
+
+        // Tải bảng danh sách nhân viên
+        function loadEmployees(filteredEmployees = employees) {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = '';
+            filteredEmployees.forEach((employee, index) => {
+                // Định dạng mã nhân viên: NV + 3 số
+                const maNV = `NV${employee.id.toString().padStart(3, '0')}`;
+                // Nếu chưa có trường giới tính thì mặc định Nam/Nữ xen kẽ
+                let gender = employee.gender;
+                if (!gender) gender = index % 2 === 0 ? 'Nam' : 'Nữ';
+                const row = `
+                    <tr>
+                        <td class="text-center">${maNV}</td>
+                        <td>${employee.name}</td>
+                        <td>${employee.phone}</td>
+                        <td>${employee.cccd || ''}</td>
+                        <td>${employee.birthday ? employee.birthday.split('-').reverse().join('/') : (employee.joinDate || '')}</td>
+                        <td>${gender}</td>
+                        <td>${employee.status === 'active' ? 'Hoạt động' : 'Nghỉ việc'}</td>
+                        <td style="min-width:120px;">
+                            <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(${employee.id})">Sửa</button>
+                            <button class="btn btn-sm btn-danger btn-action${employee.status !== 'active' ? ' invisible' : ''}" onclick="openDeleteEmployeeModal(${employee.id})">Nghỉ việc</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Lọc danh sách nhân viên
+        function filterEmployees() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const birthdayFrom = document.getElementById('filterBirthdayFrom').value;
+            const birthdayTo = document.getElementById('filterBirthdayTo').value;
+
+            let filteredEmployees = employees;
+            if (name) filteredEmployees = filteredEmployees.filter(e => e.name.toLowerCase().includes(name));
+            if (status) filteredEmployees = filteredEmployees.filter(e => e.status === status);
+            if (birthdayFrom) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) >= new Date(birthdayFrom.split('/').reverse().join('-')));
+            if (birthdayTo) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) <= new Date(birthdayTo.split('/').reverse().join('-')));
+
+            loadEmployees(filteredEmployees);
+        }
+
+        // Đặt lại bộ lọc
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterBirthdayFrom').value = '';
+            document.getElementById('filterBirthdayTo').value = '';
+            loadEmployees();
+        }
+
+        // Mở modal thêm nhân viên
+        function openAddEmployeeModal() {
+            document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeJoinDate').value = '31/05/2025';
+        }
+
+        // Mở modal sửa nhân viên
+        function openEditEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('editEmployeeId').value = employee.id;
+            document.getElementById('editEmployeeName').value = employee.name;
+            document.getElementById('editEmployeePhone').value = employee.phone;
+            document.getElementById('editEmployeeEmail').value = employee.email;
+            document.getElementById('editEmployeeBirthday').value = employee.birthday ? employee.birthday.split('-').reverse().join('/') : '';
+            document.getElementById('editEmployeeCCCD').value = employee.cccd || '';
+            document.getElementById('editEmployeeRole').value = employee.role || '';
+            document.getElementById('editEmployeeJoinDate').value = employee.joinDate || '';
+            if (employee.gender === 'Nam') {
+                document.getElementById('editGenderMale').checked = true;
+            } else {
+                document.getElementById('editGenderFemale').checked = true;
+            }
+            var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+            editModal.show();
+        }
+
+        // Lưu thông tin nhân viên
+        function saveEmployee() {
+            const id = document.getElementById('employeeId').value;
+            const name = document.getElementById('employeeName').value;
+            const phone = document.getElementById('employeePhone').value;
+            const email = document.getElementById('employeeEmail').value;
+            const role = document.getElementById('employeeRole').value;
+            const joinDate = document.getElementById('employeeJoinDate').value;
+            const birthday = document.getElementById('employeeBirthday').value;
+            const gender = document.querySelector('input[name="employeeGender"]:checked')?.value;
+            const cccd = document.getElementById('employeeCCCD').value;
+
+            if (!name || !phone || !email || !role || !joinDate || !birthday || !gender || !cccd) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+            if (!/^[0-9]{12}$/.test(cccd)) {
+                alert('CCCD phải là 12 chữ số!');
+                return;
+            }
+
+            const employeeData = {
+                id: id ? parseInt(id) : (employees.length ? employees[employees.length - 1].id + 1 : 1),
+                name,
+                phone,
+                email,
+                role,
+                joinDate,
+                birthday: birthday.split('/').reverse().join('-'),
+                gender,
+                cccd,
+                status: 'active'
+            };
+
+            if (id) {
+                const index = employees.findIndex(e => e.id === parseInt(id));
+                employees[index] = employeeData;
+            } else {
+                employees.push(employeeData);
+            }
+
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('employeeModal'));
+            modal.hide();
+        }
+
+        // Mở modal xóa nhân viên
+        function openDeleteEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('deleteEmployeeName').textContent = employee.name;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteEmployeeModal'));
+            deleteModal.show();
+        }
+
+        // Xác nhận xóa nhân viên
+        function confirmDelete() {
+            const id = employees.find(e => e.name === document.getElementById('deleteEmployeeName').textContent).id;
+            const employee = employees.find(e => e.id === id);
+            employee.status = 'inactive';
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('deleteEmployeeModal'));
+            modal.hide();
+        }
+
+        // Xử lý sự kiện gửi biểu mẫu
+        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveEmployee();
+        });
+
+        document.getElementById('editEmployeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editEmployeeId').value;
+            const name = document.getElementById('editEmployeeName').value;
+            const phone = document.getElementById('editEmployeePhone').value;
+            const email = document.getElementById('editEmployeeEmail').value;
+            const role = document.getElementById('editEmployeeRole').value;
+            const joinDate = document.getElementById('editEmployeeJoinDate').value;
+            const birthday = document.getElementById('editEmployeeBirthday').value;
+            const gender = document.querySelector('input[name="editEmployeeGender"]:checked')?.value;
+            const cccd = document.getElementById('editEmployeeCCCD').value;
+
+            if (!name || !phone || !email || !role || !joinDate || !birthday || !gender || !cccd) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+            if (!/^[0-9]{12}$/.test(cccd)) {
+                alert('CCCD phải là 12 chữ số!');
+                return;
+            }
+
+            const employee = employees.find(e => e.id === parseInt(id));
+            employee.name = name;
+            employee.phone = phone;
+            employee.email = email;
+            employee.role = role;
+            employee.joinDate = joinDate;
+            employee.birthday = birthday.split('/').reverse().join('-');
+            employee.gender = gender;
+            employee.cccd = cccd;
+
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('editEmployeeModal'));
+            modal.hide();
+        });
+
+        // Tải dữ liệu ban đầu
+        loadEmployees();
+    </script>
     
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
