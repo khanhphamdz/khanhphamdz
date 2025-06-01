@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý chi tiết sản phẩm</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Style cho các nút chức năng trên header bảng biến thể */
+      .btn-variant-action {
+        font-size: 1rem;
+        min-width: 170px;
+        padding: 0.5rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2rem;
+        font-weight: bold;
+      }
+      .btn-variant-edit {
+        min-width: 260px;
+      }
+      .btn-variant-save {
+        min-width: 100px;
+      }
+
+      /* Style cho ảnh sản phẩm trong bảng */
+      .variant-img {
+        width: 96px;
+        height: 96px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      /* Style cho ô màu sắc trong bảng */
+      .variant-color {
+        display: inline-block;
+        width: 28px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      /* Xóa style tăng kích thước spin button cho input number */
+      input[type="number"].big-spin::-webkit-inner-spin-button,
+      input[type="number"].big-spin::-webkit-outer-spin-button {
+        /* reset về mặc định */
+        -webkit-appearance: auto;
+        appearance: auto;
+        width: auto;
+        height: auto;
+        background: none;
+        border-radius: 0;
+        font-size: inherit;
+      }
+      input[type="number"].big-spin {
+        font-size: 1.1rem;
+        height: 38px;
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      /* Modal chi tiết biến thể lớn */
+      .variant-detail-modal-lg {
+        max-width: 980px;
+      }
+      /* Style cho form chi tiết biến thể */
+      #variantDetailModal .modal-body form .row.align-items-center {
+        margin-bottom: 18px;
+      }
+      #variantDetailModal .modal-body form .form-label {
+        color: #000000;
+        font-size: 1.08rem;
+        text-align: left;
+        white-space: normal;
+        padding-right: 0;
+        min-width: unset;
+      }
+      #variantDetailModal .modal-body form .form-control,
+      #variantDetailModal .modal-body form .form-select {
+        max-width: 220px;
+        min-width: 120px;
+        display: inline-block;
+      }
+      #variantDetailModal
+        .modal-body
+        form
+        .d-flex.align-items-center.gap-2
+        > .rounded {
+        margin-left: 8px;
+        margin-right: 0;
+      }
+      #variantDetailModal .modal-body form .col-8 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      #variantDetailModal
+        .modal-body
+        .d-flex.align-items-center.flex-grow-1
+        > .rounded {
+        width: 48px;
+        height: 32px;
+        border-radius: 6px;
+      }
+      #variantDetailModal .modal-body .form-select {
+        width: 120px;
+      }
+      #variantDetailModal .modal-body .btn.btn-sm {
+        padding: 0.25rem 0.6rem;
+        font-size: 1rem;
+      }
+      #variantDetailModal
+        .modal-body
+        .d-flex.flex-wrap.justify-content-center.gap-3
+        > div {
+        width: 90px;
+        height: 90px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1.5px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fafbfc;
+        cursor: pointer;
+      }
+      #variantDetailModal
+        .modal-body
+        .d-flex.flex-wrap.justify-content-center.gap-3
+        > div
+        img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      #variantDetailModal
+        .modal-body
+        .d-flex.flex-wrap.justify-content-center.gap-3
+        > div
+        span {
+        color: #888;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+
+      .input-modal-fix,
+      .select-modal-fix {
+        width: 100%;
+        min-width: 120px;
+        max-width: 220px;
+        margin-left: 0 !important;
+      }
+      .color-preview-modal {
+        display: inline-block;
+        width: 48px;
+        height: 32px;
+        background: #800000;
+        border-radius: 6px;
+        margin-left: 8px;
+      }
+      #variantDetailModal .modal-body form .d-flex.align-items-center.gap-2 {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Style cho label và value thông tin sản phẩm */
+      .product-info-label {
+        width: 180px;
+        margin-bottom: 0;
+        display: flex;
+        height: 40px;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 1rem;
+        padding-right: 0.5rem;
+      }
+      .product-info-card input.product-info-value,
+      .product-info-card select.product-info-value,
+      .product-info-card textarea.product-info-value {
+        border: 1px solid #e0e0e0;
+        box-shadow: none;
+        outline: none;
+        background: #fafbfc;
+        border-radius: 8px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        font-size: 1rem;
+        height: 40px;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .product-info-card input.product-info-value:focus,
+      .product-info-card select.product-info-value:focus,
+      .product-info-card textarea.product-info-value:focus {
+        border-color: #bdbdbd;
+        box-shadow: 0 0 0 1px #e0e0e0;
+      }
+      .product-info-card .row.mb-2.align-items-center {
+        align-items: flex-start !important;
+      }
+      .product-info-label {
+        align-items: flex-start;
+        padding-top: 0.5rem;
+      }
+      .product-info-card textarea.product-info-value {
+        display: block;
+        align-items: unset;
+        height: auto;
+        min-height: 5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.1rem;
+      }
+
+      .color-checkbox-label {
+        display: inline-block;
+        margin: 0;
+        cursor: pointer;
+      }
+      .color-checkbox {
+        display: none;
+      }
+      .color-checkbox-box {
+        display: inline-block;
+        min-width: 48px;
+        max-width: 52px;
+        width: 48px;
+        height: 38px;
+        line-height: 38px;
+        border-radius: 8px;
+        border: 2.5px solid transparent;
+        font-weight: bold;
+        text-align: center;
+        font-size: 1.1rem;
+        padding: 0 0;
+        transition: border 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+      }
+      .color-checkbox:checked + .color-checkbox-box {
+        border: 2.5px solid #1976d2 !important;
+        box-shadow: 0 0 0 3px #90caf9;
+        outline: none;
+        position: relative;
+        z-index: 2;
+      }
+
+      .size-checkbox-label {
+        display: inline-block;
+        margin: 0;
+        cursor: pointer;
+      }
+      .size-checkbox {
+        display: none;
+      }
+      .size-checkbox-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 48px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1.5px solid #1976d2;
+        background: #fff;
+        color: #1976d2;
+        font-weight: bold;
+        text-align: center;
+        font-size: 1.1rem;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+        margin-right: 2px;
+        margin-bottom: 2px;
+        padding: 0 10px;
+        box-sizing: border-box;
+      }
+      .size-checkbox:checked + .size-checkbox-box {
+        background: #1976d2;
+        color: #fff;
+        border: 1.2px solid #1976d2;
+        box-shadow: 0 0 0 3px #90caf9;
+        outline: none;
+        position: relative;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="d-flex flex-column p-3 w-100">
+      <h3 class="fw-bold text-center mb-3">Chi tiết sản phẩm</h3>
+      <!-- Card thông tin sản phẩm -->
+      <div class="card mb-4 product-info-card">
+        <div class="card-body position-relative">
+          <div class="row g-3 align-items-start ms-5">
+            <div class="col-md-8">
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Tên sản phẩm:</label
+                >
+                <input type="text" class="col-8 text-dark product-info-value editable-info" data-field="name" value="Áo thun nam basic" />
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Danh mục sản phẩm:</label
+                >
+                <select class="col-8 text-dark product-info-value editable-info" data-field="category">
+                  <option value="Áo thun nam" selected>Áo thun</option>
+                  <option value="Áo khoác">Áo khoác</option>
+                  <option value="Áo sơ mi">Áo sơ mi</option>
+                  <option value="Áo polo">Áo polo</option>
+                  <option value="Áo hoodie">Áo hoodie</option>
+                </select>
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Chất liệu:</label
+                >
+                <input type="text" value="Cotton 100%"
+                  class="col-8 text-dark product-info-value editable-info"
+                  data-field="material"
+                >
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Trạng thái sản phẩm:</label
+                >
+                <select class="col-8 product-info-value editable-info" data-field="status">
+                  <option value="Đang kinh doanh" selected>Đang kinh doanh</option>
+                  <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                </select>
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Mã sản phẩm:</label
+                >
+                <input type="text" value="SP001"
+                  class="col-8 text-dark product-info-value editable-info"
+                  data-field="code"
+                >
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Giá bán:</label
+                >
+                <input type="text" value="200.000đ"
+                  class="col-8 text-dark product-info-value editable-info"
+                  data-field="price"
+                >
+              </div>
+              <div class="row mb-2 align-items-center">
+                <label
+                  class="col-4 fw-semibold mb-0 text-start product-info-label"
+                  >Mô tả:</label
+                >
+                <textarea class="col-8 text-dark product-description product-info-value editable-info"
+                  data-field="description"
+                  id="productDescription"
+                >Áo thun Kappa thiết kế trẻ trung, năng động, chất liệu cotton thoáng mát, phù hợp mặc hàng ngày.</textarea>
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary rounded-pill fw-bold px-4 py-2 position-absolute mt-4  "
+                style="z-index: 2"
+                id="btn-save-header"
+              >
+                <i class="fa-solid fa-floppy-disk me-2"></i>Cập nhật
+              </button>
+            </div>
+            <div
+              class="col-md-4 d-flex justify-content-center align-items-start"
+            >
+              <img
+                src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                alt="Ảnh sản phẩm"
+                class="product-info-img h-100"
+                style="width: 100%; object-fit: cover"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Thông tin bảng biến thể -->
+      <div class="card flex-grow-1 d-flex flex-column">
+        <div
+          class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
+          style="margin-top: 8px"
+        >
+          <h5
+            class="fw-bold mb-0 d-flex align-items-center"
+            style="white-space: nowrap"
+          >
+            <i class="fa-solid fa-table-list me-2"></i>Danh sách biến thể
+          </h5>
+          <div
+            class="d-flex align-items-center gap-2 w-100 justify-content-end"
+          >
+            <!-- Bỏ nút Thêm biến thể -->
+            <button
+              type="button"
+              class="btn btn-info rounded-pill fw-bold px-3 py-1 d-flex justify-content-center align-items-center btn-variant-action btn-variant-edit"
+            >
+              <i class="fa-solid fa-pen-to-square me-2"></i>
+              <span class="flex-fill text-center"
+                >Chỉnh sửa số lượng chung</span
+              >
+            </button>
+            <button
+              type="button"
+              class="btn btn-success rounded-pill fw-bold px-3 py-1 d-flex justify-content-center align-items-center btn-variant-action btn-add-variant"
+              id="btn-add-variant"
+              data-bs-toggle="modal" data-bs-target="#addVariantModal"
+            >
+              <i class="fa-solid fa-plus me-2"></i>
+              <span class="flex-fill text-center">Thêm biến thể</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
+          <div class="flex-grow-1 overflow-auto">
+            <table class="table table-hover align-middle text-center mb-0">
+              <thead class="bg-primary bg-gradient text-white">
+                <tr>
+                  <th class="text-center">#</th>
+                  <th class="text-center" style="width: 220px;">Ảnh</th>
+                  <th class="text-center">Tên Sản Phẩm</th>
+                  <th class="text-center">Số Lượng</th>
+                  <th class="text-center">Kích Cỡ</th>
+                  <th class="text-center">Màu Sắc</th>
+                  <th class="text-center">Trạng Thái</th>
+                  <th class="text-center">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td style="width: 220px;">
+                    <div class="d-flex flex-row gap-2 justify-content-center align-items-center">
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                    </div>
+                  </td>
+                  <td class="text-center">Áo thun nam basic - 37 - Đỏ</td>
+                  <td
+                    class="editable-cell"
+                    style="cursor: pointer"
+                    title="Click để chỉnh sửa"
+                  >
+                    500
+                  </td>
+                  <td>S</td>
+                  <td>
+                    <span class="variant-color" style="background: red"></span>
+                  </td>
+                  <td>
+                    <span
+                      class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill"
+                      >Đang kinh doanh</span
+                    >
+                  </td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-warning btn-sm d-flex align-items-center justify-content-center mx-auto btn-eye-view"
+                      title="Xem chi tiết"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td style="width: 220px;">
+                    <div class="d-flex flex-row gap-2 justify-content-center align-items-center">
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                    </div>
+                  </td>
+                  <td class="text-center">Áo thun nam basic - 38 - Xanh</td>
+                  <td
+                    class="editable-cell"
+                    style="cursor: pointer"
+                    title="Click để chỉnh sửa"
+                  >
+                    300
+                  </td>
+                  <td>M</td>
+                  <td>
+                    <span class="variant-color" style="background: blue"></span>
+                  </td>
+                  <td>
+                    <span
+                      class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill"
+                      >Đang kinh doanh</span
+                    >
+                  </td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-warning btn-sm d-flex align-items-center justify-content-center mx-auto btn-eye-view"
+                      title="Xem chi tiết"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" /></td>
+                  <td style="width: 220px;">
+                    <div class="d-flex flex-row gap-2 justify-content-center align-items-center">
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                      <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" />
+                    </div>
+                  </td>
+                  <td class="text-center">Áo thun nam basic - 39 - Đen</td>
+                  <td
+                    class="editable-cell"
+                    style="cursor: pointer"
+                    title="Click để chỉnh sửa"
+                  >
+                    200
+                  </td>
+                  <td>L</td>
+                  <td>
+                    <span
+                      class="variant-color"
+                      style="background: black"
+                    ></span>
+                  </td>
+                  <td>
+                    <span
+                      class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill"
+                      >Đang kinh doanh</span
+                    >
+                  </td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-warning btn-sm d-flex align-items-center justify-content-center mx-auto btn-eye-view"
+                      title="Xem chi tiết"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- Thêm các dòng dữ liệu khác nếu cần -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Đã xóa nút quay lại danh sách ở đây -->
+    </main>
+    <!-- Modal xem chi tiết biến thể -->
+    <div
+      class="modal fade"
+      id="variantDetailModal"
+      tabindex="-1"
+      aria-labelledby="variantDetailModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered variant-detail-modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="variantDetailModalLabel">
+              Chi tiết biến thể
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Đóng"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <form class="row g-4">
+              <div class="col-md-6">
+                <div class="mb-3 row align-items-center">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end"
+                    >Màu Sắc:</label
+                  >
+                  <div class="col-8 d-flex align-items-center gap-2">
+                    <select class="form-select select-modal-fix">
+                      <option>Đỏ</option>
+                      <option>Xanh</option>
+                      <option>Đen</option>
+                    </select>
+                    <span class="rounded color-preview-modal"></span>
+                  </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end"
+                    >Số lượng:</label
+                  >
+                  <div class="col-8">
+                    <input
+                      type="number"
+                      class="form-control input-modal-fix"
+                      value="1000"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3 row align-items-center">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end"
+                    >Kích Cỡ:</label
+                  >
+                  <div class="col-8">
+                    <select class="form-select select-modal-fix">
+                      <option>S</option>
+                      <option>M</option>
+                      <option>L</option>
+                      <option>XL</option>
+                      <option>XXL</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="mt-4">
+              <h5 class="fw-bold text-center mb-3">Ảnh Sản Phẩm</h5>
+              <div
+                class="d-flex flex-wrap justify-content-center gap-3"
+                id="variant-image-list"
+              >
+                <div
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1.5px solid #eee;
+                  "
+                >
+                  <img
+                    src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                </div>
+                <div
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1.5px solid #eee;
+                  "
+                >
+                  <img
+                    src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                </div>
+                <div
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1.5px solid #eee;
+                  "
+                >
+                  <img
+                    src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                </div>
+                <div
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1.5px solid #eee;
+                  "
+                >
+                  <img
+                    src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                    style="width: 100%; height: 100%; object-fit: cover"
+                  />
+                </div>
+                <div
+                  id="btn-upload-image"
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1.5px solid #eee;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #fafbfc;
+                    cursor: pointer;
+                  "
+                >
+                  <span class="text-secondary">+<br />Upload</span>
+                </div>
+              </div>
+              <input
+                type="file"
+                id="input-upload-image"
+                accept="image/*"
+                style="display: none"
+                multiple
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary rounded-pill px-4 fw-bold"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill px-4 fw-bold"
+            >
+              Lưu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="editAllModal"
+      tabindex="-1"
+      aria-labelledby="editAllModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fw-bold" id="editAllModalLabel">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Chỉnh sửa số lượng chung
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Đóng"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <div
+              class="mb-3 d-flex align-items-center gap-3"
+              style="margin-bottom: 0 !important"
+            >
+              <label
+                for="editAllQuantity"
+                class="form-label fw-semibold mb-0"
+                style="min-width: 110px"
+                >Số lượng</label
+              >
+              <input
+                type="number"
+                class="form-control rounded-pill px-3 py-2 text-center fs-5 flex-grow-1"
+                id="editAllQuantity"
+                placeholder="Nhập số lượng..."
+                min="0"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary rounded-pill px-4 fw-bold"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill px-4 fw-bold"
+            >
+              Lưu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal thêm biến thể mới -->
+    <div class="modal fade" id="addVariantModal" tabindex="-1" aria-labelledby="addVariantModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered variant-detail-modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="addVariantModalLabel">Chi tiết biến thể</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form class="row g-4">
+              <div class="col-md-6">
+                <div class="mb-3 row ">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end">Màu Sắc:</label>
+                  <div class="col-8">
+                    <div class="d-flex flex-wrap gap-2" id="addVariantColorGroup">
+                      <label class="color-checkbox-label">
+                        <input type="checkbox" class="color-checkbox" value="#b39ddb" />
+                        <span class="color-checkbox-box" style="background-color: #b39ddb; color: #222; min-width: 48px;"></span>
+                      </label>
+                      <label class="color-checkbox-label">
+                        <input type="checkbox" class="color-checkbox" value="#00bcd4" />
+                        <span class="color-checkbox-box" style="background-color: #00bcd4; color: #222; min-width: 48px;"></span>
+                      </label>
+                      <label class="color-checkbox-label">
+                        <input type="checkbox" class="color-checkbox" value="#ffb300" />
+                        <span class="color-checkbox-box" style="background-color: #ffb300; color: #222; min-width: 48px;"></span>
+                      </label>
+                      <label class="color-checkbox-label">
+                        <input type="checkbox" class="color-checkbox" value="#222" />
+                        <span class="color-checkbox-box" style="background-color: #222; color: #fff; min-width: 48px;"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 row align-items-center">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end">Số lượng:</label>
+                  <div class="col-8">
+                    <input type="number" class="form-control input-modal-fix" id="addVariantQuantity" min="0" placeholder="Nhập số lượng" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3 row align-items-center">
+                  <label class="form-label fw-semibold mb-0 col-4 text-end">Kích Cỡ:</label>
+                  <div class="col-8">
+                    <div class="d-flex flex-wrap gap-2" id="addVariantSizeGroup">
+                      <label class="size-checkbox-label">
+                        <input type="checkbox" class="size-checkbox" value="S" />
+                        <span class="size-checkbox-box">S</span>
+                      </label>
+                      <label class="size-checkbox-label">
+                        <input type="checkbox" class="size-checkbox" value="M" />
+                        <span class="size-checkbox-box">M</span>
+                      </label>
+                      <label class="size-checkbox-label">
+                        <input type="checkbox" class="size-checkbox" value="L" />
+                        <span class="size-checkbox-box">L</span>
+                      </label>
+                      <label class="size-checkbox-label">
+                        <input type="checkbox" class="size-checkbox" value="XL" />
+                        <span class="size-checkbox-box">XL</span>
+                      </label>
+                      <label class="size-checkbox-label">
+                        <input type="checkbox" class="size-checkbox" value="XXL" />
+                        <span class="size-checkbox-box">XXL</span>
+                      </label>
+                    </div>
+                    <input type="hidden" id="addVariantSize" value="" />
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="mt-4">
+              <h5 class="fw-bold text-center mb-3">Ảnh Sản Phẩm</h5>
+              <div class="d-flex flex-wrap justify-content-center gap-3" id="add-variant-image-list">
+                <div id="btn-add-variant-upload-image" style="width: 90px; height: 90px; border-radius: 10px; overflow: hidden; border: 1.5px solid #eee; display: flex; align-items: center; justify-content: center; background: #fafbfc; cursor: pointer; margin-right: 8px; margin-bottom: 8px;">
+                  <span class="text-secondary">+<br />Upload</span>
+                </div>
+              </div>
+              <input type="file" id="input-add-variant-upload-image" accept="image/*" style="display: none" multiple />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" id="btn-save-variant">Lưu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+      // Gán sự kiện cho tất cả nút xem (icon con mắt)
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".btn-eye-view").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var modal = new bootstrap.Modal(
+              document.getElementById("variantDetailModal")
+            );
+            modal.show();
+          });
+        });
+
+        // Chỉnh sửa số lượng và giá bán trực tiếp trên bảng
+        document.querySelectorAll(".editable-cell").forEach(function (cell) {
+          cell.addEventListener("click", function (e) {
+            if (cell.querySelector("input")) return; // Đã có input
+            var oldValue = cell.innerText.trim();
+            var input = document.createElement("input");
+            input.type = "number";
+            input.value = oldValue.replace(/[^\d.]/g, "");
+            input.className = "form-control form-control-sm text-center";
+            input.style.width = "90px";
+            input.style.display = "inline-block";
+            input.style.padding = "2px 6px";
+            input.style.fontSize = "1rem";
+            cell.innerHTML = "";
+            cell.appendChild(input);
+            input.focus();
+            input.select();
+            input.addEventListener("blur", function () {
+              var newValue = input.value;
+              if (cell.dataset.type === "price") {
+                newValue = Number(newValue).toLocaleString("vi-VN") + " VNĐ";
+              }
+              cell.innerHTML = newValue;
+            });
+            input.addEventListener("keydown", function (ev) {
+              if (ev.key === "Enter") {
+                input.blur();
+              }
+            });
+          });
+        });
+
+        // Khi bấm nút Lưu, cập nhật lại tất cả các trường editable-info về dạng text
+        var btnSave = document.querySelector(".btn-variant-save");
+        if (btnSave) {
+          btnSave.addEventListener("click", function () {
+            document
+              .querySelectorAll(".editable-info")
+              .forEach(function (info) {
+                var field = info.dataset.field;
+                var input = info.querySelector("input, select, textarea");
+                if (input) {
+                  var newValue = input.value;
+                  if (field === "status") {
+                    newValue = input.options[input.selectedIndex].text;
+                    info.classList.toggle(
+                      "text-success",
+                      newValue === "Đang kinh doanh"
+                    );
+                    info.classList.toggle(
+                      "fw-bold",
+                      newValue === "Đang kinh doanh"
+                    );
+                  }
+                  info.innerHTML = newValue;
+                }
+              });
+          });
+        }
+
+        // Khi bấm nút Lưu ở card thông tin sản phẩm, chỉ cập nhật các trường editable-info trong card
+        var btnSaveHeader = document.getElementById("btn-save-header");
+        if (btnSaveHeader) {
+          btnSaveHeader.addEventListener("click", function () {
+            // Chỉ lấy các .editable-info trong card thông tin sản phẩm
+            var card = btnSaveHeader.closest(".card-body");
+            if (!card) return;
+            card.querySelectorAll(".editable-info").forEach(function (info) {
+              var field = info.dataset.field;
+              var input = info.querySelector("input, select, textarea");
+              if (input) {
+                var newValue = input.value;
+                if (field === "status") {
+                  newValue = input.options[input.selectedIndex].text;
+                  info.classList.toggle(
+                    "text-success",
+                    newValue === "Đang kinh doanh"
+                  );
+                  info.classList.toggle(
+                    "fw-bold",
+                    newValue === "Đang kinh doanh"
+                  );
+                }
+                info.innerHTML = newValue;
+              }
+            });
+          });
+        }
+
+        // Hiện modal chỉnh sửa số lượng & giá chung khi bấm nút
+        var btnEditAll = document.querySelector(".btn-variant-edit");
+        if (btnEditAll) {
+          btnEditAll.addEventListener("click", function () {
+            var modal = new bootstrap.Modal(
+              document.getElementById("editAllModal")
+            );
+            modal.show();
+          });
+        }
+
+        // Upload ảnh trong modal chi tiết biến thể
+        var btnUploadImage = document.getElementById("btn-upload-image");
+        var inputUploadImage = document.getElementById("input-upload-image");
+        var imageList = document.getElementById("variant-image-list");
+        if (btnUploadImage && inputUploadImage && imageList) {
+          btnUploadImage.addEventListener("click", function () {
+            inputUploadImage.click();
+          });
+          inputUploadImage.addEventListener("change", function (e) {
+            var files = Array.from(e.target.files);
+            files.forEach(function (file) {
+              if (!file.type.startsWith("image/")) return;
+              var reader = new FileReader();
+              reader.onload = function (ev) {
+                var div = document.createElement("div");
+                div.style.width = "90px";
+                div.style.height = "90px";
+                div.style.borderRadius = "10px";
+                div.style.overflow = "hidden";
+                div.style.border = "1.5px solid #eee";
+                var img = document.createElement("img");
+                img.src = ev.target.result;
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                div.appendChild(img);
+                // Thêm trước nút upload
+                imageList.insertBefore(div, btnUploadImage);
+              };
+              reader.readAsDataURL(file);
+            });
+            // Reset input để có thể chọn lại cùng file
+            inputUploadImage.value = "";
+          });
+        }
+
+        // Preview ảnh khi chọn file trong modal thêm biến thể
+        (function() {
+          var input = document.getElementById('variantImageInput');
+          var preview = document.getElementById('variantImagePreview');
+          if(input && preview) {
+            input.addEventListener('change', function(e) {
+              preview.innerHTML = '';
+              var file = e.target.files[0];
+              if(file && file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                  var img = document.createElement('img');
+                  img.src = ev.target.result;
+                  img.style.maxWidth = '120px';
+                  img.style.maxHeight = '120px';
+                  img.style.borderRadius = '8px';
+                  preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+              }
+            });
+          }
+        })();
+
+        // Preview màu sắc khi chọn trong modal thêm biến thể
+        (function() {
+          var colorSelect = document.getElementById('addVariantColor');
+          var colorPreview = document.getElementById('addVariantColorPreview');
+          if(colorSelect && colorPreview) {
+            colorSelect.addEventListener('change', function() {
+              var val = colorSelect.value;
+              var colorMap = { 'Đỏ': 'red', 'Xanh': 'blue', 'Đen': 'black' };
+              colorPreview.style.background = colorMap[val] || '#888';
+            });
+          }
+        })();
+
+        // Preview và upload nhiều ảnh trong modal thêm biến thể
+        (function() {
+          var btnUpload = document.getElementById('btn-add-variant-upload-image');
+          var inputUpload = document.getElementById('input-add-variant-upload-image');
+          var imageList = document.getElementById('add-variant-image-list');
+          if(btnUpload && inputUpload && imageList) {
+            btnUpload.addEventListener('click', function() {
+              inputUpload.click();
+            });
+            inputUpload.addEventListener('change', function(e) {
+              var files = Array.from(e.target.files);
+              files.forEach(function(file) {
+                if (!file.type.startsWith("image/")) return;
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                  var div = document.createElement('div');
+                  div.style.width = '90px';
+                  div.style.height = '90px';
+                  div.style.borderRadius = '10px';
+                  div.style.overflow = 'hidden';
+                  div.style.border = '1.5px solid #eee';
+                  div.style.display = 'flex';
+                  div.style.alignItems = 'center';
+                  div.style.justifyContent = 'center';
+                  div.style.background = '#fafbfc';
+                  div.style.marginRight = '8px';
+                  div.style.marginBottom = '8px';
+                  var img = document.createElement('img');
+                  img.src = ev.target.result;
+                  img.style.width = '100%';
+                  img.style.height = '100%';
+                  img.style.objectFit = 'cover';
+                  div.appendChild(img);
+                  imageList.insertBefore(div, btnUpload);
+                };
+                reader.readAsDataURL(file);
+              });
+              inputUpload.value = '';
+            });
+          }
+        })();
+
+        // Chọn màu sắc trong modal thêm biến thể
+        (function() {
+          var colorBtns = document.querySelectorAll('#addVariantColorGroup .btn-choose-color');
+          var colorInput = document.getElementById('addVariantColor');
+          colorBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              colorBtns.forEach(function(b) { b.classList.remove('color-active'); });
+              btn.classList.add('color-active');
+              colorInput.value = btn.getAttribute('data-color');
+            });
+          });
+          // Set mặc định
+          if(colorBtns.length) colorBtns[0].classList.add('color-active');
+        })();
+        // Chọn kích cỡ trong modal thêm biến thể (radio version, native)
+        (function() {
+          var sizeRadios = document.querySelectorAll('#addVariantSizeGroup input[type="radio"]');
+          var sizeInput = document.getElementById('addVariantSize');
+          sizeRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+              if(radio.checked) sizeInput.value = radio.value;
+            });
+          });
+        })();
+        // Chọn nhiều kích cỡ trong modal thêm biến thể (checkbox version)
+        (function() {
+          var sizeCheckboxes = document.querySelectorAll('#addVariantSizeGroup .size-checkbox');
+          var sizeInput = document.getElementById('addVariantSize');
+          function updateSizeInput() {
+            var checked = Array.from(sizeCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            sizeInput.value = checked.join(',');
+          }
+          sizeCheckboxes.forEach(function(cb) {
+            cb.addEventListener('change', updateSizeInput);
+          });
+        })();
+      });
+    </script>
+  </body>
+</html>
