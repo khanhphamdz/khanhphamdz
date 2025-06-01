@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
 </head>
 <body>
     <!-- Main Content -->
@@ -21,21 +20,21 @@
         <div class="card mb-4">
             <div class="card-body">
                 <form class="row g-4 align-items-end justify-content-center">
-                   
-                     <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
+                    <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
                         <div class="d-flex align-items-center">
-                             <label for="filterName" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
-                                <i class=""></i>Tìm kiếm:
+                            <label for="filterName" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
+                                <i class="fa-solid me-2"></i>Tìm kiếm :
                             </label>
-                            <input type="text" class="form-control rounded-pill px-3 text-center" id="filterName"
-                                placeholder="Tìm kiếm tên,SĐT,email..." onchange="filterEmployees()"
-                                style="max-width: 400px;">
+                            <input type="text" class="form-control rounded-pill px-1.5 text-center" id="filterName"
+                                placeholder="Tìm kiếm tên, SĐT" onchange="filterEmployees()"
+                                style="max-width: 200px;">
                         </div>
-                        <div class="d-flex align-items-center">
-                            <label for="filterStatus" class="form-label fw-semibold mb-0 me-2"
-                                style="min-width:90px;">Trạng thái:</label>
+                        <div class="d-flex align-items-center mt-2">
+                            <label for="filterStatus" class="form-label fw-semibold mb-0 me-2" style="min-width: 90px;">
+                                <i class="fa-solid me-2"></i>Trạng thái:
+                            </label>
                             <select class="form-select rounded-pill px-3 text-center" id="filterStatus"
-                                onchange="filterEmployees()" >
+                                onchange="filterEmployees()" style="max-width: 200px;">
                                 <option value="">Tất cả</option>
                                 <option value="active">Hoạt động</option>
                                 <option value="inactive">Nghỉ việc</option>
@@ -49,7 +48,6 @@
                             </label>
                             <input type="date" class="form-control rounded-pill text-center flatpickr" id="filterBirthdayFrom"
                                 placeholder="Chọn ngày" onchange="filterEmployees()" style="max-width: 160px;">
-                           
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
                             <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold"
@@ -84,33 +82,24 @@
                                 <th class="text-center">Giới tính</th>
                                 <th class="text-center">Trạng thái</th>
                                 <th class="text-center">Hành động</th>
+                                
                             </tr>
+
                         </thead>
-                        <tbody>
-                                        <tr>
-                                            <td>#PRG001</td>
-                                            <td>Lục Minh Q</td>
-                                            <td>0353228194</td>
-                                            <td>23456789777</td>
-                                            <td>03/07/2005</td>
-                                            <td>NAM</td>
-                                            <td><span class="status-badge status-active">Đang hoạt động</span></td>
-                                            <td class="action-buttons">
-                                                <button class="btn btn-info" title="Xem chi tiết">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-warning" title="Chỉnh sửa">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-danger" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Thêm các dòng khác tương tự -->
-                                    </tbody>
                         <tbody id="employeeTable">
-                            <!-- Dữ liệu sẽ được render bằng JS -->
+                            <!-- Dữ liệu nhân viên sẽ được chèn vào đây bằng JavaScript -->
+                           <td>#ORD001</td>
+                                    <td>Nguyễn Văn A</td>
+                                    <td>5221444</td>
+                                    <td>3456789</td>
+                                    <td>03/07/2005</td> 
+                                    <td>nam</td>
+                                    <td>Hoạt động</td>
+
+                                    <td style="min-width:120px;">
+                                        <button class="btn btn-info btn-action btn btn-sm " title="Xem chi tiết"> <i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(1)"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger btn-action" onclick="openDeleteEmployeeModal(1)"><i class="fas fa-trash"></i></button>                 
                         </tbody>
                     </table>
                 </div>
@@ -182,17 +171,6 @@
                                 <input type="text" class="form-control rounded-pill" id="employeeCCCD"
                                     pattern="[0-9]{12}" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Vai
-                                    trò</label>
-                                <input type="text" class="form-control rounded-pill" id="employeeRole" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
-                                    vào làm</label>
-                                <input type="date" class="form-control rounded-pill flatpickr" id="employeeJoinDate"
-                                    placeholder="Chọn ngày vào làm" required->
-                            </div>
                             <input type="hidden" id="employeeId">
                         </div>
                         <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
@@ -260,17 +238,6 @@
                                 <input type="text" class="form-control rounded-pill" id="editEmployeeCCCD"
                                     pattern="[0-9]{12}" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Vai
-                                    trò</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeRole" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
-                                    vào làm</label>
-                                <input type="text" class="form-control rounded-pill flatpickr" id="editEmployeeJoinDate"
-                                    placeholder="Chọn ngày vào làm" required>
-                            </div>
                             <input type="hidden" id="editEmployeeId">
                         </div>
                         <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
@@ -310,6 +277,211 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
     <!-- JavaScript for Interactivity -->
-   
+    <script>
+        // Khởi tạo Flatpickr với ngôn ngữ Tiếng Việt
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            locale: "vn",
+            placeholder: "Chọn ngày",
+            enableTime: false,
+            allowInput: true,
+            clickOpens: true
+        });
+
+        // Dữ liệu giả lập cho nhân viên
+        let employees = [
+            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active' },
+            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active' },
+            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive' },
+            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active' },
+            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive' }
+        ];
+
+        // Tải bảng danh sách nhân viên
+        function loadEmployees(filteredEmployees = employees) {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = '';
+            filteredEmployees.forEach((employee, index) => {
+                // Định dạng mã nhân viên: NV + 3 số
+                const maNV = `NV${employee.id.toString().padStart(3, '0')}`;
+                // Nếu chưa có trường giới tính thì mặc định Nam/Nữ xen kẽ
+                let gender = employee.gender;
+                if (!gender) gender = index % 2 === 0 ? 'Nam' : 'Nữ';
+                const row = `
+                    <tr>
+                        <td class="text-center">${maNV}</td>
+                        <td>${employee.name}</td>
+                        <td>${employee.phone}</td>
+                        <td>${employee.cccd || ''}</td>
+                        <td>${employee.birthday ? employee.birthday.split('-').reverse().join('/') : ''}</td>
+                        <td>${gender}</td>
+                        <td>${employee.status === 'active' ? 'Hoạt động' : 'Nghỉ việc'}</td>
+                        <td style="min-width:120px;">
+                            <button class="btn btn-info btn-action btn btn-sm " title="Xem chi tiết"> <i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning btn-action" onclick="openEditEmployeeModal(${employee.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger btn-action${employee.status !== 'active' ? ' invisible' : ''}" onclick="openDeleteEmployeeModal(${employee.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Lọc danh sách nhân viên
+        function filterEmployees() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const birthdayFrom = document.getElementById('filterBirthdayFrom').value;
+
+            let filteredEmployees = employees;
+            if (name) filteredEmployees = filteredEmployees.filter(e => e.name.toLowerCase().includes(name));
+            if (status) filteredEmployees = filteredEmployees.filter(e => e.status === status);
+            if (birthdayFrom) filteredEmployees = filteredEmployees.filter(e => new Date(e.birthday) >= new Date(birthdayFrom.split('/').reverse().join('-')));
+
+            loadEmployees(filteredEmployees);
+        }
+
+        // Đặt lại bộ lọc
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterBirthdayFrom').value = '';
+            loadEmployees();
+        }
+
+        // Mở modal thêm nhân viên
+        function openAddEmployeeModal() {
+            document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeId').value = '';
+        }
+
+        // Mở modal sửa nhân viên
+        function openEditEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('editEmployeeId').value = employee.id;
+            document.getElementById('editEmployeeName').value = employee.name;
+            document.getElementById('editEmployeePhone').value = employee.phone;
+            document.getElementById('editEmployeeEmail').value = employee.email;
+            document.getElementById('editEmployeeBirthday').value = employee.birthday ? employee.birthday.split('-').reverse().join('/') : '';
+            document.getElementById('editEmployeeCCCD').value = employee.cccd || '';
+            if (employee.gender === 'Nam') {
+                document.getElementById('editGenderMale').checked = true;
+            } else {
+                document.getElementById('editGenderFemale').checked = true;
+            }
+            var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+            editModal.show();
+        }
+
+        // Lưu thông tin nhân viên
+        function saveEmployee() {
+            const id = document.getElementById('employeeId').value;
+            const name = document.getElementById('employeeName').value;
+            const phone = document.getElementById('employeePhone').value;
+            const email = document.getElementById('employeeEmail').value;
+            const birthday = document.getElementById('employeeBirthday').value;
+            const gender = document.querySelector('input[name="employeeGender"]:checked')?.value;
+            const cccd = document.getElementById('employeeCCCD').value;
+
+            if (!name || !phone || !email || !birthday || !gender || !cccd) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+            if (!/^[0-9]{12}$/.test(cccd)) {
+                alert('CCCD phải là 12 chữ số!');
+                return;
+            }
+
+            const employeeData = {
+                id: id ? parseInt(id) : (employees.length ? employees[employees.length - 1].id + 1 : 1),
+                name,
+                phone,
+                email,
+                birthday: birthday.split('/').reverse().join('-'),
+                gender,
+                cccd,
+                status: 'active'
+            };
+
+            if (id) {
+                const index = employees.findIndex(e => e.id === parseInt(id));
+                employees[index] = employeeData;
+            } else {
+                employees.push(employeeData);
+            }
+
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('employeeModal'));
+            modal.hide();
+        }
+
+        // Mở modal xóa nhân viên
+        function openDeleteEmployeeModal(id) {
+            const employee = employees.find(e => e.id === id);
+            document.getElementById('deleteEmployeeName').textContent = employee.name;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteEmployeeModal'));
+            deleteModal.show();
+        }
+
+        // Xác nhận xóa nhân viên
+        function confirmDelete() {
+            const id = employees.find(e => e.name === document.getElementById('deleteEmployeeName').textContent).id;
+            const employee = employees.find(e => e.id === id);
+            employee.status = 'inactive';
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('deleteEmployeeModal'));
+            modal.hide();
+        }
+
+        // Xử lý sự kiện gửi biểu mẫu
+        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveEmployee();
+        });
+
+        document.getElementById('editEmployeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editEmployeeId').value;
+            const name = document.getElementById('editEmployeeName').value;
+            const phone = document.getElementById('editEmployeePhone').value;
+            const email = document.getElementById('editEmployeeEmail').value;
+            const birthday = document.getElementById('editEmployeeBirthday').value;
+            const gender = document.querySelector('input[name="editEmployeeGender"]:checked')?.value;
+            const cccd = document.getElementById('editEmployeeCCCD').value;
+
+            if (!name || !phone || !email || !birthday || !gender || !cccd) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải là 10 chữ số!');
+                return;
+            }
+            if (!/^[0-9]{12}$/.test(cccd)) {
+                alert('CCCD phải là 12 chữ số!');
+                return;
+            }
+
+            const employee = employees.find(e => e.id === parseInt(id));
+            employee.name = name;
+            employee.phone = phone;
+            employee.email = email;
+            employee.birthday = birthday.split('/').reverse().join('-');
+            employee.gender = gender;
+            employee.cccd = cccd;
+
+            loadEmployees();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('editEmployeeModal'));
+            modal.hide();
+        });
+
+        // Tải dữ liệu ban đầu
+        loadEmployees();
+    </script>
 </body>
 </html>
