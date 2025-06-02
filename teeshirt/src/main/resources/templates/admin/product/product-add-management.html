@@ -7,6 +7,47 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
+/* Style riêng cho trang product-add-management */
+.product-add-img-list {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.product-add-variant-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: inline-block;
+}
+.product-add-upload-img-box {
+  width: 90px;
+  height: 90px;
+  border: 2.5px dashed #ff9800;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  margin-left: 8px;
+}
+.product-add-upload-img-box:hover {
+  border-color: #ff5722;
+  box-shadow: 0 4px 16px 0 rgba(255,152,0,0.15);
+}
+.product-add-upload-img-box .upload-plus {
+  font-size: 2rem;
+  color: #ff9800;
+  line-height: 1;
+  margin-bottom: 2px;
+  display: block;
+  text-align: center;
+  width: 100%;
+}
 .upload-img-box {
   width: 70px;
   height: 70px;
@@ -71,6 +112,11 @@
   align-items: center;
   justify-content: center;
 }
+.btn-action-delete:hover, .btn-action-delete:focus {
+  background: #ff1744;
+  color: #fff;
+  box-shadow: 0 2px 8px 0 rgba(255,23,68,0.13);
+}
 .btn-color.color-active {
   border: 2.5px solid #1976d2 !important;
   box-shadow: 0 0 0 3px #90caf9;
@@ -79,7 +125,84 @@
   z-index: 2;
 }
 
-</style>
+.color-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.color-checkbox {
+  display: none;
+}
+
+.color-checkbox-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  margin-right: 8px;
+  position: relative;
+}
+
+.color-checkbox:checked + .color-checkbox-box {
+  border-color: #1976d2;
+}
+
+.size-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.size-checkbox {
+  display: none;
+}
+
+.size-checkbox-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 2px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  position: relative;
+  background: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.size-checkbox:checked + .size-checkbox-box {
+  border-color: #1976d2;
+}
+
+.product-add-td-action {
+  text-align: center;
+  vertical-align: middle;
+}
+.product-add-input-qty {
+  width: 60px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  border-radius: 8px;
+  border: 1.5px solid #eee;
+  color: #a34a1a;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1rem;
+  font-family: inherit;
+  box-shadow: none;
+  outline: none;
+  transition: border-color 0.18s;
+  display: block;
+}
+.product-add-input-qty:focus {
+  border-color: #ff9800;
+}
+    </style>
 </head>
 <body>
     <main class="d-flex flex-column p-3 w-100">
@@ -128,78 +251,205 @@
             </div>
         </div>
         <!-- Khung dưới: Bảng preview thông tin sản phẩm (hoặc bảng biến thể mẫu) -->
+        <!-- Card chọn màu và size ở giữa -->
+        <div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="d-flex align-items-center mb-2">
+          <label class="form-label fw-bold mb-0 me-2">Chọn màu sắc</label>
+          <button type="button" class="btn btn-outline-primary d-flex align-items-center justify-content-center ms-2" data-bs-toggle="modal" data-bs-target="#modalColorSelect" style="width: 40px; height: 30px; border-radius: 8px; font-size: 1.2rem;">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div id="selectedColors" class="d-flex flex-wrap gap-2"></div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex align-items-center mb-2">
+          <label class="form-label fw-bold mb-0 me-2">Chọn size</label>
+          <button type="button" class="btn btn-outline-primary d-flex align-items-center justify-content-center ms-2" data-bs-toggle="modal" data-bs-target="#modalSizeSelect" style="width: 40px; height: 30px; border-radius: 8px; font-size: 1.2rem;">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div id="selectedSizes" class="d-flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal chọn màu sắc -->
+<div class="modal fade" id="modalColorSelect" tabindex="-1" aria-labelledby="modalColorSelectLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalColorSelectLabel">Chọn màu sắc</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex flex-wrap gap-3">
+          <label class="color-checkbox-label">
+            <input type="checkbox" class="color-checkbox" value="#b39ddb" />
+            <span class="color-checkbox-box" style="background-color: #b39ddb; color: #222; min-width: 60px; height: 36px;"></span>
+          </label>
+          <label class="color-checkbox-label">
+            <input type="checkbox" class="color-checkbox" value="#00bcd4" />
+            <span class="color-checkbox-box" style="background-color: #00bcd4; color: #222; min-width: 60px; height: 36px;"></span>
+          </label>
+          <label class="color-checkbox-label">
+            <input type="checkbox" class="color-checkbox" value="#ffb300" />
+            <span class="color-checkbox-box" style="background-color: #ffb300; color: #222; min-width: 60px; height: 36px;"></span>
+          </label>
+          <label class="color-checkbox-label">
+            <input type="checkbox" class="color-checkbox" value="#222" />
+            <span class="color-checkbox-box" style="background-color: #222; color: #fff; min-width: 60px; height: 36px;"></span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnColorSelectDone" data-bs-dismiss="modal">Thêm</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal chọn size -->
+<div class="modal fade" id="modalSizeSelect" tabindex="-1" aria-labelledby="modalSizeSelectLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalSizeSelectLabel">Chọn size</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex flex-wrap gap-3">
+          <label class="size-checkbox-label">
+            <input type="checkbox" class="size-checkbox" value="S" />
+            <span class="size-checkbox-box" style="min-width: 60px; height: 36px;">S</span>
+          </label>
+          <label class="size-checkbox-label">
+            <input type="checkbox" class="size-checkbox" value="M" />
+            <span class="size-checkbox-box" style="min-width: 60px; height: 36px;">M</span>
+          </label>
+          <label class="size-checkbox-label">
+            <input type="checkbox" class="size-checkbox" value="L" />
+            <span class="size-checkbox-box" style="min-width: 60px; height: 36px;">L</span>
+          </label>
+          <label class="size-checkbox-label">
+            <input type="checkbox" class="size-checkbox" value="XL" />
+            <span class="size-checkbox-box" style="min-width: 60px; height: 36px;">XL</span>
+          </label>
+          <label class="size-checkbox-label">
+            <input type="checkbox" class="size-checkbox" value="XXL" />
+            <span class="size-checkbox-box" style="min-width: 60px; height: 36px;">XXL</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnSizeSelectDone" data-bs-dismiss="modal">Thêm</button>
+      </div>
+    </div>
+  </div>
+</div>
+        <!-- End Card chọn màu và size -->
         <div class="card flex-grow-1 d-flex flex-column">
             <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2" style="margin-top: 8px;">
                 <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách sản phẩm</h5>
             </div>
             <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
                 <div class="flex-grow-1 overflow-auto">
-                    <table class="table table-hover align-middle text-center mb-0">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="bg-primary bg-gradient text-white">
-    <tr>
-        <th class="text-center">#</th>
-        <th class="text-center">Tên sản phẩm</th>
-        <th class="text-center">Trạng thái</th>
-        <th class="text-center">Ảnh sản phẩm</th>
-        <th class="text-center">Hành động</th>
-    </tr>
+<tr>
+    <th class="text-center" style="width:40px;">
+      <input type="checkbox" id="selectAllRows" />
+    </th>
+    <th class="text-start ps-5">Tên sản phẩm</th>
+    <th class="text-center">Số lượng</th>
+    <th class="text-center">Hành động</th>
+    <th class="text-center">Ảnh sản phẩm</th>
+</tr>
 </thead>
 <tbody>
-    <tr>
-        <td><input type="checkbox" class="row-checkbox"></td>
-        <td>Áo thun nam basic</td>
-        <td><span class="badge bg-success">Đang bán</span></td>
-        <td>
-          <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" style="width:70px;height:70px;object-fit:cover;border-radius:12px;" />
-        </td>
-        <td>
-          <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" /></td>
-        <td>Áo thun basic</td>
-        <td><span class="badge bg-success">Đang bán</span></td>
-        <td>
-          <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" style="width:70px;height:70px;object-fit:cover;border-radius:12px;" />
-        </td>
-        <td>
-          <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" /></td>
-        <td>Áo polo cổ bẻ</td>
-        <td><span class="badge bg-secondary">Ngừng bán</span></td>
-        <td>
-          <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" style="width:70px;height:70px;object-fit:cover;border-radius:12px;" />
-        </td>
-        <td>
-          <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" /></td>
-        <td>Áo hoodie nỉ</td>
-        <td><span class="badge bg-success">Đang bán</span></td>
-        <td>
-          <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" style="width:70px;height:70px;object-fit:cover;border-radius:12px;" />
-        </td>
-        <td>
-          <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" /></td>
-        <td>Áo thun thể thao nam Flexline</td>
-        <td><span class="badge bg-success">Đang bán</span></td>
-        <td>
-          <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="variant-img" style="width:70px;height:70px;object-fit:cover;border-radius:12px;" />
-        </td>
-        <td>
-          <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
+<!-- Nhóm 1: Áo thun nam basic - Đen (3 size) -->
+<tr>
+    <td><input type="checkbox" class="row-checkbox"></td>
+    <td class="product-add-td-name ps-5">Áo thun nam basic - Đen - M</td>
+    <td>
+      <input type="number" class="product-add-input-qty" value="1" min="1" />
+    </td>
+    <td class="product-add-td-action">
+      <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    <td rowspan="3" style="vertical-align: middle;">
+      <div class="product-add-img-list">
+        <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="product-add-variant-img" />
+        <label class="product-add-upload-img-box">
+          <span class="upload-plus"><i class="fa-solid fa-plus"></i></span>
+          <input type="file" accept="image/*" style="display:none;" class="variant-upload-input" multiple />
+        </label>
+      </div>
+    </td>
+</tr>
+<tr>
+    <td><input type="checkbox" class="row-checkbox"></td>
+    <td class="product-add-td-name ps-5">Áo thun nam basic - Đen - L</td>
+    <td>
+      <input type="number" class="product-add-input-qty" value="1" min="1" />
+    </td>
+    <td class="product-add-td-action">
+      <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    <!-- Không có cột ảnh ở dòng này -->
+</tr>
+<tr>
+    <td><input type="checkbox" class="row-checkbox"></td>
+    <td class="product-add-td-name ps-5">Áo thun nam basic - Đen - XL</td>
+    <td>
+      <input type="number" class="product-add-input-qty" value="1" min="1" />
+    </td>
+    <td class="product-add-td-action">
+      <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    <!-- Không có cột ảnh ở dòng này -->
+</tr>
+<!-- Nhóm 2: Áo hoodie nỉ - Tím (1 size) -->
+<tr>
+    <td><input type="checkbox" class="row-checkbox"></td>
+    <td class="product-add-td-name ps-5">Áo hoodie nỉ - Tím - L</td>
+    <td>
+      <input type="number" class="product-add-input-qty" value="1" min="1" />
+    </td>
+    <td class="product-add-td-action">
+      <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    <td rowspan="1" style="vertical-align: middle;">
+      <div class="product-add-img-list">
+        <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="product-add-variant-img" />
+        <label class="product-add-upload-img-box">
+          <span class="upload-plus"><i class="fa-solid fa-plus"></i></span>
+          <input type="file" accept="image/*" style="display:none;" class="variant-upload-input" multiple />
+        </label>
+      </div>
+    </td>
+</tr>
+<!-- Nhóm 3: Áo hoodie nỉ - Xanh (1 size) -->
+<tr>
+    <td><input type="checkbox" class="row-checkbox"></td>
+    <td class="product-add-td-name ps-5">Áo hoodie nỉ - Xanh - S</td>
+    <td>
+      <input type="number" class="product-add-input-qty" value="1" min="1" />
+    </td>
+    <td class="product-add-td-action">
+      <button class="btn btn-action-delete" title="Xoá sản phẩm"><i class="fa-solid fa-trash"></i></button>
+    </td>
+    <td rowspan="1" style="vertical-align: middle;">
+      <div class="product-add-img-list">
+        <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg" alt="Ảnh sản phẩm" class="product-add-variant-img" />
+        <label class="product-add-upload-img-box">
+          <span class="upload-plus"><i class="fa-solid fa-plus"></i></span>
+          <input type="file" accept="image/*" style="display:none;" class="variant-upload-input" multiple />
+        </label>
+      </div>
+    </td>
+</tr>
                         </tbody>
                     </table>
                 </div>
@@ -242,5 +492,84 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Đã di chuyển toàn bộ style sang file product-add-management.css -->
+<script>
+// Hiển thị màu đã chọn ra ngoài
+function updateSelectedColors() {
+  const checked = document.querySelectorAll('#modalColorSelect .color-checkbox:checked');
+  const container = document.getElementById('selectedColors');
+  container.innerHTML = '';
+  checked.forEach(cb => {
+    const span = document.createElement('span');
+    span.className = 'color-checkbox-box';
+    span.style.backgroundColor = cb.value;
+    span.style.minWidth = '36px';
+    span.style.height = '24px';
+    span.style.display = 'inline-block';
+    span.style.marginRight = '4px';
+    container.appendChild(span);
+  });
+}
+document.getElementById('btnColorSelectDone').addEventListener('click', updateSelectedColors);
+// Hiển thị size đã chọn ra ngoài
+function updateSelectedSizes() {
+  const checked = document.querySelectorAll('#modalSizeSelect .size-checkbox:checked');
+  const container = document.getElementById('selectedSizes');
+  container.innerHTML = '';
+  checked.forEach(cb => {
+    const span = document.createElement('span');
+    span.className = 'size-checkbox-box';
+    span.textContent = cb.value;
+    span.style.minWidth = '36px';
+    span.style.height = '24px';
+    span.style.display = 'inline-flex';
+    span.style.alignItems = 'center';
+    span.style.justifyContent = 'center';
+    span.style.marginRight = '4px';
+    container.appendChild(span);
+  });
+}
+document.getElementById('btnSizeSelectDone').addEventListener('click', updateSelectedSizes);
+</script>
+<script>
+// Checkbox chọn tất cả
+const selectAll = document.getElementById('selectAllRows');
+const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+if (selectAll) {
+  selectAll.addEventListener('change', function() {
+    rowCheckboxes.forEach(cb => cb.checked = selectAll.checked);
+  });
+}
+</script>
+<script>
+// Xử lý upload nhiều ảnh, mỗi lần chọn sẽ thêm ảnh mới vào danh sách, không thay thế ảnh cũ
+function handleVariantImageUpload(row) {
+  const input = row.querySelector('.variant-upload-input');
+  const imgList = row.querySelector('.variant-img-list');
+  input.addEventListener('change', function(e) {
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.className = 'variant-img';
+        img.style.width = '70px';
+        img.style.height = '70px';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '12px';
+        img.style.marginRight = '2px';
+        imgList.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+    // reset input để lần sau chọn lại vẫn nhận file mới
+    input.value = '';
+  });
+}
+document.querySelectorAll('tr').forEach(row => {
+  if (row.querySelector('.variant-upload-input')) {
+    handleVariantImageUpload(row);
+  }
+});
+</script>
 </body>
 </html>
