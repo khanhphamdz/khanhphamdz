@@ -8,217 +8,202 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Arial', sans-serif;
-        }
 
+    <style>
+        /* CSS để chỉnh sửa giao diện timeline */
         .timeline-container {
+            width: 100%;
+            margin: 20px auto;
             position: relative;
-            margin: 50px 0;
-            overflow-x: auto;
-            padding: 20px 0;
+            padding: 30px; /* Tăng padding để tạo khoảng trống bên trong khung */
+            overflow: hidden;
+            border: 1px solid #ccc; /* Thêm viền để tạo khung */
+            border-radius: 8px; /* Bo góc khung */
+            background-color: #f9f9f9; /* Màu nền nhẹ cho khung */
         }
 
         .timeline-horizontal {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             position: relative;
-            min-width: 800px;
+            padding-top: 17px; /* Tăng khoảng trống phía trên để hình tròn ở trên thanh ngang */
         }
 
         .timeline-line {
             position: absolute;
-            top: 50%;
+            top: 90px; /* Điều chỉnh vị trí thanh ngang để nằm dưới hình tròn và trên chữ */
             left: 0;
-            height: 3px;
-            background-color: #e0e0e0;
-            width: 100%;
-            transform: translateY(-50%);
-            z-index: 1;
+            right: 0;
+            height: 4px;
+            background-color: #e0e0e0; /* Màu xám cho đường chưa hoàn thành */
+            z-index: 0;
         }
 
         .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
             height: 100%;
-            background-color: #2196F3;
-            width: 0%;
-            transition: width 0.8s ease;
-            border-radius: 3px;
+            background-color: #007bff; /* Màu xanh dương cho đường đã hoàn thành */
+            width: 0%; /* Sẽ được cập nhật bằng JavaScript nếu cần */
+            transition: width 0.5s ease-in-out;
         }
 
         .timeline-step {
-            position: relative;
-            z-index: 2;
+            flex: 1;
             text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
-        }
-
-        .timeline-step.visible {
-            opacity: 1;
-            transform: translateY(0);
+            position: relative;
+            z-index: 1;
         }
 
         .step-circle {
-            width: 60px;
-            height: 60px;
+            width: 60px; /* Tăng kích thước hình tròn */
+            height: 60px; /* Tăng kích thước hình tròn */
+            background-color: #e0e0e0; /* Màu xám mặc định */
+            color: #fff;
             border-radius: 50%;
-            margin: 0 auto 15px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 24px;
-            background: white;
-            border: 4px solid #e0e0e0;
-            color: #999;
-            transition: all 0.4s ease;
+            align-items: center;
+            margin: 0 auto 15px auto; /* Căn giữa và tăng khoảng trống dưới hình tròn */
+            font-size: 26px; /* Tăng kích thước icon/chữ trong hình tròn */
+            font-weight: bold;
+            border: 3px solid #fff;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
         }
 
         .step-circle.active {
-            border-color: #2196F3;
-            background-color: #2196F3;
-            color: white;
-            transform: scale(1.1);
+            background-color: #007bff; /* Màu xanh dương khi active */
+            border-color: #cce5ff; /* Viền sáng hơn */
         }
 
-        .step-circle.completed {
-            border-color: #4caf50;
-            background-color: #4caf50;
-            color: white;
+         .step-circle.completed {
+            background-color: #007bff; /* Màu xanh dương khi completed */
+            border-color: #cce5ff; /* Viền sáng hơn */
+            /* content: '✓'; */ /* Sẽ dùng JavaScript để thay đổi nội dung */
+            font-size: 33px; /* Tăng kích thước dấu tick */
+            padding-top: 3px; /* Chỉnh vị trí dấu tick */
         }
 
         .step-info {
-            max-width: 150px;
+            text-align: center;
         }
 
         .step-title {
-            font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: bold;
+            margin-bottom: 5px;
             color: #333;
-            margin-bottom: 8px;
-            line-height: 1.3;
+             font-size: 18px; /* Tăng kích thước chữ tiêu đề */
         }
 
         .step-date {
-            font-size: 0.8rem;
+            font-size: 14px; /* Tăng kích thước font cho ngày giờ */
             color: #666;
-            margin-bottom: 8px;
+             margin-bottom: 5px;
         }
 
         .step-status {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            display: inline-block;
-            font-weight: 500;
-        }
-
-        .status-completed {
-            background-color: #e8f5e8;
-            color: #2e7d32;
+            font-size: 15px; /* Tăng kích thước chữ trạng thái */
+            font-weight: bold;
         }
 
         .status-active {
-            background-color: #e3f2fd;
-            color: #1976d2;
+            color: #007bff; /* Màu xanh dương */
         }
 
         .status-pending {
-            background-color: #f5f5f5;
-            color: #999;
+            color: #666; /* Màu xám */
         }
 
-        .controls {
-            text-align: center;
-            margin-top: 40px;
+        .status-completed {
+             color: #28a745; /* Màu xanh lá */
         }
 
-        .btn {
-            background-color: #2196F3;
+        /* Điều chỉnh lại khoảng cách giữa các bước nếu cần */
+        .timeline-step:not(:last-child) {
+            margin-right: 0; /* Bỏ khoảng cách ngang nếu flex đã xử lý */
+        }
+
+         /* Style cho các bước chưa active/completed */
+         .timeline-step:not(.active):not(.completed) .step-circle {
+             background-color: #e9ecef; /* Màu nền nhạt hơn cho pending */
+             color: #495057; /* Màu chữ tối hơn */
+             border-color: #dee2e6;
+         }
+
+         /* Style cho nút Bước tiếp theo */
+        #nextBtn {
+            background-color: #007bff; /* Màu xanh dương */
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            margin: 0 10px;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
         }
 
-        .btn:hover {
-            background-color: #1976d2;
-            transform: translateY(-1px);
+        #nextBtn:hover {
+            background-color: #0056b3; /* Màu xanh đậm hơn khi hover */
         }
 
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        /* Style cho nút Đặt lại */
         .btn-reset {
-            background-color: #f44336;
+            background-color: #6c757d; /* Màu xám */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            margin-left: 15px; /* Khoảng cách với nút trước */
         }
 
         .btn-reset:hover {
-            background-color: #d32f2f;
+            background-color: #5a6268; /* Màu xám đậm hơn khi hover */
         }
 
-        .step-counter {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #666;
-            font-size: 0.9rem;
+        /* Style cho nút Xác nhận */
+        .btn-confirm {
+            background-color: #28a745; /* Màu xanh lá cây */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
         }
 
-        /* Animation for step appearance */
-        @keyframes stepAppear {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.8);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        .btn-confirm:hover {
+            background-color: #218838; /* Màu xanh lá cây đậm hơn khi hover */
         }
 
-        .timeline-step.animate {
-            animation: stepAppear 0.6s ease forwards;
+        /* Style cho nút Hủy */
+        .btn-cancel {
+            background-color: #dc3545; /* Màu đỏ */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            .timeline-horizontal {
-                min-width: 600px;
-            }
-
-            .step-circle {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-
-            .step-info {
-                max-width: 120px;
-            }
-
-            .step-title {
-                font-size: 0.85rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
+        .btn-cancel:hover {
+            background-color: #c82333; /* Màu đỏ đậm hơn khi hover */
         }
+
+        .info-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
     </style>
 </head>
 
@@ -294,77 +279,78 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="controls">
-            <button class="btn" id="nextBtn" onclick="nextStep()">Bước tiếp theo</button>
-            <button class="btn btn-reset" onclick="resetTimeline()">Đặt lại</button>
-        </div>
-    </div>
-
-
-    <!-- Order Information -->
-    <div class="info-card">
-        <h5>Thông tin đơn hàng: <span id="detailOrderId"></span></h5>
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Trạng thái:</strong> <span id="detailStatus"></span></p>
-                <p><strong>Loại:</strong> <span id="detailSource"></span></p>
-                <p><strong>Địa chỉ:</strong> <span id="detailAddress"></span></p>
-                <p><strong>Ghi chú:</strong> <span id="detailNote"></span></p>
+            <!-- Di chuyển nút Bước tiếp theo và Đặt lại vào đây -->
+             <div class="controls mt-4 "> <!-- Thêm class để căn giữa và khoảng cách -->
+                <button class="btn" id="nextBtn" onclick="nextStep()">Bước tiếp theo</button>
+                <button class="btn btn-reset" onclick="resetTimeline()">Đặt lại</button>
             </div>
-            <div class="col-md-6">
-                <p><strong>Tên khách hàng:</strong> <span id="detailCustomer"></span></p>
-                <p><strong>Số điện thoại:</strong> <span id="detailPhone"></span></p>
-                <p><strong>Thời gian đặt hàng:</strong> <span id="detailCreatedAt"></span></p>
+
+        </div>
+
+        <!-- Order Information -->
+        <div class="info-card p-4">
+            <h5 class="">Thông tin đơn hàng: <span id="detailOrderId"></span></h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Trạng thái:</strong> <span id="detailStatus"></span></p>
+                    <p><strong>Loại:</strong> <span id="detailSource"></span></p>
+                    <p><strong>Địa chỉ:</strong> <span id="detailAddress"></span></p>
+                    <p><strong>Ghi chú:</strong> <span id="detailNote"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Tên khách hàng:</strong> <span id="detailCustomer"></span></p>
+                    <p><strong>Số điện thoại:</strong> <span id="detailPhone"></span></p>
+                    <p><strong>Thời gian đặt hàng:</strong> <span id="detailCreatedAt"></span></p>
+                    <p><strong>Phương thức thanh toán:</strong> <span id="detailPaymentMethod"></span></p>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#editOrderModal">Thay
+                đổi</button>
+        </div>
+
+        <!-- Product List -->
+        <div class="card mt-4">
+            <div class="card-body ">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Danh sách sản phẩm</h5>
+                    <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#productModal"
+                        onclick="openAddProductModal()">+Thêm sản phẩm</button>
+                </div>
+                <table class="table table-hover product-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ảnh Sản Phẩm</th>
+                            <th>Thông tin sản phẩm</th>
+                            <th>Màu sắc</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderItems"></tbody>
+                </table>
             </div>
         </div>
-        <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#editOrderModal">Thay
-            đổi</button>
-    </div>
 
-    <!-- Product List -->
-    <div class="card mt-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Danh sách sản phẩm</h5>
-                <button class="btn btn-primary btn-custom" data-bs-toggle="modal" data-bs-target="#productModal"
-                    onclick="openAddProductModal()">+Thêm sản phẩm</button>
-            </div>
-            <table class="table table-hover product-table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Ảnh Sản Phẩm</th>
-                        <th>Thông tin sản phẩm</th>
-                        <th>Màu sắc</th>
-                        <th>Số lượng</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="orderItems"></tbody>
-            </table>
+        <!-- Summary -->
+        <div class="summary p-4 pt-2">
+            <p><strong>Tổng tiền hàng:</strong> <span id="summaryTotal"></span></p>
+            <p><strong>Phí vận chuyển:</strong> <span id="summaryShipping">0 VND</span></p>
+            <p><strong>Voucher giảm giá:</strong> <span id="summaryDiscount">0 VND</span></p>
+            <p><strong>Tổng tiền tạm:</strong> <span id="summaryTemp"></span></p>
+            <p><strong>Tổng tiền thanh toán:</strong> <span id="summaryFinal"></span></p>
         </div>
-    </div>
 
-    <!-- Summary -->
-    <div class="summary">
-        <p><strong>Tổng tiền hàng:</strong> <span id="summaryTotal"></span></p>
-        <p><strong>Phí vận chuyển:</strong> <span id="summaryShipping">0 VND</span></p>
-        <p><strong>Voucher giảm giá:</strong> <span id="summaryDiscount">0 VND</span></p>
-        <p><strong>Tổng tiền tạm:</strong> <span id="summaryTemp"></span></p>
-        <p><strong>Tổng tiền thanh toán:</strong> <span id="summaryFinal"></span></p>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="d-flex justify-content-center mt-4 gap-3">
-        <button class="btn btn-confirm btn-custom" onclick="confirmOrder()">Xác nhận</button>
-        <button class="btn btn-cancel btn-custom" onclick="cancelOrder()">Hủy</button>
-        <button class="btn btn-history btn-custom" data-bs-toggle="modal" data-bs-target="#historyModal">Lịch
-            sử</button>
-    </div>
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-center mt-4 gap-3">
+            <button class="btn btn-confirm btn-custom" onclick="confirmOrder()">Xác nhận</button>
+            <button class="btn btn-cancel btn-custom" onclick="cancelOrder()">Hủy</button>
+            <button class="btn btn-history btn-custom" data-bs-toggle="modal" data-bs-target="#historyModal">Lịch
+                sử</button>
+        </div>
     </div>
 
     <!-- Modal Thêm/Sửa sản phẩm -->
@@ -509,27 +495,123 @@
             document.getElementById('detailPhone').textContent = order.phone;
             document.getElementById('detailAddress').textContent = order.address;
             document.getElementById('detailCreatedAt').textContent = order.createdAt;
+            document.getElementById('detailPaymentMethod').textContent = 'Thanh toán khi nhận hàng';
             document.getElementById('detailNote').textContent = order.note || 'Không có';
 
             // Update timeline based on status
-            const steps = document.querySelectorAll('.timeline-step');
-            const lines = document.querySelectorAll('.timeline-line');
-            const labels = document.querySelectorAll('.timeline-label');
-            const statuses = ['cho-xac-nhan', 'dang-chuan-bi', 'dang-giao', 'hoan-tat'];
-            const currentIndex = statuses.indexOf(order.status);
+            const stepsElements = document.querySelectorAll('.timeline-step');
+            const progressLine = document.getElementById('progressLine');
+            const totalSteps = stepsElements.length; // Use stepsElements.length
 
-            steps.forEach((step, index) => {
-                step.classList.toggle('active', index <= currentIndex);
-            });
-            lines.forEach((line, index) => {
-                line.classList.toggle('active', index < currentIndex);
-            });
-            labels.forEach((label, index) => {
-                label.classList.toggle('active', index <= currentIndex);
-                if (index === currentIndex) {
-                    label.innerHTML = `${label.innerHTML.split('<br>')[0]}<br>${currentTime}`;
+            let currentStepIndex = -1; // Mặc định trước bước đầu tiên
+
+            // Ánh xạ trạng thái đơn hàng sang chỉ mục bước (0-4)
+            switch (order.status) {
+                case 'cho-xac-nhan':
+                    currentStepIndex = 0;
+                    break;
+                case 'dang-chuan-bi':
+                    currentStepIndex = 1;
+                    break;
+                case 'dang-giao':
+                    currentStepIndex = 3; // Ánh xạ đến bước 'Đang giao hàng'
+                    break;
+                 case 'hoan-tat':
+                    currentStepIndex = 4; // Ánh xạ đến bước 'Hoàn thành'
+                    break;
+                case 'da-huy':
+                    currentStepIndex = -2; // Chỉ thị trạng thái hủy
+                    break;
+                default:
+                    currentStepIndex = -1; // Mặc định
+            }
+
+             // Define original icons for each step (matches the steps array)
+            const originalIcons = ['📝', '✅', '📦', '🚚', '✨'];
+            const stepTitles = ['Chờ xác nhận', 'Xác nhận đơn', 'Chuẩn bị hàng', 'Đang giao hàng', 'Hoàn thành'];
+
+            // Cập nhật hiển thị từng bước và thanh tiến độ
+            stepsElements.forEach((stepElement, index) => {
+                const circle = stepElement.querySelector('.step-circle');
+                const statusDiv = stepElement.querySelector('.step-status');
+                const dateDiv = stepElement.querySelector('.step-date');
+                const titleDiv = stepElement.querySelector('.step-title');
+
+                // Reset classes
+                stepElement.classList.remove('active', 'completed', 'pending');
+                circle.classList.remove('active', 'completed', 'pending');
+                statusDiv.classList.remove('status-active', 'status-pending', 'status-completed');
+
+                // Thiết lập trạng thái dựa trên chỉ mục bước hiện tại
+                if (index < currentStepIndex) {
+                    // Bước đã hoàn thành
+                    stepElement.classList.add('completed');
+                    circle.classList.add('completed');
+                    circle.textContent = '✓'; // Hiển thị dấu tick
+                    statusDiv.classList.add('status-completed');
+                    statusDiv.textContent = 'Hoàn thành';
+                     // Hiển thị ngày giờ từ mảng steps gốc
+                     if (steps[index] && steps[index].date) {
+                        dateDiv.innerHTML = steps[index].date;
+                     } else {
+                         dateDiv.textContent = ''; // Fallback if date is missing in steps array
+                     }
+
+                } else if (index === currentStepIndex && currentStepIndex !== -2) {
+                    // Bước đang xử lý (và không phải trạng thái hủy)
+                    stepElement.classList.add('active');
+                    circle.classList.add('active');
+                     circle.textContent = originalIcons[index]; // Hiển thị icon gốc
+                     statusDiv.classList.add('status-active');
+                    statusDiv.textContent = 'Đang xử lý';
+                     // Hiển thị ngày giờ hiện tại
+                     dateDiv.innerHTML = currentTime; // Sử dụng currentTime làm tạm
+
+                } else {
+                    // Bước đang chờ xử lý hoặc đơn hàng đã hủy
+                    stepElement.classList.add('pending');
+                    circle.classList.add('pending');
+                     circle.textContent = originalIcons[index]; // Hiển thị icon gốc
+                    statusDiv.classList.add('status-pending');
+                    statusDiv.textContent = 'Chờ xử lý';
+                     dateDiv.textContent = ''; // Xóa ngày giờ cho bước chờ xử lý
                 }
+
+                 // Xử lý trạng thái hủy riêng
+                 if (currentStepIndex === -2) {
+                     stepElement.classList.remove('active', 'completed');
+                     stepElement.classList.add('pending');
+                     circle.classList.remove('active', 'completed');
+                     circle.classList.add('pending');
+                      circle.textContent = originalIcons[index];
+                     statusDiv.classList.remove('status-active', 'status-completed');
+                     statusDiv.classList.add('status-pending');
+                     statusDiv.textContent = 'Đã hủy';
+                     dateDiv.textContent = ''; // Xóa ngày giờ nếu hủy
+                 }
+
+                 // Cập nhật tiêu đề bước (đảm bảo khớp với mảng steps gốc)
+                 if (stepTitles[index]) {
+                     titleDiv.textContent = stepTitles[index];
+                 }
+
             });
+
+            // Cập nhật chiều rộng thanh tiến độ
+            let progressWidth = 0;
+            if (currentStepIndex !== -1 && currentStepIndex !== -2) {
+                 const segmentWidth = 100 / (totalSteps - 1);
+                 progressWidth = currentStepIndex * segmentWidth;
+                 if (currentStepIndex === totalSteps - 1) {
+                     progressWidth = 100;
+                 }
+            } else if (currentStepIndex === -1) {
+                 progressWidth = 0;
+            } else if (currentStepIndex === -2) {
+                 progressWidth = 0;
+            }
+
+            progressLine.style.width = Math.min(100, progressWidth) + '%';
 
             loadOrderItems();
             loadHistory();
@@ -689,6 +771,7 @@
             document.getElementById('editOrderModal').addEventListener('show.bs.modal', openEditOrderModal);
         };
     </script>
+    <!-- Re-add the second script block for manual timeline control -->
     <script>
         let currentStep = 0;
         const totalSteps = 5;
@@ -728,86 +811,126 @@
         }
 
         function updateStepCounter() {
-            document.getElementById('stepCounter').textContent = currentStep + 1;
+             // This function seems related to a counter not currently in HTML, maybe remove or adjust later
+            // document.getElementById('stepCounter').textContent = currentStep + 1;
         }
 
         function nextStep() {
             if (currentStep < totalSteps - 1) {
-                // Hoàn thành bước hiện tại
-                const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
-                const currentCircle = currentStepElement.querySelector('.step-circle');
-                const currentStatus = currentStepElement.querySelector('.step-status');
-
-                currentCircle.classList.remove('active');
-                currentCircle.classList.add('completed');
-                currentCircle.textContent = '✓';
-                currentStatus.className = 'step-status status-completed';
-                currentStatus.textContent = 'Hoàn thành';
-
-                // Chuyển sang bước tiếp theo
+                // Logic to update step appearance (classes, content) would go here
                 currentStep++;
-
-                // Hiển thị bước mới
-                const nextStepElement = document.querySelector(`[data-step="${currentStep}"]`);
-                nextStepElement.classList.add('visible', 'animate');
-
-                const nextCircle = nextStepElement.querySelector('.step-circle');
-                const nextStatus = nextStepElement.querySelector('.step-status');
-
-                nextCircle.classList.add('active');
-                nextStatus.className = 'step-status status-active';
-                nextStatus.textContent = currentStep === totalSteps - 1 ? 'Hoàn thành' : 'Đang xử lý';
-
-                // Cập nhật thanh tiến độ và counter
-                updateProgressLine();
-                updateStepCounter();
-
-                // Vô hiệu hóa nút nếu đã hoàn thành
-                if (currentStep === totalSteps - 1) {
-                    document.getElementById('nextBtn').disabled = true;
-                    document.getElementById('nextBtn').textContent = 'Đã hoàn thành';
-                }
+                // Update UI based on new currentStep
+                updateTimelineUI(); // Call a helper function to update UI
             }
         }
 
         function resetTimeline() {
             currentStep = 0;
-
-            // Reset tất cả các bước
-            document.querySelectorAll('.timeline-step').forEach((step, index) => {
-                const circle = step.querySelector('.step-circle');
-                const status = step.querySelector('.step-status');
-
-                if (index === 0) {
-                    // Bước đầu tiên
-                    step.classList.add('visible');
-                    step.classList.remove('animate');
-                    circle.className = 'step-circle active';
-                    circle.textContent = steps[index].icon;
-                    status.className = 'step-status status-active';
-                    status.textContent = 'Đang xử lý';
-                } else {
-                    // Các bước khác ẩn đi
-                    step.classList.remove('visible', 'animate');
-                    circle.className = 'step-circle';
-                    circle.textContent = steps[index].icon;
-                    status.className = 'step-status status-pending';
-                    status.textContent = 'Chờ xử lý';
-                }
-            });
-
-            // Reset thanh tiến độ và nút
-            updateProgressLine();
-            updateStepCounter();
-
-            const nextBtn = document.getElementById('nextBtn');
-            nextBtn.disabled = false;
-            nextBtn.textContent = 'Bước tiếp theo';
+            // Reset UI based on currentStep = 0
+            updateTimelineUI(); // Call a helper function to update UI
         }
 
-        // Khởi tạo timeline
-        updateProgressLine();
-        updateStepCounter();
+        // Helper function to update timeline UI based on currentStep
+        function updateTimelineUI() {
+            const stepsElements = document.querySelectorAll('.timeline-step');
+            stepsElements.forEach((stepElement, index) => {
+                const circle = stepElement.querySelector('.step-circle');
+                const statusDiv = stepElement.querySelector('.step-status');
+                const dateDiv = stepElement.querySelector('.step-date');
+                const titleDiv = stepElement.querySelector('.step-title');
+
+                // Reset classes and content
+                stepElement.classList.remove('active', 'completed', 'pending');
+                circle.classList.remove('active', 'completed', 'pending');
+                statusDiv.classList.remove('status-active', 'status-pending', 'status-completed');
+
+                // Update based on currentStep
+                if (index < currentStep) {
+                    // Step is completed
+                    stepElement.classList.add('completed');
+                    circle.classList.add('completed');
+                    circle.textContent = '✓'; // Checkmark icon
+                    statusDiv.classList.add('status-completed');
+                    statusDiv.textContent = 'Hoàn thành';
+                     // Display date from steps array
+                    dateDiv.innerHTML = steps[index].date;
+
+                } else if (index === currentStep) {
+                    // Step is active
+                    stepElement.classList.add('active');
+                    circle.classList.add('active');
+                    circle.textContent = steps[index].icon; // Original icon
+                    statusDiv.classList.add('status-active');
+                    statusDiv.textContent = 'Đang xử lý';
+                    // Display current time or relevant date
+                     dateDiv.innerHTML = currentTime; // Using currentTime as placeholder
+
+                } else {
+                    // Step is pending
+                    stepElement.classList.add('pending');
+                    circle.classList.add('pending');
+                     circle.textContent = steps[index].icon; // Original icon
+                    statusDiv.classList.add('status-pending');
+                    statusDiv.textContent = 'Chờ xử lý';
+                     dateDiv.textContent = ''; // No date for pending steps
+                 }
+            });
+
+            updateProgressLine();
+            // updateStepCounter(); // If you decide to add a counter
+        }
+
+        // Initialize timeline UI based on order status when page loads
+        function initializeTimelineFromOrderStatus() {
+             // Map order status to a step index
+            let orderStepIndex = -1; // Default before first step
+            switch (order.status) {
+                case 'cho-xac-nhan': orderStepIndex = 0; break;
+                case 'dang-chuan-bi': orderStepIndex = 1; break;
+                case 'dang-giao': orderStepIndex = 3; break; // Matches HTML steps
+                case 'hoan-tat': orderStepIndex = 4; break; // Matches HTML steps
+                case 'da-huy':
+                    // Handle cancelled state - maybe no progress shown or a specific indicator
+                    orderStepIndex = -2; // Indicator for cancelled
+                    break;
+                default: orderStepIndex = -1;
+            }
+
+            // Set currentStep for the manual timeline control (if still needed) or just update UI directly
+            // Let's directly update UI based on orderStepIndex
+            currentStep = orderStepIndex; // Sync with order status for initial load
+            updateTimelineUI();
+
+             // Disable nextBtn if order is completed or cancelled
+            if (order.status === 'hoan-tat' || order.status === 'da-huy') {
+                document.getElementById('nextBtn').disabled = true;
+                 if (order.status === 'hoan-tat') document.getElementById('nextBtn').textContent = 'Đã hoàn thành';
+                 if (order.status === 'da-huy') document.getElementById('nextBtn').textContent = 'Đã hủy';
+            }
+             // Hide reset button if order is completed or cancelled (optional)
+            if (order.status === 'hoan-tat' || order.status === 'da-huy') {
+                document.querySelector('.btn-reset').style.display = 'none';
+            }
+
+        }
+
+        // Modify the window.onload to call initializeTimelineFromOrderStatus
+        window.onload = () => {
+            loadOrderDetails();
+            document.getElementById('editOrderModal').addEventListener('show.bs.modal', openEditOrderModal);
+            initializeTimelineFromOrderStatus(); // Initialize timeline based on order status
+        };
+
+         // Add event listener to nextBtn to update order status (if needed)
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            // Logic here to update order status based on currentStep and then reload order details
+            // This requires backend integration, so for now, the button just advances the UI
+            // You would likely trigger an API call here to update the order status on the server.
+            console.log('Next Step clicked. Current step:', currentStep);
+             // After successful API call and status update, you would reload order details:
+             // loadOrderDetails();
+        });
+
     </script>
 </body>
 
