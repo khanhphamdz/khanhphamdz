@@ -57,26 +57,56 @@ public class HomeController {
 
     @GetMapping("/counter-sale")
     public String counter_sale() {
-        return "admin/counter-sales";
+        return "/admin/order/counter-sales";
     }
 
     @GetMapping("/admin/promotion-management")
     public String promotionManagement() {
-        return "admin/promotion-management";
+        return "/admin/product/promotion-management";
     }
 
     @GetMapping("/admin/refund-management")
     public String refundManagement() {
-        return "admin/refund-management";
+        return "/admin/product/refund-management";
     }
 
     @GetMapping("/order")
     public String order() {
-        return "/admin/order-management";
+        return "/admin/order/order-management";
     }
 
     @GetMapping("/employee")
     public String employee() {
-        return "/admin/employee-management";
+        return "/admin/account/employee-management";
+    }
+
+    @GetMapping("/product-management")
+    public String productManagement() {
+        return "/admin/product/product-management";
+    }
+
+    @GetMapping("/ass-product")
+    public String add_product() {
+        return "/admin/product/product-add-management";
+    }
+
+    @GetMapping("product-detail")
+    public String detail_product() {
+        return "/admin/product/product-detail-management";
+    }
+
+    @GetMapping("/customer-management")
+    public String customerManagement() {
+        return "/admin/account/customer-management";
+    }
+
+    @GetMapping("/admin/comment-manegement")
+    public String commentManagement() {
+        return "/admin/feedback-management";
+    }
+
+    @GetMapping("/admin/order-detail")
+    public String order_detail() {
+        return "/admin/order/order-detail";
     }
 }

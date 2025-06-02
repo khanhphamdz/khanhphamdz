@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi" th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tee Shirt Vibe - Quản lý phản hồi và đánh giá</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body class="bg-light">
+    <main class="container p-4">
+        <div class="page-header mb-4">
+            <div class="header-title d-flex align-items-center justify-content-center">
+                <!-- <i class="fa-solid fa-rotate-left fs-3 me-2"></i> -->
+                <div>
+                    <h3 class="p-0 m-0 text-center">Quản lý đánh giá</h3>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section mb-3">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select id="ratingFilter" class="form-select">
+                        <option value="all">Tất cả số sao</option>
+                        <option value="5">5 sao</option>
+                        <option value="4">4 sao</option>
+                        <option value="3">3 sao</option>
+                        <option value="2">2 sao</option>
+                        <option value="1">1 sao</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="Chưa xử lý">Chưa xử lý</option>
+                        <option value="Đã phản hồi">Đã phản hồi</option>
+                        <option value="Đã xử lý">Đã xử lý</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" id="dateFilter" class="form-control" placeholder="Chọn ngày">
+                </div>
+                <div class="col-md-3">
+                    <button onclick="applyFilters()" class="btn btn-primary w-100">Lọc</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-feedback table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Khách hàng</th>
+                        <th>Sản phẩm</th>
+                        <th>Số sao</th>
+                        <th>Nội dung</th>
+                        <th>Phản hồi</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Nguyễn Văn A</td>
+                        <td>Áo thun nam</td>
+                        <td>5 sao</td>
+                        <td>Chất lượng tuyệt vời, rất thoải mái!</td>
+                        <td>Cảm ơn bạn đã đánh giá tích cực!</td>
+                        <td>24/05/2025</td>
+                        <td>Đã phản hồi</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" onclick="openReplyModal(1)">Phản hồi</button>
+                            <button type="button" class="btn btn-danger" onclick="openDeleteModal(1)">Xóa</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Trần Thị B</td>
+                        <td>Áo polo</td>
+                        <td>3 sao</td>
+                        <td>Áo đẹp nhưng hơi chật ở vai.</td>
+                        <td></td>
+                        <td>23/05/2025</td>
+                        <td>Chưa xử lý</td>
+                        <td >
+                            <button type="button" class="btn btn-primary" onclick="openReplyModal(2)">Phản hồi</button>
+                            <button type="button" class="btn btn-danger" onclick="openDeleteModal(2)">Xóa</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Lê Văn C</td>
+                        <td>Áo sơ mi</td>
+                        <td>1 sao</td>
+                        <td>Sản phẩm lỗi đường may.</td>
+                        <td></td>
+                        <td>22/05/2025</td>
+                        <td>Chưa xử lý</td>
+                        <td >
+                            <button type="button" class="btn btn-primary" onclick="openReplyModal(3)">Phản hồi</button>
+                            <button type="button" class="btn btn-danger" onclick="openDeleteModal(3)">Xóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="modal fade" id="replyModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content p-3">
+                    <h3 class="mb-4">Phản hồi đánh giá</h3>
+                    <div class="mb-3">
+                        <p class="mb-2">Khách hàng: <span id="customerName" class="fw-bold"></span></p>
+                        <p class="mb-2">Sản phẩm: <span id="productName" class="fw-bold"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="4" placeholder="Nhập phản hồi của bạn"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-select">
+                            <option>Chọn trạng thái</option>
+                            <option>Đã phản hồi</option>
+                            <option>Đã xử lý</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button class="btn btn-primary" onclick="saveResponse()">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content p-3">
+                    <h3 class="mb-4">Xóa đánh giá</h3>
+                    <p class="mb-4">Bạn có chắc chắn muốn xóa đánh giá của khách hàng <span id="deleteCustomerName" class="fw-bold"></span> về sản phẩm <span id="deleteProductName" class="fw-bold"></span>?</p>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button class="btn btn-danger">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Lưu trữ dữ liệu phản hồi
+        let feedbackData = [
+            {
+                id: 1,
+                customer: 'Nguyễn Văn A',
+                product: 'Áo thun nam',
+                rating: '5 sao',
+                content: 'Chất lượng tuyệt vời, rất thoải mái!',
+                response: 'Cảm ơn bạn đã đánh giá tích cực!',
+                date: '24/05/2025',
+                status: 'Đã phản hồi'
+            },
+            {
+                id: 2,
+                customer: 'Trần Thị B',
+                product: 'Áo polo',
+                rating: '3 sao',
+                content: 'Áo đẹp nhưng hơi chật ở vai.',
+                response: '',
+                date: '23/05/2025',
+                status: 'Chưa xử lý'
+            },
+            {
+                id: 3,
+                customer: 'Lê Văn C',
+                product: 'Áo sơ mi',
+                rating: '1 sao',
+                content: 'Sản phẩm lỗi đường may.',
+                response: '',
+                date: '22/05/2025',
+                status: 'Chưa xử lý'
+            }
+        ];
+
+        let currentFeedbackId = null;
+        let filteredData = [...feedbackData];
+
+        function applyFilters() {
+            const ratingFilter = document.getElementById('ratingFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            filteredData = feedbackData.filter(feedback => {
+                // Lọc theo số sao
+                if (ratingFilter !== 'all') {
+                    const feedbackRating = feedback.rating.split(' ')[0];
+                    if (feedbackRating !== ratingFilter) return false;
+                }
+
+                // Lọc theo trạng thái
+                if (statusFilter !== 'all' && feedback.status !== statusFilter) {
+                    return false;
+                }
+
+                // Lọc theo ngày
+                if (dateFilter) {
+                    const feedbackDate = feedback.date.split('/').reverse().join('-');
+                    if (feedbackDate !== dateFilter) return false;
+                }
+
+                return true;
+            });
+
+            updateTable();
+        }
+
+        function updateTable() {
+            const tbody = document.querySelector('table-feedback');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(feedback => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${feedback.id}</td>
+                    <td>${feedback.customer}</td>
+                    <td>${feedback.product}</td>
+                    <td>${feedback.rating}</td>
+                    <td>${feedback.content}</td>
+                    <td>${feedback.response || ''}</td>
+                    <td>${feedback.date}</td>
+                    <td>${feedback.status}</td>
+                        <td >
+                            <button data-bs-toggle="modal" data-bs-target="#replyModal" type="button" class="btn btn-primary" onclick="openReplyModal(${feedback.id})">Phản hồi</button>
+                            <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" class="btn btn-danger" onclick="openDeleteModal(${feedback.id})">Xóa</button>
+                        </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function openReplyModal(id) {
+            currentFeedbackId = id;
+            const feedback = feedbackData.find(f => f.id === id);
+            document.getElementById('customerName').innerText = feedback.customer;
+            document.getElementById('productName').innerText = feedback.product;
+            document.querySelector('#replyModal textarea').value = feedback.response || '';
+            document.querySelector('#replyModal select').value = feedback.status;
+        }
+
+        function saveResponse() {
+            const response = document.querySelector('#replyModal textarea').value;
+            const status = document.querySelector('#replyModal select').value;
+            
+            if (!response.trim()) {
+                alert('Vui lòng nhập nội dung phản hồi!');
+                return;
+            }
+
+            if (status === 'Chọn trạng thái') {
+                alert('Vui lòng chọn trạng thái!');
+                return;
+            }
+            
+            if (currentFeedbackId) {
+                const feedback = feedbackData.find(f => f.id === currentFeedbackId);
+                if (feedback) {
+                    feedback.response = response;
+                    feedback.status = status;
+                    updateTable();
+                    alert('Đã lưu phản hồi thành công!');
+                }
+            }
+            
+        }
+
+        function openDeleteModal(id) {
+            currentFeedbackId = id;
+            const feedback = feedbackData.find(f => f.id === id);
+            document.getElementById('deleteModal').style.display = 'flex';
+            document.getElementById('deleteCustomerName').innerText = feedback.customer;
+            document.getElementById('deleteProductName').innerText = feedback.product;
+        }
+
+
+        // Khởi tạo bảng khi trang được tải
+        document.addEventListener('DOMContentLoaded', updateTable);
+    </script>
+</body>
+</html>

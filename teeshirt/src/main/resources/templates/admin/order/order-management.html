@@ -1,4 +1,4 @@
-c<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
 
 <head>
@@ -12,9 +12,15 @@ c<!DOCTYPE html>
 
 <body>
     <!-- Main Content -->
-    <main class="d-flex flex-column p-3 w-100">
-        <!-- Header -->
-        <h3 class="fw-bold text-center mb-3">Quản lý đơn hàng</h3>
+    <main class="p-3 w-100">
+        <div class="page-header mb-4">
+            <div class="header-title d-flex align-items-center justify-content-center">
+                <!-- <i class="fa-solid fa-rotate-left fs-3 me-2"></i> -->
+                <div>
+                    <h3 class="p-0 m-0">Quản lý đơn hàng</h3>
+                </div>
+            </div>
+        </div>
         <!-- Card bộ lọc tìm kiếm -->
         <div class="card mb-4">
             <div class="card-body">
@@ -255,8 +261,7 @@ c<!DOCTYPE html>
                         <td>${order.totalAmount.toLocaleString()} VNĐ</td>
                         <td>
                             <button class="btn btn-sm btn-info btn-action" onclick="openOrderDetail('${order.id}')">Xem</button>
-                            <button class="btn btn-sm btn-warning btn-action" onclick="updateOrderStatus('${order.id}')">Cập nhật</button>
-                            ${order.status !== 'da-huy' ? '<button class="btn btn-sm btn-danger btn-action" onclick="openCancelOrder(\'' + order.id + '\')">Hủy</button>' : ''}
+                            <a href="/admin/order-detail" class="btn btn-sm btn-warning btn-action">Cập nhật</a>
                         </td>
                     </tr>
                 `;

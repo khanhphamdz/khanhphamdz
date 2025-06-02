@@ -1,0 +1,179 @@
+
+/* Style riêng cho trang product-add-management */
+.product-add-img-list {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.product-add-variant-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.product-add-upload-img-box {
+  width: 90px;
+  height: 90px;
+  border: 2.5px dashed #ff9800;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  margin-left: 8px;
+}
+
+.product-add-upload-img-box:hover {
+  border-color: #ff5722;
+  box-shadow: 0 4px 16px 0 rgba(255, 152, 0, 0.15);
+}
+
+.product-add-upload-img-box .upload-plus {
+  font-size: 2rem;
+  color: #ff9800;
+  line-height: 1;
+  margin-bottom: 2px;
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+.upload-img-box {
+  width: 70px;
+  height: 70px;
+  border: 2.5px dashed #ff9800;
+  border-radius: 12px;
+  background: #fff8f0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* căn giữa ngang */
+  justify-content: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(255, 152, 0, 0.07);
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.upload-img-box:hover {
+  border-color: #ff5722;
+  box-shadow: 0 4px 16px 0 rgba(255, 152, 0, 0.15);
+}
+
+.upload-img-box .upload-plus,
+.upload-img-box .upload-label {
+  text-align: center;
+  /* căn giữa chữ và dấu cộng */
+  width: 100%;
+}
+
+.upload-img-box .upload-plus {
+  font-size: 2rem;
+  color: #ff9800;
+  line-height: 1;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.upload-img-box .upload-label {
+  font-size: 0.95rem;
+  color: #ff9800;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  display: block;
+}
+.btn-color.color-active {
+  border: 2.5px solid #1976d2 !important;
+  box-shadow: 0 0 0 3px #90caf9;
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+
+.color-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.color-checkbox {
+  display: none;
+}
+
+.color-checkbox-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  margin-right: 8px;
+  position: relative;
+}
+
+.color-checkbox:checked+.color-checkbox-box {
+  border-color: #1976d2;
+}
+
+.size-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.size-checkbox {
+  display: none;
+}
+
+.size-checkbox-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 2px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  position: relative;
+  background: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.size-checkbox:checked+.size-checkbox-box {
+  border-color: #1976d2;
+}
+
+.product-add-td-action {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.product-add-input-qty {
+  width: 60px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  border-radius: 8px;
+  border: 1.5px solid #eee;
+  color: #a34a1a;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1rem;
+  font-family: inherit;
+  box-shadow: none;
+  outline: none;
+  transition: border-color 0.18s;
+  display: block;
+}
+
+.product-add-input-qty:focus {
+  border-color: #ff9800;
+}
