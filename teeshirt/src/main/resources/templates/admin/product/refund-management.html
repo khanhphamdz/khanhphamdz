@@ -91,11 +91,45 @@
                                     <td>24/05/2024</td>
                                     <td>Sản phẩm không đúng mẫu</td>
                                     <td>350,000 VNĐ</td>
-                                    <td><span class="status-badge status-pending">Chờ xử lý</span></td>
+                                    <td>
+                                        <span class="status-badge status-pending">Chờ xử lý</span>
+                                        <small class="d-block text-muted">Đã chờ 2 ngày</small>
+                                    </td>
                                     <td class="action-buttons">
                                         <button class="btn btn-info" title="Xem chi tiết" data-bs-toggle="modal"
                                             data-bs-target="#viewRefundModal">
                                             <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-primary" title="Liên hệ khách hàng" data-bs-toggle="modal"
+                                            data-bs-target="#contactCustomerModal">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        <button class="btn btn-success" title="Duyệt" data-bs-toggle="modal"
+                                            data-bs-target="#approveRefundModal">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-danger" title="Từ chối" data-bs-toggle="modal"
+                                            data-bs-target="#rejectRefundModal">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD002</td>
+                                    <td>Trần Thị B</td>
+                                    <td>23/05/2024</td>
+                                    <td>Sản phẩm bị lỗi</td>
+                                    <td>450,000 VNĐ</td>
+                                    <td>
+                                        <span class="status-badge status-contacting">Đang liên hệ</span>
+                                        <small class="d-block text-muted">Đã chờ 3 ngày</small>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-primary" title="Liên hệ khách hàng">
+                                            <i class="fas fa-phone"></i>
                                         </button>
                                         <button class="btn btn-success" title="Duyệt">
                                             <i class="fas fa-check"></i>
@@ -105,7 +139,63 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <!-- Thêm các dòng khác tương tự -->
+                                <tr>
+                                    <td>#ORD003</td>
+                                    <td>Lê Văn C</td>
+                                    <td>22/05/2024</td>
+                                    <td>Không vừa size</td>
+                                    <td>250,000 VNĐ</td>
+                                    <td>
+                                        <span class="status-badge status-approved">Đã duyệt</span>
+                                        <small class="d-block text-muted">Đã xử lý</small>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-secondary" title="Đã xử lý" disabled>
+                                            <i class="fas fa-check-double"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD004</td>
+                                    <td>Phạm Thị D</td>
+                                    <td>21/05/2024</td>
+                                    <td>Sản phẩm bị hỏng</td>
+                                    <td>550,000 VNĐ</td>
+                                    <td>
+                                        <span class="status-badge status-rejected">Từ chối</span>
+                                        <small class="d-block text-muted">Quá thời hạn</small>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-secondary" title="Đã từ chối" disabled>
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD005</td>
+                                    <td>Hoàng Văn E</td>
+                                    <td>20/05/2024</td>
+                                    <td>Không đúng màu sắc</td>
+                                    <td>750,000 VNĐ</td>
+                                    <td>
+                                        <span class="status-badge status-completed">Hoàn tất</span>
+                                        <small class="d-block text-muted">Đã hoàn tiền</small>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-info" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-secondary" title="Đã hoàn tất" disabled>
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -132,7 +222,106 @@
             </nav>
         </div>
 
-        <!-- View Refund Modal -->
+        <!-- Contact Customer Modal -->
+        <div class="modal fade" id="contactCustomerModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-phone me-2"></i>Liên hệ khách hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Phương thức liên hệ</label>
+                            <select class="form-select">
+                                <option value="phone">Điện thoại</option>
+                                <option value="email">Email</option>
+                                <option value="zalo">Zalo</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung liên hệ</label>
+                            <textarea class="form-control" rows="4" placeholder="Nhập nội dung cần trao đổi với khách hàng..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú nội bộ</label>
+                            <textarea class="form-control" rows="2" placeholder="Ghi chú cho nhân viên khác..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary">Gửi liên hệ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approve Refund Modal -->
+        <div class="modal fade" id="approveRefundModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Xác nhận duyệt trả hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Phương thức hoàn tiền</label>
+                            <select class="form-select">
+                                <option value="bank">Chuyển khoản ngân hàng</option>
+                                <option value="wallet">Ví điện tử</option>
+                                <option value="credit">Tín dụng mua hàng</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số tiền hoàn trả</label>
+                            <input type="number" class="form-control" value="350000" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea class="form-control" rows="3" placeholder="Nhập ghi chú về việc duyệt trả hàng..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-success">Xác nhận duyệt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Refund Modal -->
+        <div class="modal fade" id="rejectRefundModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Xác nhận từ chối trả hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Lý do từ chối</label>
+                            <select class="form-select">
+                                <option value="timeout">Quá thời hạn trả hàng</option>
+                                <option value="damaged">Sản phẩm đã bị hư hỏng</option>
+                                <option value="used">Sản phẩm đã được sử dụng</option>
+                                <option value="other">Lý do khác</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Chi tiết lý do</label>
+                            <textarea class="form-control" rows="3" placeholder="Nhập chi tiết lý do từ chối..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-danger">Xác nhận từ chối</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update View Refund Modal -->
         <div class="modal fade" id="viewRefundModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -195,21 +384,478 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Add Processing History -->
+                        <div class="mb-4">
+                            <h6 class="mb-2"><i class="fas fa-history me-2"></i>Lịch sử xử lý</h6>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Yêu cầu được tạo</h6>
+                                        <p class="mb-0 text-muted">24/05/2024 14:30</p>
+                                        <p class="mb-0">Khách hàng gửi yêu cầu trả hàng</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-info"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Đã liên hệ khách hàng</h6>
+                                        <p class="mb-0 text-muted">25/05/2024 09:15</p>
+                                        <p class="mb-0">Nhân viên: Nguyễn Văn B</p>
+                                        <p class="mb-0">Nội dung: Xác nhận thông tin trả hàng</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Customer Communication History -->
+                        <div class="mb-4">
+                            <h6 class="mb-2"><i class="fas fa-comments me-2"></i>Lịch sử liên hệ</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Thời gian</th>
+                                            <th>Phương thức</th>
+                                            <th>Nội dung</th>
+                                            <th>Người thực hiện</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>25/05/2024 09:15</td>
+                                            <td>Điện thoại</td>
+                                            <td>Xác nhận thông tin trả hàng</td>
+                                            <td>Nguyễn Văn B</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Đóng
                         </button>
-                        <button type="button" class="btn btn-success">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactCustomerModal">
+                            <i class="fas fa-phone me-2"></i>Liên hệ khách hàng
+                        </button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveRefundModal">
                             <i class="fas fa-check me-2"></i>Duyệt yêu cầu
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRefundModal">
                             <i class="fas fa-times me-2"></i>Từ chối
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            /* Timeline styles */
+            .timeline {
+                position: relative;
+                padding: 20px 0;
+            }
+            .timeline-item {
+                position: relative;
+                padding-left: 40px;
+                margin-bottom: 20px;
+            }
+            .timeline-marker {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+            }
+            .timeline-content {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 4px;
+            }
+            .timeline-item:before {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 15px;
+                height: calc(100% + 5px);
+                width: 1px;
+                background: #dee2e6;
+            }
+            .timeline-item:last-child:before {
+                display: none;
+            }
+            /* Thêm style cho các trạng thái */
+            .status-badge {
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+            .status-pending {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+            .status-contacting {
+                background-color: #cce5ff;
+                color: #004085;
+            }
+            .status-approved {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            .status-rejected {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            .status-completed {
+                background-color: #e2e3e5;
+                color: #383d41;
+            }
+            .action-buttons .btn {
+                padding: 0.25rem 0.5rem;
+                margin: 0 2px;
+            }
+            .action-buttons .btn:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+            }
+        </style>
+
+        <script>
+            // Xử lý hiển thị thời gian chờ
+            function updateWaitingTime() {
+                const waitingElements = document.querySelectorAll('.status-pending + small');
+                waitingElements.forEach(element => {
+                    const startDate = new Date(element.getAttribute('data-start'));
+                    const now = new Date();
+                    const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+                    element.textContent = `Đã chờ ${diffDays} ngày`;
+                });
+            }
+
+            // Cập nhật thời gian chờ mỗi phút
+            setInterval(updateWaitingTime, 60000);
+            updateWaitingTime();
+
+            // Quản lý trạng thái và quy trình xử lý
+            const RefundStatus = {
+                PENDING: 'pending',
+                CONTACTING: 'contacting',
+                INSPECTING: 'inspecting',
+                APPROVED: 'approved',
+                REJECTED: 'rejected',
+                COMPLETED: 'completed',
+                CANCELLED: 'cancelled'
+            };
+
+            const RefundPriority = {
+                HIGH: 'high',
+                MEDIUM: 'medium',
+                LOW: 'low'
+            };
+
+            // Tính toán độ ưu tiên dựa trên các yếu tố
+            function calculatePriority(refund) {
+                let score = 0;
+                
+                // Yếu tố thời gian
+                const waitingDays = Math.floor((new Date() - new Date(refund.createdAt)) / (1000 * 60 * 60 * 24));
+                if (waitingDays > 3) score += 3;
+                else if (waitingDays > 1) score += 2;
+                else score += 1;
+
+                // Yếu tố giá trị đơn hàng
+                if (refund.amount > 1000000) score += 3;
+                else if (refund.amount > 500000) score += 2;
+                else score += 1;
+
+                // Yếu tố loại khách hàng
+                if (refund.customerType === 'VIP') score += 3;
+                else if (refund.customerType === 'REGULAR') score += 2;
+                else score += 1;
+
+                // Xác định độ ưu tiên
+                if (score >= 7) return RefundPriority.HIGH;
+                if (score >= 4) return RefundPriority.MEDIUM;
+                return RefundPriority.LOW;
+            }
+
+            // Kiểm tra điều kiện trả hàng
+            function validateRefundConditions(refund) {
+                const conditions = {
+                    isValid: true,
+                    messages: []
+                };
+
+                // Kiểm tra thời hạn trả hàng (7 ngày)
+                const refundDeadline = new Date(refund.orderDate);
+                refundDeadline.setDate(refundDeadline.getDate() + 7);
+                if (new Date() > refundDeadline) {
+                    conditions.isValid = false;
+                    conditions.messages.push('Đã quá thời hạn trả hàng (7 ngày)');
+                }
+
+                // Kiểm tra tình trạng sản phẩm
+                if (refund.productCondition === 'damaged') {
+                    conditions.isValid = false;
+                    conditions.messages.push('Sản phẩm đã bị hư hỏng');
+                }
+
+                // Kiểm tra số lần trả hàng của khách
+                if (refund.customerRefundCount >= 3) {
+                    conditions.messages.push('Cảnh báo: Khách hàng đã trả hàng nhiều lần');
+                }
+
+                return conditions;
+            }
+
+            // Xử lý hoàn tiền
+            async function processRefund(refundId, amount, method) {
+                try {
+                    // Kiểm tra số dư
+                    const balance = await checkBalance();
+                    if (balance < amount) {
+                        throw new Error('Số dư không đủ để hoàn tiền');
+                    }
+
+                    // Xử lý hoàn tiền theo phương thức
+                    switch(method) {
+                        case 'bank':
+                            await processBankRefund(refundId, amount);
+                            break;
+                        case 'wallet':
+                            await processWalletRefund(refundId, amount);
+                            break;
+                        case 'credit':
+                            await processCreditRefund(refundId, amount);
+                            break;
+                    }
+
+                    // Cập nhật trạng thái
+                    await updateRefundStatus(refundId, RefundStatus.COMPLETED);
+                    
+                    // Gửi thông báo
+                    await sendRefundNotification(refundId);
+
+                    return true;
+                } catch (error) {
+                    console.error('Lỗi xử lý hoàn tiền:', error);
+                    return false;
+                }
+            }
+
+            // Quản lý lịch sử liên hệ
+            class CommunicationManager {
+                constructor() {
+                    this.history = [];
+                }
+
+                addCommunication(communication) {
+                    this.history.push({
+                        ...communication,
+                        timestamp: new Date(),
+                        id: this.generateId()
+                    });
+                }
+
+                getCommunicationHistory(refundId) {
+                    return this.history.filter(c => c.refundId === refundId);
+                }
+
+                generateId() {
+                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                }
+            }
+
+            // Quản lý quy trình xử lý
+            class RefundWorkflow {
+                constructor() {
+                    this.currentStep = 0;
+                    this.steps = [
+                        { name: 'Tiếp nhận', status: RefundStatus.PENDING },
+                        { name: 'Liên hệ', status: RefundStatus.CONTACTING },
+                        { name: 'Kiểm tra', status: RefundStatus.INSPECTING },
+                        { name: 'Duyệt/Từ chối', status: null },
+                        { name: 'Hoàn tiền', status: RefundStatus.COMPLETED }
+                    ];
+                }
+
+                nextStep() {
+                    if (this.currentStep < this.steps.length - 1) {
+                        this.currentStep++;
+                        return this.steps[this.currentStep];
+                    }
+                    return null;
+                }
+
+                previousStep() {
+                    if (this.currentStep > 0) {
+                        this.currentStep--;
+                        return this.steps[this.currentStep];
+                    }
+                    return null;
+                }
+
+                getCurrentStep() {
+                    return this.steps[this.currentStep];
+                }
+            }
+
+            // Khởi tạo các đối tượng quản lý
+            const communicationManager = new CommunicationManager();
+            const refundWorkflow = new RefundWorkflow();
+
+            // Xử lý sự kiện form
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    // Validate form
+                    if (!validateForm(form)) {
+                        return;
+                    }
+
+                    // Xử lý dữ liệu
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+
+                    // Thực hiện hành động tương ứng
+                    switch(form.id) {
+                        case 'contactForm':
+                            await handleCustomerContact(data);
+                            break;
+                        case 'approveForm':
+                            await handleRefundApproval(data);
+                            break;
+                        case 'rejectForm':
+                            await handleRefundRejection(data);
+                            break;
+                    }
+                });
+            });
+
+            // Validate form
+            function validateForm(form) {
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                return isValid;
+            }
+
+            // Xử lý liên hệ khách hàng
+            async function handleCustomerContact(data) {
+                try {
+                    // Lưu lịch sử liên hệ
+                    communicationManager.addCommunication({
+                        refundId: data.refundId,
+                        method: data.contactMethod,
+                        content: data.content,
+                        notes: data.internalNotes
+                    });
+
+                    // Cập nhật trạng thái
+                    await updateRefundStatus(data.refundId, RefundStatus.CONTACTING);
+
+                    // Gửi thông báo
+                    await sendNotification({
+                        type: 'contact',
+                        refundId: data.refundId,
+                        message: 'Đã liên hệ với khách hàng'
+                    });
+
+                    return true;
+                } catch (error) {
+                    console.error('Lỗi xử lý liên hệ:', error);
+                    return false;
+                }
+            }
+
+            // Xử lý duyệt trả hàng
+            async function handleRefundApproval(data) {
+                try {
+                    // Kiểm tra điều kiện
+                    const conditions = validateRefundConditions(data);
+                    if (!conditions.isValid) {
+                        throw new Error(conditions.messages.join(', '));
+                    }
+
+                    // Xử lý hoàn tiền
+                    const success = await processRefund(
+                        data.refundId,
+                        data.amount,
+                        data.refundMethod
+                    );
+
+                    if (success) {
+                        // Cập nhật trạng thái
+                        await updateRefundStatus(data.refundId, RefundStatus.APPROVED);
+                        
+                        // Gửi thông báo
+                        await sendNotification({
+                            type: 'approval',
+                            refundId: data.refundId,
+                            message: 'Đã duyệt yêu cầu trả hàng'
+                        });
+                    }
+
+                    return success;
+                } catch (error) {
+                    console.error('Lỗi xử lý duyệt:', error);
+                    return false;
+                }
+            }
+
+            // Xử lý từ chối trả hàng
+            async function handleRefundRejection(data) {
+                try {
+                    // Lưu lý do từ chối
+                    await saveRejectionReason(data.refundId, {
+                        reason: data.reason,
+                        details: data.details
+                    });
+
+                    // Cập nhật trạng thái
+                    await updateRefundStatus(data.refundId, RefundStatus.REJECTED);
+
+                    // Gửi thông báo
+                    await sendNotification({
+                        type: 'rejection',
+                        refundId: data.refundId,
+                        message: 'Đã từ chối yêu cầu trả hàng'
+                    });
+
+                    return true;
+                } catch (error) {
+                    console.error('Lỗi xử lý từ chối:', error);
+                    return false;
+                }
+            }
+
+            // Gửi thông báo
+            async function sendNotification(notification) {
+                // Implement notification logic here
+                console.log('Sending notification:', notification);
+            }
+
+            // Cập nhật trạng thái
+            async function updateRefundStatus(refundId, status) {
+                // Implement status update logic here
+                console.log('Updating status:', { refundId, status });
+            }
+        </script>
     </main>
 </body>
 
