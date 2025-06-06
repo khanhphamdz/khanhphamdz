@@ -415,12 +415,18 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-sort-numeric-up me-2"></i>Số lượng sản phẩm tối thiểu</label>
-                                    <input type="number" class="form-control" min="1" value="1">
-                                </div>
-                                <div class="col-md-6">
                                     <label class="form-label"><i class="fas fa-tag me-2"></i>Điều kiện áp dụng</label>
                                     <input type="number" class="form-control" placeholder="Đơn hàng từ...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label"><i class="fas fa-users me-2"></i>Giới hạn đối tượng</label>
+                                    <select class="form-select">
+                                        <option value="all">Tất cả khách hàng</option>
+                                        <option value="new">Khách hàng mới (dưới 3 tháng)</option>
+                                        <option value="regular">Khách hàng thường xuyên (3-12 tháng)</option>
+                                        <option value="loyal">Khách hàng thân thiết (trên 12 tháng)</option>
+                                        <option value="vip">Khách hàng VIP (tổng chi tiêu > 5 triệu)</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -432,21 +438,6 @@
                                 <div class="col-md-6">
                                     <label class="form-label"><i class="fas fa-calendar-times me-2"></i>Ngày kết thúc</label>
                                     <input type="date" class="form-control" required>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-user-clock me-2"></i>Số lần sử dụng tối đa/khách hàng</label>
-                                    <input type="number" class="form-control" min="1" value="1">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-users me-2"></i>Giới hạn đối tượng</label>
-                                    <select class="form-select">
-                                        <option value="all">Tất cả khách hàng</option>
-                                        <option value="new">Chỉ khách hàng mới</option>
-                                        <option value="vip">Chỉ khách hàng VIP</option>
-                                    </select>
                                 </div>
                             </div>
 
