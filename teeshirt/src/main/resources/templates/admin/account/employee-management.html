@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
-    
-
     <!-- Main Content -->
     <main class="d-flex flex-column p-3 w-100">
         <div class="page-header mb-4">
@@ -51,7 +49,7 @@
                             <label for="filterBirthdayFrom" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
                                 <i class="fa-solid fa-calendar me-2"></i>Ngày sinh:
                             </label>
-                            <input type="date" class="form-control rounded-pill text-center flatpickr" id="filterBirthdayFrom"
+                            <input type="date" class="form-control rounded-pill text-center" id="filterBirthdayFrom"
                                    placeholder="Chọn ngày" style="max-width: 160px;">
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
@@ -63,7 +61,7 @@
             </div>
         </div>
         <!-- Thông tin bảng nhân viên -->
-        <div class="card flex-grow-1 d-flex flex-column">
+        <div class="card flexaccordions flex-grow-1 d-flex flex-column">
             <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
                  style="margin-top: 8px;">
                 <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách nhân viên</h5>
@@ -100,12 +98,8 @@
                                 <td>Hoạt động</td>
                                 <td style="min-width:120px;">
                                     <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEmployeeModal">
+                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
                                         <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#editEmployeeModal">
-                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
                                             data-bs-target="#deleteEmployeeModal">
@@ -124,12 +118,28 @@
                                 <td>Hoạt động</td>
                                 <td style="min-width:120px;">
                                     <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEmployeeModal">
+                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#editEmployeeModal">
-                                        <i class="fas fa-edit"></i>
+                                    <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
+                                            data-bs-target="#deleteEmployeeModal">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">NV003</td>
+                                <td>Trần Thị B</td>
+                                <td>0987654321</td>
+                                <td>098765432109</td>
+                                <td>02/02/1995</td>
+                                <td>Nữ</td>
+                                <td>Nhân viên</td>
+                                <td>Nghỉ việc</td>
+                                <td style="min-width:120px;">
+                                    <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
+                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
                                             data-bs-target="#deleteEmployeeModal">
@@ -151,7 +161,7 @@
                 </nav>
             </div>
         </div>
-        <!-- Modal Thêm/Sửa nhân viên -->
+        <!-- Modal Thêm nhân viên -->
         <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel"
              aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -180,21 +190,14 @@
                                         class="fa-solid fa-envelope me-2"></i>Email</label>
                                 <input type="email" class="form-control rounded-pill" id="employeeEmail" required>
                             </div>
-            
                             <div class="mb-3 position-relative">
                                 <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
                                 <input type="password" class="form-control rounded-pill" id="employeePassword" required>
                                 <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
                             </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Xác nhận mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="employeeConfirmPassword" required>
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
-                            </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
                                 <select class="form-select rounded-pill" id="employeeRole" required>
-                                    <option value="Admin">Admin</option>
                                     <option value="Quản lý">Quản lý</option>
                                     <option value="Nhân viên">Nhân viên</option>
                                 </select>
@@ -202,7 +205,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
                                     sinh</label>
-                                <input type="date" class="form-control rounded-pill flatpickr" id="employeeBirthday"
+                                <input type="date" class="form-control rounded-pill" id="employeeBirthday"
                                        placeholder="Chọn ngày sinh" required>
                             </div>
                             <div class="mb-3">
@@ -234,12 +237,12 @@
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="employeeStatus"
                                                id="statusActive" value="active" required>
-                                        <label class="form-check-label" for="statusActive"><i class="fa-solid fa-check-circle"></i>Hoạt động</label>
+                                        <label class="form-check-label" for="statusActive">Hoạt động</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="employeeStatus"
                                                id="statusInactive" value="inactive" required>
-                                        <label class="form-check-label inactive" for="statusInactive"><i class="fa-solid fa-times-circle"></i>Nghỉ việc</label>
+                                        <label class="form-check-label" for="statusInactive">Nghỉ việc</label>
                                     </div>
                                 </div>
                             </div>
@@ -253,66 +256,58 @@
                 </div>
             </div>
         </div>
-        <!-- Modal Sửa nhân viên -->
-        <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel"
-             aria-hidden="true">
+        <!-- Modal Xem và Sửa nhân viên -->
+        <div class="modal fade" id="viewEditEmployeeModal" tabindex="-1" aria-labelledby="viewEditEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content rounded-4 p-2 p-md-4">
                     <div class="modal-header border-0 pb-0">
-                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="editEmployeeModalLabel"
-                            style="font-size:2.2rem;">Sửa thông tin nhân viên</h2>
+                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="viewEditEmployeeModalLabel" style="font-size:2.2rem;">
+                            Xem và chỉnh sửa nhân viên
+                        </h2>
                         <button type="button" class="btn-close position-absolute end-0 me-3 mt-3"
                                 data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
                     </div>
-                    <form id="editEmployeeForm">
+                    <form id="viewEditEmployeeForm">
                         <div class="modal-body pt-2">
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và
-                                    tên</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeName" required>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Mã nhân viên</label>
+                                <input type="text" class="form-control rounded-pill" id="editEmployeeId" readonly value="NV001">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện
-                                    thoại</label>
-                                <input type="tel" class="form-control rounded-pill" id="editEmployeePhone"
-                                       pattern="[0-9]{10}" required>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
+                                <input type="text" class="form-control rounded-pill" id="editEmployeeName" required value="Nguyễn Văn A">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i
-                                        class="fa-solid fa-envelope me-2"></i>Email</label>
-                                <input type="email" class="form-control rounded-pill" id="editEmployeeEmail" required>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
+                                <input type="tel" class="form-control rounded-pill" id="editEmployeePhone" pattern="[0-9]{10}" required value="0901234567">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                                <input type="email" class="form-control rounded-pill" id="editEmployeeEmail" required value="nguyenvana@example.com">
                             </div>
                             <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu mới</label>
-                                <input type="password" class="form-control rounded-pill" id="editEmployeePassword">
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Xác nhận mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="editEmployeeConfirmPassword">
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
+                                <input type="password" class="form-control rounded-pill" id="editEmployeePassword" value="12345678">
                                 <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
                                 <select class="form-select rounded-pill" id="editEmployeeRole" required>
-                                    <option value="Admin">Admin</option>
                                     <option value="Quản lý">Quản lý</option>
-                                    <option value="Nhân viên">Nhân viên</option>
+                                    <option value="Nhân viên" selected>Nhân viên</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
-                                    sinh</label>
-                                <input type="text" class="form-control rounded-pill flatpickr" id="editEmployeeBirthday"
-                                       placeholder="Chọn ngày sinh" required>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
+                                <input type="text" class="form-control rounded-pill" id="editEmployeeBirthday"
+                                       placeholder="Chọn ngày sinh" required value="01/01/1990">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới
-                                    tính</label>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
                                 <div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="editEmployeeGender"
-                                               id="editGenderMale" value="Nam" required>
+                                               id="editGenderMale" value="Nam" required checked>
                                         <label class="form-check-label" for="editGenderMale">Nam</label>
                                     </div>
                                     <div class="form-check form-check-inline">
@@ -323,91 +318,32 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước
-                                    công dân (CCCD)</label>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
                                 <input type="text" class="form-control rounded-pill" id="editEmployeeCCCD"
-                                       pattern="[0-9]{12}" required>
+                                       pattern="[0-9]{12}" required value="012345678901">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng
-                                    thái</label>
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng thái</label>
                                 <div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="editEmployeeStatus"
-                                               id="editStatusActive" value="active" required>
-                                        <label class="form-check-label" for="editStatusActive"><i class="fa-solid fa-check-circle"></i>Hoạt động</label>
+                                               id="editStatusActive" value="active" required checked>
+                                        <label class="form-check-label" for="editStatusActive">Hoạt động</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="editEmployeeStatus"
                                                id="editStatusInactive" value="inactive" required>
-                                        <label class="form-check-label inactive" for="editStatusInactive"><i class="fa-solid fa-times-circle"></i>Nghỉ việc</label>
+                                        <label class="form-check-label" for="editStatusInactive">Nghỉ việc</label>
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" id="editEmployeeId">
                         </div>
-                        <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
-                            <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100"
-                                    style="max-width:400px;">LƯU THAY ĐỔI <i
-                                    class="fa-solid fa-arrow-right ms-2"></i></button>
+                        <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center gap-3">
+                            <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100" style="max-width:400px;">
+                                LƯU THAY ĐỔI <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-        <!-- Modal Xem chi tiết nhân viên -->
-        <div class="modal fade" id="viewEmployeeModal" tabindex="-1" aria-labelledby="viewEmployeeModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-4 p-2 p-md-4">
-                    <div class="modal-header border-0 pb-0">
-                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="viewEmployeeModalLabel"
-                            style="font-size:2.2rem;">Chi tiết nhân viên</h2>
-                        <button type="button" class="btn-close position-absolute end-0 me-3 mt-3"
-                                data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
-                    </div>
-                    <div class="modal-body pt-2">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Mã nhân viên</label>
-                            <p class="form-control-static" id="viewEmployeeId">NV001</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
-                            <p class="form-control-static" id="viewEmployeeName">Nguyễn Văn A</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
-                            <p class="form-control-static" id="viewEmployeePhone">0901234567</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
-                            <p class="form-control-static" id="viewEmployeeEmail">nguyenvana@example.com</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
-                            <p class="form-control-static" id="viewEmployeeRole">Admin</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
-                            <p class="form-control-static" id="viewEmployeeBirthday">01/01/1990</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
-                            <p class="form-control-static" id="viewEmployeeGender">Nam</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
-                            <p class="form-control-static" id="viewEmployeeCCCD">012345678901</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng thái</label>
-                            <p class="form-control-static" id="viewEmployeeStatus">Hoạt động</p>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary rounded-pill px-5 py-2 fs-5 fw-bold w-100"
-                                style="max-width:400px;" data-bs-dismiss="modal">ĐÓNG <i class="fa-solid fa-times ms-2"></i></button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -432,8 +368,6 @@
             </div>
         </div>
     </main>
-    <!-- Bootstrap JS and Popper.js (required for modal functionality) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- Flatpickr JS -->
+    
 </body>
+</html>

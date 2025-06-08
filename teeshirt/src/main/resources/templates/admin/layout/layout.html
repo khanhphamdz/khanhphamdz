@@ -632,13 +632,7 @@
         });
 
         // Dữ liệu giả lập cho nhân viên
-        let employees = [
-            { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', cccd: '012345678901', birthday: '1990-01-01', gender: 'Nam', status: 'active', joinDate: '01/05/2025', role: 'Nhân viên' },
-            { id: 2, name: 'Trần Thị B', phone: '0912345678', cccd: '012345678902', birthday: '1992-02-02', gender: 'Nữ', status: 'active', joinDate: '10/05/2025', role: 'Quản lý' },
-            { id: 3, name: 'Lê Văn C', phone: '0923456789', cccd: '012345678903', birthday: '1995-03-03', gender: 'Nam', status: 'inactive', joinDate: '15/05/2025', role: 'Nhân viên' },
-            { id: 4, name: 'Phạm Thị D', phone: '0934567890', cccd: '012345678904', birthday: '1998-04-04', gender: 'Nữ', status: 'active', joinDate: '20/05/2025', role: 'Nhân viên' },
-            { id: 5, name: 'Hoàng Văn E', phone: '0945678901', cccd: '012345678905', birthday: '1988-05-05', gender: 'Nam', status: 'inactive', joinDate: '22/05/2025', role: 'Quản lý' }
-        ];
+        
 
         // Tải bảng danh sách nhân viên
         function loadEmployees(filteredEmployees = employees) {
@@ -1742,6 +1736,191 @@
       </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
+
+    <!-- quản lý nhân viên-->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initialize Flatpickr for date inputs
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            maxDate: "today"
+        });
+
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', () => {
+                const input = icon.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Dữ liệu nhân viên mẫu
+        let  employees = [
+            {
+                id: 'NV001',
+                name: 'Nguyễn Văn A',
+                phone: '0901234567',
+                cccd: '012345678901',
+                birthday: '01/01/1990',
+                gender: 'Nam',
+                role: 'Admin',
+                status: 'Hoạt động',
+                email: 'nguyenvana@example.com'
+            },
+            {
+                id: 'NV002',
+                name: 'luc minh c',
+                phone: '45678907',
+                cccd: '0123567891',
+                birthday: '01/01/1990',
+                gender: 'Nam',
+                role: 'Nhân viên',
+                status: 'Hoạt động',
+                email: 'lucminhc@example.com'
+            },
+            {
+                id: 'NV003',
+                name: 'Trần Thị B',
+                phone: '0987654321',
+                cccd: '098765432109',
+                birthday: '02/02/1995',
+                gender: 'Nữ',
+                role: 'Nhân viên',
+                status: 'Nghỉ việc',
+                email: 'tranthib@example.com'
+            }
+        ];
+
+        // Lấy các phần tử DOM
+        const filterStatus = document.getElementById('filterStatus');
+        const filterName = document.getElementById('filterName');
+        const filterBirthdayFrom = document.getElementById('filterBirthdayFrom');
+        const searchButton = document.querySelector('.btn-primary');
+        const resetButton = document.querySelector('.btn-danger');
+        const employeeTableBody = document.getElementById('employeeTable');
+
+        // Hàm hiển thị danh sách nhân viên
+        function renderEmployees(employeeList) {
+            employeeTableBody.innerHTML = '';
+            if (employeeList.length === 0) {
+                employeeTableBody.innerHTML = '<tr><td colspan="9" class="text-center">Không tìm thấy nhân viên</td></tr>';
+                return;
+            }
+            employeeList.forEach(employee => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="text-center">${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.phone}</td>
+                    <td>${employee.cccd}</td>
+                    <td>${employee.birthday}</td>
+                    <td>${employee.gender}</td>
+                    <td>${employee.role}</td>
+                    <td>${employee.status}</td>
+                    <td style="min-width:120px;">
+                        <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
+                                data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
+                                data-bs-target="#deleteEmployeeModal">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                employeeTableBody.appendChild(row);
+            });
+        }
+
+        // Xử lý sự kiện nhấn nút Tìm kiếm
+        searchButton.addEventListener('click', () => {
+            const selectedStatus = filterStatus.value;
+            const searchText = filterName.value.toLowerCase();
+            const birthdayFrom = filterBirthdayFrom.value;
+
+            let filteredEmployees = employees;
+
+            // Lọc theo trạng thái
+            if (selectedStatus) {
+                filteredEmployees = filteredEmployees.filter(employee => 
+                    selectedStatus === 'active' ? employee.status === 'Hoạt động' : 
+                    selectedStatus === 'inactive' ? employee.status === 'Nghỉ việc' : 
+                    true
+                );
+            }
+
+            // Lọc theo tên/số điện thoại/email
+            if (searchText) {
+                filteredEmployees = filteredEmployees.filter(employee =>
+                    employee.name.toLowerCase().includes(searchText) ||
+                    employee.phone.includes(searchText) ||
+                    employee.email.toLowerCase().includes(searchText)
+                );
+            }
+
+            // Lọc theo ngày sinh
+            if (birthdayFrom) {
+                const selectedDate = new Date(birthdayFrom);
+                filteredEmployees = filteredEmployees.filter(employee => {
+                    const [day, month, year] = employee.birthday.split('/');
+                    const employeeDate = new Date(`${year}-${month}-${day}`);
+                    return employeeDate >= selectedDate;
+                });
+            }
+
+            renderEmployees(filteredEmployees);
+        });
+
+        // Xử lý sự kiện nhấn nút Làm mới bộ lọc
+        resetButton.addEventListener('click', () => {
+            filterStatus.value = '';
+            filterName.value = '';
+            filterBirthdayFrom.value = '';
+            renderEmployees(employees);
+        });
+
+        // Populate view/edit modal with data from table
+        document.querySelectorAll('[data-bs-target="#viewEditEmployeeModal"]').forEach(button => {
+            button.addEventListener('click', () => {
+                const row = button.closest('tr');
+                const id = row.cells[0].textContent;
+                const name = row.cells[1].textContent;
+                const phone = row.cells[2].textContent;
+                const cccd = row.cells[3].textContent;
+                const birthday = row.cells[4].textContent;
+                const gender = row.cells[5].textContent;
+                const role = row.cells[6].textContent;
+                const status = row.cells[7].textContent;
+
+                // Populate edit mode
+                document.getElementById('editEmployeeId').value = id;
+                document.getElementById('editEmployeeName').value = name;
+                document.getElementById('editEmployeePhone').value = phone;
+                document.getElementById('editEmployeeCCCD').value = cccd;
+                document.getElementById('editEmployeeBirthday').value = birthday.split('/').reverse().join('-');
+                document.getElementById('editEmployeeEmail').value = `${name.toLowerCase().replace(/\s/g, '')}@example.com`;
+                document.getElementById('editEmployeeRole').value = role;
+                document.querySelector(`input[name="editEmployeeGender"][value="${gender}"]`).checked = true;
+                document.querySelector(`input[name="editEmployeeStatus"][value="${status === 'Hoạt động' ? 'active' : 'inactive'}"]`).checked = true;
+            });
+        });
+
+        // Khởi tạo bảng khi tải trang
+        renderEmployees(employees);
+    </script>
+ 
 </body>
 
 </html>
