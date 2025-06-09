@@ -11,211 +11,156 @@
 </head>
 
 <body>
-    <main class="d-flex flex-column p-3 w-100">
-        <div class="page-header mb-4">
-            <div class="header-title d-flex align-items-center justify-content-center">
-                <!-- <i class="fa-solid fa-rotate-left fs-3 me-2"></i> -->
-                <div>
-                    <h4 class="p-0 m-0">Quản lý sản phẩm</h4>
+    <main class="product-manage-page p-4">
+        <div class="page-header">
+            <h3 class="page-title mb-4">Quản lý sản phẩm</h3>
+            <span class="me-3">Tất cả (1)</span>
+            <a href="/add-product"  class="btn btn-success">Thêm sản phẩm</a>
+        </div>
+        <div class="page-content mt-4">
+            <div class="row">
+                <div class="filter col-8 d-flex align-items-center gap-3">
+                    <select name="select-category" id="select-category" class="form-select">
+                        <option value="">Chọn danh mục</option>
+                        <option value="ao-thun">Áo thun (10)</option>
+                        <option value="ao-thun-co-tron">--Áo thun cổ tròn (5)</option>
+                        <option value="ao-thun-dai-tay">--Áo thun dài tay (5)</option>
+                        <option value="ao-so-mi">Áo sơ mi (1)</option>
+                        <option value="ao-ba-lo">Áo ba lỗ (4)</option>
+                        <option value="ao-hoodie">Áo hoodie (5)</option>
+                    </select>
+                    <select name="select-product-type" id="select-product-type" class="form-select">
+                        <option value="">Lọc theo loại sản phẩm</option>
+                        <option value="basic-product">Sản phẩm đơn giản</option>
+                        <option value="product-have-variants">Sản phẩm có biến thể</option>
+                    </select>
+                    <select name="select-stuck-status" id="select-stuck-status" class="form-select">
+                        <option value="">Lọc theo trạng thái kho</option>
+                        <option value="in-stock">Còn hàng</option>
+                        <option value="out-of-stock">Hết hàng</option>
+                        <option value="low-stock">Hàng sắp hết</option>
+                    </select>
+                    <select name="select-sort" id="select-sort" class="form-select">
+                        <option value="">Sắp xếp</option>
+                        <option value="name-asc">Tên A-Z</option>
+                        <option value="name-desc">Tên Z-A</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="date-asc">Ngày tạo cũ nhất</option>
+                        <option value="date-desc">Ngày tạo mới nhất</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-primary text-dark" id="btn-filter">Lọc</button>
+                </div>
+                <div class="search col-2 ms-auto d-flex align-items-center gap-3">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." id="search-product">
+                    <button type="button" class="btn btn-primary" id="btn-search"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ảnh</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Danh mục</th>
+                        <th scope="col">Trạng thái kho</th>
+                        <th scope="col">Ngày tạo</th>
+                        <th scope="col">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    <!-- Dữ liệu sản phẩm sẽ được thêm vào đây bằng JavaScript -->
+                </tbody>
+            </table>
         </div>
-        <!-- Card bộ lọc tìm kiếm -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form class="row flex-column g-3 align-items-end">
-                    <div class="col">
-                        <div class="row g-3">
-                            <div class="col d-flex flex-column align-items-center">
-                                <div class="form-group w-100 d-flex align-items-center">
-                                    <label for="filterProduct" class="form-label fw-semibold mb-0 me-2"
-                                        style="min-width:90px;">Tìm kiếm:</label>
-                                    <input type="text" class="form-control rounded-pill px-3" id="filterProduct"
-                                        placeholder="Tìm tên, mã sản phẩm...">
-                                </div>
-                                <div class="form-group w-100 mt-3 d-flex align-items-center">
-                                    <label for="filterCategory" class="form-label fw-semibold mb-0 me-2"
-                                        style="min-width:90px;">Danh mục:</label>
-                                    <select class="form-select rounded-pill px-3" id="filterCategory">
-                                        <option value="">Tất cả</option>
-                                        <option value="Áo thun">Áo thun</option>
-                                        <option value="Áo polo">Áo polo</option>
-                                        <option value="Áo khoác">Áo khoác</option>
-                                        <option value="Áo hoodie">Áo hoodie</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col d-flex flex-column align-items-center">
-                                <div class="form-group w-100 d-flex align-items-center">
-                                    <label for="filterStatus" class="form-label fw-semibold mb-0 me-2"
-                                        style="min-width:90px;">Trạng thái:</label>
-                                    <select class="form-select rounded-pill px-3" id="filterStatus">
-                                        <option value="">Tất cả</option>
-                                    </select>
-                                </div>
-                                <div class="form-group mt-3 w-100 d-flex align-items-center">
-                                    <label class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">Khoảng
-                                        giá:</label>
-                                    <div class="d-flex align-items-center w-100 justify-content-center gap-2">
-                                        <input type="number" class="form-control w-25 rounded-pill px-3" id="priceFrom"
-                                            placeholder="Từ" min="0">
-                                        <span>-</span>
-                                        <input type="number" class="form-control w-25 rounded-pill px-3" id="priceTo"
-                                            placeholder="Đến" min="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col d-flex mt-4 align-items-center justify-content-center gap-3">
-                        <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold">Tìm kiếm</button>
-                        <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold">Làm mới bộ lọc</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Thông tin bảng sản phẩm -->
-        <div class="card flex-grow-1 d-flex flex-column">
-            <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
-                style="margin-top: 8px;">
-                <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách sản phẩm</h5>
-                <a href="/ass-product" class="btn btn-primary rounded-pill fw-bold px-3 py-1" style="font-size: 1rem;">
-                    <i class="fa-solid fa-plus me-2"></i>Thêm sản phẩm
-                </a>
-            </div>
-            <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
-                <div class="flex-grow-1 overflow-auto">
-                    <table class="table table-hover align-middle text-center mb-0">
-                        <thead class="bg-primary bg-gradient text-white">
-                            <tr>
-                                <th class="text-center" style="width:40px;">#</th>
-                                <th class="text-center">Mã sản phẩm</th>
-                                <th class="text-center">Tên sản phẩm</th>
-                                <th class="text-center">Danh mục</th>
-                                <th class="text-center">Tổng tồn kho</th>
-                                <th class="text-center">Giá</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTable">
-                            <tr>
-                                <td class="text-center">3</td>
-                                <td class="text-center">SP003</td>
-                                <td>Áo khoác đại bàng</td>
-                                <td>Áo khoác</td>
-                                <td>50</td>
-                                <td>150.000đ</td>
-                                <td><span class="badge bg-secondary">Ngừng bán</span></td>
-                                <td>
-                                    <button class="btn btn-info me-1" data-bs-toggle="modal"
-                                        data-bs-target="#productDetailModal" title="Xem chi tiết"><i
-                                            class="fa-solid fa-eye"></i></button>
-                                    <a href="/product-detail" class="btn btn-warning me-1" title="Chỉnh sửa"><i
-                                            class="fas fa-edit"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Pagination -->
-                <nav class="mt-4 mb-2">
-                    <ul class="pagination justify-content-center mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <!-- Modal Chi tiết sản phẩm -->
-        <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="productDetailModalLabel">Chi tiết sản phẩm</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row flex-column">
-                            <div class="col d-flex flex-column">
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex flex-column">
-                                        <p><strong>Mã sản phẩm:</strong> <span id="productCode">SP003</span></p>
-                                        <p><strong>Tên sản phẩm:</strong> <span id="productName">Áo khoác đại
-                                                bàng</span></p>
-                                        <p><strong>Danh mục:</strong> <span id="productCategory">Áo khoác</span></p>
-                                        <p><strong>Giá:</strong> <span id="productPrice">150.000đ</span></p>
-                                    </div>
-                                    <div class="d-flex flex-column">
-                                        <p><strong>Trạng thái:</strong> <span id="productStatus"
-                                                class="badge bg-secondary">Ngừng bán</span></p>
-                                        <p><strong>Tổng tồn kho:</strong> <span id="productStock">50</span></p>
-                                        <p><strong>Tổng số biến thể:</strong> <span id="productVariantsCount">2</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <p><strong>Mô tả:</strong> <span id="productDescription">Áo khoác thời trang với thiết
-                                        kế mạnh mẽ, phù hợp cho mùa đông.</span></p>
-                            </div>
-                            <div class="col">
-                                <h6 class="fw-bold">Danh sách biến thể</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover text-center">
-                                        <thead class="bg-light">
-                                            <tr>
-                                                <th>Hình ảnh</th>
-                                                <th>Tên biến thể</th>
-                                                <th>Màu sắc</th>
-                                                <th>Số lượng</th>
-                                                <th>Trạng thái</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="variantTable">
-                                            <tr>
-                                                <td>
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                </td>
-                                                <td>Áo khoác đại bàng - L</td>
-                                                <td>Đen</td>
-                                                <td>30</td>
-                                                <td><span class="badge bg-success">Đang bán</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                    <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                                        alt="Variant Image" style="width: 50px; height: 50px;">
-                                                </td>
-                                                <td>Áo khoác đại bàng - XL</td>
-                                                <td>Xám</td>
-                                                <td>20</td>
-                                                <td><span class="badge bg-secondary">Ngừng bán</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary rounded-pill"
-                            data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <script>
+            // Dữ liệu mẫu sản phẩm
+            const products = [
+                {
+                    id: 1,
+                    name: 'Áo thun cổ tròn',
+                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
+                    price: 150000,
+                    category: 'Áo thun',
+                    stockStatus: 'Còn hàng',
+                    createdAt: '2023-10-01'
+                },
+                {
+                    id: 2,
+                    name: 'Áo sơ mi nam',
+                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
+                    price: 250000,
+                    category: 'Áo sơ mi',
+                    stockStatus: 'Còn hàng',
+                    createdAt: '2023-10-02'
+                },
+                {
+                    id: 3,
+                    name: 'Áo ba lỗ thể thao',
+                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
+                    price: 120000,
+                    category: 'Áo ba lỗ',
+                    stockStatus: 'Hết hàng',
+                    createdAt: '2023-10-03'
+                },
+                {
+                    id: 4,
+                    name: 'Áo hoodie mùa đông',
+                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
+                    price: 350000,
+                    category: 'Áo hoodie',
+                    stockStatus: 'Còn hàng',
+                    createdAt: '2023-10-04'
+                }
+            ];
+            function displayProducts() {
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = ''; // Xóa nội dung cũ
+    
+                products.forEach((product, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <th>${index + 1}</th>
+                        <th><img src="${product.imageUrl}" alt="${product.name}" style="max-width: 70px;"></th>
+                        <td>${product.name}</td>
+                        <td>${product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                        <td>${product.category}</td>
+                        <td>${product.stockStatus}</td>
+                        <td>${new Date(product.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <a href="/product-detail" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                        </td>
+                    `;
+                    productList.appendChild(row);
+                });
+            }
+            displayProducts();
+            document.getElementById('btn-search').addEventListener('click', () => {
+                const searchQuery = document.getElementById('search-product').value.toLowerCase();
+                const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = ''; // Xóa nội dung cũ
+    
+                filteredProducts.forEach((product, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <th>${index + 1}</th>
+                        <th><img src="${product.imageUrl}" alt="${product.name}" style="max-width: 70px;"></th>
+                        <td>${product.name}</td>
+                        <td>${product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                        <td>${product.category}</td>
+                        <td>${product.stockStatus}</td>
+                        <td>${new Date(product.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <a href="/product-detail" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                        </td>
+                    `;
+                    productList.appendChild(row);
+                });
+            });
+        </script>
     </main>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
