@@ -78,6 +78,7 @@ public class HomeController {
     @GetMapping("/employee")
     public String employee() {
         return "/admin/account/employee-management";
+<<<<<<< Updated upstream
     }
 
     @GetMapping("/product-management")
@@ -108,5 +109,7 @@ public class HomeController {
     @GetMapping("/admin/order-detail")
     public String order_detail() {
         return "/admin/order/order-detail";
+=======
+>>>>>>> Stashed changes
     }
 }
