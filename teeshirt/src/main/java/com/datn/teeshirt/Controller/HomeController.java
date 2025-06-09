@@ -55,9 +55,9 @@ public class HomeController {
         return "admin/index";
     }
 
-    @GetMapping("/counter-sale")
+    @GetMapping("/counter-sale-update")
     public String counter_sale() {
-        return "/admin/order/counter-sales";
+        return "/admin/order/counter-sale-update";
     }
 
     @GetMapping("/admin/promotion-management")
