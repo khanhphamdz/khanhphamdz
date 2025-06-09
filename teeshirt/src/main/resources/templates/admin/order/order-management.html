@@ -14,7 +14,7 @@
     <!-- Main Content -->
     <main class="p-3 w-100">
         <div class="page-header mb-4">
-            <div class="header-title d-flex align-items-center justify-content-center">
+            <div class="header-title d-flex align-items-center justify-content-start">
                 <!-- <i class="fa-solid fa-rotate-left fs-3 me-2"></i> -->
                 <div>
                     <h3 class="p-0 m-0">Quản lý đơn hàng</h3>
@@ -29,13 +29,13 @@
                         <div class="d-flex align-items-center">
                             <label for="filterDate" class="form-label fw-semibold mb-0 me-2"
                                 style="min-width:90px;">Ngày tạo:</label>
-                            <input type="date" class="form-control rounded-pill px-3 text-center" id="filterDate"
+                            <input type="date" class="form-control px-3 text-center" id="filterDate"
                                 onchange="filterOrders()">
                         </div>
                         <div class="d-flex align-items-center">
                             <label for="filterStatus" class="form-label fw-semibold mb-0 me-2"
                                 style="min-width:90px;">Trạng thái:</label>
-                            <select class="form-select rounded-pill px-3 text-center" id="filterStatus"
+                            <select class="form-select px-3 text-center" id="filterStatus"
                                 onchange="filterOrders()">
                                 <option value="">Tất cả</option>
                                 <option value="cho-xac-nhan">Chờ xác nhận</option>
@@ -50,7 +50,7 @@
                     <div class="col-md-8 d-flex flex-column gap-3 justify-content-center">
                         <div class="d-flex align-items-center justify-content-center gap-3">
                             <label for="filterSource" class="form-label fw-semibold mb-0 me-2">Loại đơn:</label>
-                            <select class="form-select rounded-pill px-3 text-center" id="filterSource"
+                            <select class="form-select px-3 text-center" id="filterSource"
                                 onchange="filterOrders()" style="max-width: 200px;">
                                 <option value="">Tất cả</option>
                                 <option value="counter">Tại quầy</option>
@@ -58,9 +58,9 @@
                             </select>
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-                            <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold"
+                            <button type="button" class="btn btn-primary px-4 fw-bold"
                                 onclick="filterOrders()">Tìm kiếm</button>
-                            <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold"
+                            <button type="button" class="btn btn-danger px-4 fw-bold"
                                 onclick="resetOrderFilters()">Làm mới bộ lọc</button>
                         </div>
                     </div>
@@ -167,6 +167,7 @@
                         </thead>
                         <tbody id="orderItems"></tbody>
                     </table>
+
                     <div class="mt-3">
                         <select class="form-select" id="newStatus">
                             <option value="cho-xac-nhan">Chờ xác nhận</option>
@@ -268,7 +269,6 @@
                 tbody.innerHTML += row;
             });
         }
-
         // Filter orders
         function filterOrders() {
             const date = document.getElementById('filterDate').value;

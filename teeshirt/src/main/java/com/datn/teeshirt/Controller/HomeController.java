@@ -85,12 +85,12 @@ public class HomeController {
         return "/admin/product/product-management";
     }
 
-    @GetMapping("/ass-product")
+    @GetMapping("/add-product")
     public String add_product() {
         return "/admin/product/product-add-management";
     }
 
-    @GetMapping("product-detail")
+    @GetMapping("/product-detail")
     public String detail_product() {
         return "/admin/product/product-detail-management";
     }

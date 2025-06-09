@@ -31,12 +31,8 @@
                         <input type="text" class="form-control" id="filterName" placeholder="Tìm theo tên">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Khoảng tuổi:</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control" id="ageFrom" placeholder="Từ" min="0">
-                            <span class="input-group-text">-</span>
-                            <input type="number" class="form-control" id="ageTo" placeholder="Đến" min="0">
-                        </div>
+                        <label for="filterPhone" class="form-label fw-semibold">Số điện thoại:</label>
+                        <input type="tel" class="form-control" id="filterPhone" placeholder="Tìm theo số điện thoại">
                     </div>
                     <div class="col-md-4">
                         <label for="filterProvince" class="form-label fw-semibold">Khu vực:</label>
@@ -73,7 +69,8 @@
                                 <th>#</th>
                                 <th>Mã khách hàng</th>
                                 <th>Tên</th>
-                                <th>Ngày sinh</th>
+                                <th>Số điện thoại</th>
+                                <th>Địa chỉ</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
@@ -82,18 +79,12 @@
                                 <td>1</td>
                                 <td>KH001</td>
                                 <td>Nguyễn Văn Anh</td>
-                                <td>01/01/1990</td>
+                                <td>0123456789</td>
+                                <td>123 Đường Láng, Láng Thượng, Đống Đa, Hà Nội</td>
                                 <td>
                                     <button class="btn btn-info btn-sm me-1" data-bs-toggle="modal"
                                         data-bs-target="#viewCustomerModal" onclick="showCustomerDetails('KH001')"><i
                                             class="fa-solid fa-eye"></i></button>
-                                    <button class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
-                                        data-bs-target="#editCustomerModal"
-                                        onclick="showCustomerDetails('KH001', true)"><i
-                                            class="fa-solid fa-edit"></i></button>
-                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#addressBookModal" onclick="showAddressBook('KH001')"><i
-                                            class="fa-solid fa-address-book"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -113,16 +104,46 @@
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <p><strong>Mã khách hàng:</strong> <span id="viewCustomerCode"></span></p>
-                                <p><strong>Tên:</strong> <span id="viewCustomerName"></span></p>
-                                <p><strong>Ngày sinh:</strong> <span id="viewCustomerDob"></span></p>
-                                <p><strong>Email:</strong> <span id="viewCustomerEmail"></span></p>
-                                <p><strong>Mật khẩu:</strong> <span id="viewCustomerPassword"></span></p>
-                                <p><strong>Giới tính:</strong> <span id="viewCustomerGender"></span></p>
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 fw-bold">Thông tin cơ bản</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Mã khách hàng:</strong> <span id="viewCustomerCode"></span></p>
+                                        <p><strong>Tên:</strong> <span id="viewCustomerName"></span></p>
+                                        <p><strong>Số điện thoại:</strong> <span id="viewCustomerPhone"></span></p>
+                                        <p><strong>Email:</strong> <span id="viewCustomerEmail"></span></p>
+                                        <p><strong>Giới tính:</strong> <span id="viewCustomerGender"></span></p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Địa chỉ:</strong></p>
-                                <p><span id="viewCustomerAddress"></span></p>
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 fw-bold">Thông tin địa chỉ</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Địa chỉ:</strong></p>
+                                        <p class="mb-0"><span id="viewCustomerAddress"></span></p>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 fw-bold">Thông tin mua sắm</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row text-center">
+                                            <div class="col-6">
+                                                <h3 class="text-primary mb-2" id="totalOrders">0</h3>
+                                                <p class="text-muted mb-0">Tổng số đơn hàng</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <h3 class="text-success mb-2" id="totalSpending">0đ</h3>
+                                                <p class="text-muted mb-0">Tổng tiền đã mua</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,41 +155,41 @@
             </div>
         </div>
 
-        <!-- Modal Sửa khách hàng -->
-        <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
+        <!-- Modal Thêm khách hàng -->
+        <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="editCustomerModalLabel">Sửa thông tin khách hàng</h5>
+                        <h5 class="modal-title fw-bold" id="addCustomerModalLabel">Thêm khách hàng</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Mã khách hàng:</label>
-                                    <input type="text" class="form-control" id="editCustomerCode" readonly>
-                                </div>
-                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Tên:</label>
-                                    <input type="text" class="form-control" id="editCustomerName">
+                                    <input type="text" class="form-control" id="newCustomerName">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Ngày sinh:</label>
-                                    <input type="date" class="form-control" id="editCustomerDob">
+                                    <label class="form-label fw-semibold">Số điện thoại:</label>
+                                    <input type="tel" class="form-control" id="newCustomerPhone" placeholder="Nhập số điện thoại">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Email:</label>
-                                    <input type="email" class="form-control" id="editCustomerEmail">
+                                    <input type="email" class="form-control" id="newCustomerEmail">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Ngày sinh:</label>
+                                    <input type="date" class="form-control" id="newCustomerDob">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Mật khẩu:</label>
-                                    <input type="password" class="form-control" id="editCustomerPassword">
+                                    <input type="password" class="form-control" id="newCustomerPassword">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Giới tính:</label>
-                                    <select class="form-select" id="editCustomerGender">
+                                    <select class="form-select" id="newCustomerGender">
                                         <option value="Nam">Nam</option>
                                         <option value="Nữ">Nữ</option>
                                         <option value="Khác">Khác</option>
@@ -217,199 +238,6 @@
                         <button type="button" class="btn btn-secondary"
                             data-bs-dismiss="modal">Hủy</button>
                         <button type="button" class="btn btn-primary"
-                            onclick="saveCustomerChanges()">Lưu</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Sổ địa chỉ -->
-        <div class="modal fade" id="addressBookModal" tabindex="-1" aria-labelledby="addressBookModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="addressBookModalLabel">Sổ địa chỉ</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <button type="button" class="btn btn-primary rounded-pill mb-3" data-bs-toggle="modal"
-                            data-bs-target="#addAddressModal">Thêm địa chỉ mới</button>
-                        <table class="table table-hover text-center address-table">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Số nhà/Ngõ/Đường</th>
-                                    <th>Xã/Phường</th>
-                                    <th>Quận/Huyện</th>
-                                    <th>Tỉnh/Thành phố</th>
-                                    <th>Mặc định</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="addressTable">
-                                <tr>
-                                    <td>123 Đường Láng</td>
-                                    <td>Láng Thượng</td>
-                                    <td>Đống Đa</td>
-                                    <td>Hà Nội</td>
-                                    <td><input type="radio" name="defaultAddress" checked></td>
-                                    <td><button class="btn btn-danger btn-sm" onclick="deleteAddress(this)">Xóa</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Thêm địa chỉ -->
-        <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="addAddressModalLabel">Thêm địa chỉ</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Họ và tên:</label>
-                                    <input type="text" class="form-control" id="newAddressName">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Số điện thoại:</label>
-                                    <input type="tel" class="form-control" id="newAddressPhone">
-                                </div>
-                                <div class="col-lg-6 order-lg-1">
-                                    <form class="checkout-form">
-                                        <div class="form-section">
-                                            <div class="form-group">
-                                                <label for="new-address-province">Tỉnh/Thành phố</label>
-                                                <select id="new-address-province" class="form-select" name="province"
-                                                    required>
-                                                    <option value="">Chọn tỉnh/thành phố</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="new-address-district">Quận/Huyện</label>
-                                                <select id="new-address-district" class="form-select" name="district"
-                                                    required>
-                                                    <option value="">Chọn quận/huyện</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="new-address-ward">Phường/Xã</label>
-                                                <select id="new-address-ward" class="form-select" name="ward" required>
-                                                    <option value="">Chọn phường/xã</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="new-address-detail">Địa chỉ chi tiết</label>
-                                                <input type="text" id="new-address-detail" class="form-control"
-                                                    name="address-detail" required />
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-primary" onclick="addNewAddress()">Thêm</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        </div>
-
-        <!-- Modal Thêm khách hàng -->
-        <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="addCustomerModalLabel">Thêm khách hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Tên:</label>
-                                    <input type="text" class="form-control" id="newCustomerName">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Ngày sinh:</label>
-                                    <input type="date" class="form-control" id="newCustomerDob">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Email:</label>
-                                    <input type="email" class="form-control" id="newCustomerEmail">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Mật khẩu:</label>
-                                    <input type="password" class="form-control" id="newCustomerPassword">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Giới tính:</label>
-                                    <select class="form-select" id="newCustomerGender">
-                                        <option value="Nam">Nam</option>
-                                        <option value="Nữ">Nữ</option>
-                                        <option value="Khác">Khác</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Địa chỉ:</label>
-                                    <div class="col-lg-6 order-lg-1">
-                                        <form class="checkout-form">
-                                            <div class="form-section">
-                                                <div class="form-group">
-                                                    <label for="customer-province">Tỉnh/Thành phố</label>
-                                                    <select id="customer-province" class="form-select" name="province"
-                                                        required>
-                                                        <option value="">Chọn tỉnh/thành phố</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="customer-district">Quận/Huyện</label>
-                                                    <select id="customer-district" class="form-select" name="district"
-                                                        required>
-                                                        <option value="">Chọn quận/huyện</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="customer-ward">Phường/Xã</label>
-                                                    <select id="customer-ward" class="form-select" name="ward" required>
-                                                        <option value="">Chọn phường/xã</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="customer-address-detail">Địa chỉ chi tiết</label>
-                                                    <input type="text" id="customer-address-detail" class="form-control"
-                                                        name="address-detail" required />
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-primary"
                             onclick="addNewCustomer()">Thêm</button>
                     </div>
                 </div>
@@ -417,134 +245,39 @@
         </div>
     </main>
 
-
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script>
-
-        // Sử dụng API https://provinces.open-api.vn để lấy tỉnh/thành, quận/huyện, phường/xã
-        function initializeAddressForm(provinceId, districtId, wardId) {
-            const provinceSelect = document.getElementById(provinceId);
-            const districtSelect = document.getElementById(districtId);
-            const wardSelect = document.getElementById(wardId);
-
-            // Load tỉnh/thành phố
-            fetch('https://provinces.open-api.vn/api/p/')
-                .then(res => res.json())
-                .then(data => {
-                    data.forEach(province => {
-                        const opt = document.createElement('option');
-                        opt.value = province.code;
-                        opt.textContent = province.name;
-                        provinceSelect.appendChild(opt);
-                    });
-                });
-
-            // Khi chọn tỉnh/thành, load quận/huyện
-            provinceSelect.addEventListener('change', function () {
-                const provinceCode = this.value;
-                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-                if (!provinceCode) return;
-                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.districts && Array.isArray(data.districts)) {
-                            data.districts.forEach(district => {
-                                const opt = document.createElement('option');
-                                opt.value = district.code;
-                                opt.textContent = district.name;
-                                districtSelect.appendChild(opt);
-                            });
-                        }
-                    });
-            });
-
-            // Khi chọn quận/huyện, load phường/xã
-            districtSelect.addEventListener('change', function () {
-                const districtCode = this.value;
-                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-                if (!districtCode) return;
-                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.wards && Array.isArray(data.wards)) {
-                            data.wards.forEach(ward => {
-                                const opt = document.createElement('option');
-                                opt.value = ward.code;
-                                opt.textContent = ward.name;
-                                wardSelect.appendChild(opt);
-                            });
-                        }
-                    });
-            });
-        }
-
-        // Khởi tạo cho từng form
-        document.addEventListener('DOMContentLoaded', function () {
-            initializeAddressForm('edit-province', 'edit-district', 'edit-ward');
-            initializeAddressForm('new-address-province', 'new-address-district', 'new-address-ward');
-            initializeAddressForm('customer-province', 'customer-district', 'customer-ward');
-        });
-
-        function showCustomerDetails(customerId, isEdit = false) {
+        function showCustomerDetails(customerId) {
             // Hàm mẫu, cần tích hợp API để lấy dữ liệu
-            document.getElementById('viewCustomerCode').textContent = customerId;
-            document.getElementById('viewCustomerName').textContent = 'Nguyễn Văn Anh';
-            document.getElementById('viewCustomerDob').textContent = '01/01/1990';
-            document.getElementById('viewCustomerEmail').textContent = 'vinhnguyen0120@gmail.com';
-            document.getElementById('viewCustomerPassword').textContent = 'dd/mm/yyyy';
-            document.getElementById('viewCustomerGender').textContent = 'Nam';
-            document.getElementById('viewCustomerAddress').textContent = '123 Đường Láng, Láng Thượng, Đống Đa, Hà Nội';
+            const customerData = {
+                code: customerId,
+                name: 'Nguyễn Văn Anh',
+                phone: '0123456789',
+                email: 'vinhnguyen0120@gmail.com',
+                gender: 'Nam',
+                address: '123 Đường Láng, Láng Thượng, Đống Đa, Hà Nội',
+                totalOrders: 15,
+                totalSpending: '9,850,000đ'
+            };
 
-            if (isEdit) {
-                document.getElementById('editCustomerCode').value = customerId;
-                document.getElementById('editCustomerName').value = 'Nguyễn Văn Anh';
-                document.getElementById('editCustomerDob').value = '1990-01-01';
-                document.getElementById('editCustomerEmail').value = 'vinhnguyen0120@gmail.com';
-                document.getElementById('editCustomerPassword').value = 'dd/mm/yyyy';
-                document.getElementById('editCustomerGender').value = 'Nam';
-                document.getElementById('editCustomerAddress').value = '123 Đường Láng, Láng Thượng, Đống Đa, Hà Nội';
-            }
-        }
+            // Cập nhật thông tin chi tiết khách hàng
+            document.getElementById('viewCustomerCode').textContent = customerData.code;
+            document.getElementById('viewCustomerName').textContent = customerData.name;
+            document.getElementById('viewCustomerPhone').textContent = customerData.phone;
+            document.getElementById('viewCustomerEmail').textContent = customerData.email;
+            document.getElementById('viewCustomerGender').textContent = customerData.gender;
+            document.getElementById('viewCustomerAddress').textContent = customerData.address;
 
-        function showAddressBook(customerId) {
-            // Hàm mẫu, cần tích hợp API để lấy danh sách địa chỉ
-            document.getElementById('addressTable').innerHTML = `
-                <tr>
-                    <td>123 Đường Láng</td>
-                    <td>Láng Thượng</td>
-                    <td>Đống Đa</td>
-                    <td>Hà Nội</td>
-                    <td><input type="radio" name="defaultAddress" checked></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteAddress(this)">Xóa</button></td>
-                </tr>
-            `;
-        }
-
-        function addNewAddress() {
-            // Logic thêm địa chỉ mới
-            alert('Đã thêm địa chỉ mới!');
-            $('#addAddressModal').modal('hide');
+            // Cập nhật thông tin mua sắm
+            document.getElementById('totalOrders').textContent = customerData.totalOrders;
+            document.getElementById('totalSpending').textContent = customerData.totalSpending;
         }
 
         function addNewCustomer() {
             // Logic thêm khách hàng mới
             alert('Đã thêm khách hàng mới!');
             $('#addCustomerModal').modal('hide');
-        }
-
-        function saveCustomerChanges() {
-            // Logic lưu thay đổi
-            alert('Đã lưu thay đổi!');
-            $('#editCustomerModal').modal('hide');
-        }
-
-        function deleteAddress(button) {
-            if (confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-                button.closest('tr').remove();
-            }
         }
     </script>
 </body>
