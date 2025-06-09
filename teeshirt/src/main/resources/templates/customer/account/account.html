@@ -168,35 +168,105 @@
                 <div class="tab-pane fade" id="v-pills-order-history" role="tabpanel" aria-labelledby="v-pills-order-history-tab">
                     <div class="bg-light rounded-4 p-5" style="min-height:550px;">
                         <h2 class="fw-bold mb-4 fs-3">Lịch sử đơn hàng</h2>
-                        <div class="row gy-4">
-                            <div class="col-12">
-                                <div class="card rounded-4 border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <a href="#" class="fw-bold text-white text-decoration-underline" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#41774496694</a>
-                                            <div class="small text-white-50">22.05.2025</div>
+                        
+                        <!-- Sub-tabs for order history -->
+                        <ul class="nav nav-tabs mb-4" id="orderHistoryTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="processing-tab" data-bs-toggle="tab" data-bs-target="#processing" type="button" role="tab">Đang xử lý</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">Giao thành công</button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content -->
+                        <div class="tab-content" id="orderHistoryTabContent">
+                            <!-- Processing Orders Tab -->
+                            <div class="tab-pane fade show active" id="processing" role="tabpanel">
+                                <div class="row gy-4">
+                                    <div class="col-12">
+                                        <div class="card rounded-4 border-0 shadow-sm mb-4">
+                                            <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <a href="#" class="fw-bold text-white text-decoration-underline" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#41774496694</a>
+                                                    <div class="small text-white-50">22.05.2025</div>
+                                                </div>
+                                                <span class="badge bg-white text-primary fw-semibold px-4 py-2 rounded-pill">Đang chuẩn bị hàng</span>
+                                            </div>
+                                            <div class="card-body bg-warning-subtle d-flex align-items-center gap-4">
+                                                <img src="../images/product-01.jpg" alt="sp1" class="rounded-3 border" width="110" height="110">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold text-primary mb-1">Quần Shorts Chạy Bộ Economy I</div>
+                                                    <div class="text-secondary small">Cam / M</div>
+                                                    <div class="text-secondary small">x1</div>
+                                                    <div class="fw-bold mt-1">79.000đ</div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer bg-light d-flex align-items-center rounded-bottom-4">
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần hỗ trợ</button>
+                                                    <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua lại</button>
+                                                </div>
+                                                <div class="ms-auto fw-bold fs-5">104.000đ</div>
+                                            </div>
                                         </div>
-                                        <span class="badge bg-white text-primary fw-semibold px-4 py-2 rounded-pill">Đang chuẩn bị hàng</span>
-                                    </div>
-                                    <div class="card-body bg-warning-subtle d-flex align-items-center gap-4">
-                                        <img src="../images/product-01.jpg" alt="sp1" class="rounded-3 border" width="110" height="110">
-                                        <div class="flex-grow-1">
-                                            <div class="fw-semibold text-primary mb-1">Quần Shorts Chạy Bộ Economy I</div>
-                                            <div class="text-secondary small">Cam / M</div>
-                                            <div class="text-secondary small">x1</div>
-                                            <div class="fw-bold mt-1">79.000đ</div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-light d-flex align-items-center rounded-bottom-4">
-                                        <div class="d-flex gap-2">
-                                            <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần hỗ trợ</button>
-                                            <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua lại</button>
-                                        </div>
-                                        <div class="ms-auto fw-bold fs-5">104.000đ</div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Thêm các đơn hàng khác tương tự ở đây -->
+
+                            <!-- Completed Orders Tab -->
+                            <div class="tab-pane fade" id="completed" role="tabpanel">
+                                <div class="row gy-4">
+                                    <div class="col-12">
+                                        <div class="card rounded-4 border-0 shadow-sm mb-4">
+                                            <div class="card-header bg-success text-white rounded-top-4 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <a href="#" class="fw-bold text-white text-decoration-underline" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#41774496695</a>
+                                                    <div class="small text-white-50">20.05.2025</div>
+                                                </div>
+                                                <span class="badge bg-white text-success fw-semibold px-4 py-2 rounded-pill">Giao thành công</span>
+                                            </div>
+                                            <div class="card-body bg-warning-subtle">
+                                                <div class="d-flex align-items-center gap-4 mb-3">
+                                                    <img src="../images/product-01.jpg" alt="sp1" class="rounded-3 border" width="110" height="110">
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-semibold text-primary mb-1">Quần Shorts Chạy Bộ Economy I</div>
+                                                        <div class="text-secondary small">Cam / M</div>
+                                                        <div class="text-secondary small">x1</div>
+                                                        <div class="fw-bold mt-1">79.000đ</div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-4 mb-3">
+                                                    <img src="../images/product-02.jpg" alt="sp2" class="rounded-3 border" width="110" height="110">
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-semibold text-primary mb-1">Áo Thun Nam Basic</div>
+                                                        <div class="text-secondary small">Đen / L</div>
+                                                        <div class="text-secondary small">x2</div>
+                                                        <div class="fw-bold mt-1">158.000đ</div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-4">
+                                                    <img src="../images/product-03.jpg" alt="sp3" class="rounded-3 border" width="110" height="110">
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-semibold text-primary mb-1">Áo Polo Nam Premium</div>
+                                                        <div class="text-secondary small">Xanh Navy / XL</div>
+                                                        <div class="text-secondary small">x1</div>
+                                                        <div class="fw-bold mt-1">199.000đ</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer bg-light d-flex align-items-center rounded-bottom-4">
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần hỗ trợ</button>
+                                                    <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua lại</button>
+                                                    <button class="btn btn-danger rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#returnModal">Hoàn trả hàng</button>
+                                                </div>
+                                                <div class="ms-auto fw-bold fs-5">436.000đ</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -261,6 +331,24 @@
                                                 <td>1</td>
                                                 <td class="fw-bold text-end">79.000đ</td>
                                             </tr>
+                                            <tr>
+                                                <td class="d-flex align-items-center gap-2">
+                                                    <img src="../images/product-02.jpg" alt="sp2" class="rounded-3 border" width="90" height="90">
+                                                    <span class="fw-semibold text-primary">Áo Thun Nam Basic</span>
+                                                </td>
+                                                <td>Đen / L</td>
+                                                <td>2</td>
+                                                <td class="fw-bold text-end">158.000đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="d-flex align-items-center gap-2">
+                                                    <img src="../images/product-03.jpg" alt="sp3" class="rounded-3 border" width="90" height="90">
+                                                    <span class="fw-semibold text-primary">Áo Polo Nam Premium</span>
+                                                </td>
+                                                <td>Xanh Navy / XL</td>
+                                                <td>1</td>
+                                                <td class="fw-bold text-end">199.000đ</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -271,11 +359,219 @@
                                     <button class="btn btn-danger rounded-pill px-4 fw-bold">Huỷ đơn hàng</button>
                                     <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua lại</button>
                                 </div>
-                                <div class="fw-bold fs-5">Tổng tiền: 104.000đ</div>
+                                <div class="fw-bold fs-5">Tổng tiền: 237.000đ</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Return Modal -->
+                <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content rounded-4">
+                            <div class="modal-header bg-danger text-white rounded-top-4">
+                                <h5 class="modal-title fw-bold" id="returnModalLabel">Yêu cầu hoàn trả hàng</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="returnForm">
+                                    <!-- Product Selection Section -->
+                                    <div class="mb-4">
+                                        <h6 class="fw-bold mb-3">Chọn sản phẩm cần hoàn trả</h6>
+                                        <div class="product-selection bg-light rounded-4 p-3">
+                                            <div class="row g-3">
+                                                <!-- Product 1 -->
+                                                <div class="col-12">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input product-checkbox" type="checkbox" id="product1" data-price="79000">
+                                                        <label class="form-check-label w-100" for="product1">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <img src="../images/product-01.jpg" alt="sp1" class="rounded-3 border" width="80" height="80">
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-semibold text-primary">Quần Shorts Chạy Bộ Economy I</div>
+                                                                    <div class="text-secondary small">Cam / M</div>
+                                                                    <div class="text-secondary small">x1</div>
+                                                                    <div class="fw-bold mt-1">79.000đ</div>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <!-- Product 2 -->
+                                                <div class="col-12">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input product-checkbox" type="checkbox" id="product2" data-price="158000">
+                                                        <label class="form-check-label w-100" for="product2">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <img src="../images/product-02.jpg" alt="sp2" class="rounded-3 border" width="80" height="80">
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-semibold text-primary">Áo Thun Nam Basic</div>
+                                                                    <div class="text-secondary small">Đen / L</div>
+                                                                    <div class="text-secondary small">x2</div>
+                                                                    <div class="fw-bold mt-1">158.000đ</div>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <!-- Product 3 -->
+                                                <div class="col-12">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input product-checkbox" type="checkbox" id="product3" data-price="199000">
+                                                        <label class="form-check-label w-100" for="product3">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <img src="../images/product-03.jpg" alt="sp3" class="rounded-3 border" width="80" height="80">
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-semibold text-primary">Áo Polo Nam Premium</div>
+                                                                    <div class="text-secondary small">Xanh Navy / XL</div>
+                                                                    <div class="text-secondary small">x1</div>
+                                                                    <div class="fw-bold mt-1">199.000đ</div>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="fw-bold">Tổng tiền hoàn trả:</span>
+                                                    <span class="fw-bold fs-5 text-danger" id="returnTotal">0đ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Return Details Section -->
+                                    <div class="mb-4">
+                                        <h6 class="fw-bold mb-3">Thông tin hoàn trả</h6>
+                                        <div class="bg-light rounded-4 p-4">
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Lý do hoàn trả</label>
+                                                <select class="form-select rounded-pill mb-3" required>
+                                                    <option value="">Chọn lý do hoàn trả</option>
+                                                    <option value="defect">Sản phẩm bị lỗi</option>
+                                                    <option value="wrong_description">Không đúng mô tả</option>
+                                                    <option value="wrong_size">Không vừa với kích thước</option>
+                                                    <option value="quality">Không hài lòng với chất lượng</option>
+                                                    <option value="other">Khác</option>
+                                                </select>
+                                                <textarea class="form-control" rows="4" placeholder="Mô tả chi tiết lý do hoàn trả..." required></textarea>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Hình ảnh sản phẩm lỗi</label>
+                                                <div class="d-flex gap-3">
+                                                    <div class="border rounded-4 p-3 text-center" style="width: 150px; height: 150px;">
+                                                        <i class="fa-solid fa-plus fs-4 text-secondary"></i>
+                                                        <div class="small text-secondary mt-2">Thêm ảnh</div>
+                                                    </div>
+                                                    <div class="border rounded-4 p-3 text-center" style="width: 150px; height: 150px;">
+                                                        <i class="fa-solid fa-plus fs-4 text-secondary"></i>
+                                                        <div class="small text-secondary mt-2">Thêm ảnh</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Địa chỉ gửi hàng hoàn trả</label>
+                                        <div class="bg-light p-3 rounded-4">
+                                            <div class="fw-semibold">Tee-Shirt Vibe</div>
+                                            <div class="text-secondary">123 Đường ABC, Quận XYZ, TP. Hà Nội</div>
+                                            <div class="text-secondary">Hotline: 0123456789</div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer bg-light rounded-bottom-4">
+                                <button type="button" class="btn btn-outline-dark rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="submitReturnBtn">Gửi yêu cầu hoàn trả</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Modal -->
+                <div class="modal fade" id="returnSuccessModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4">
+                            <div class="modal-body text-center p-5">
+                                <i class="fa-solid fa-circle-check text-success" style="font-size: 4rem;"></i>
+                                <h4 class="fw-bold mt-4">Yêu cầu hoàn trả của quý khách đang được xử lý</h4>
+                                <p class="text-secondary mt-3">Chúng tôi sẽ liên hệ với quý khách trong thời gian sớm nhất</p>
+                                <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold mt-4" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const checkboxes = document.querySelectorAll('.product-checkbox');
+                        const totalElement = document.getElementById('returnTotal');
+                        const returnForm = document.getElementById('returnForm');
+                        const submitReturnBtn = document.getElementById('submitReturnBtn');
+                        const returnModal = document.getElementById('returnModal');
+                        const returnSuccessModal = document.getElementById('returnSuccessModal');
+
+                        function updateTotal() {
+                            let total = 0;
+                            checkboxes.forEach(checkbox => {
+                                if (checkbox.checked) {
+                                    total += parseInt(checkbox.dataset.price);
+                                }
+                            });
+                            totalElement.textContent = total.toLocaleString('vi-VN') + 'đ';
+                        }
+
+                        checkboxes.forEach(checkbox => {
+                            checkbox.addEventListener('change', updateTotal);
+                        });
+
+                        submitReturnBtn.addEventListener('click', function() {
+                            // Kiểm tra form
+                            if (!returnForm.checkValidity()) {
+                                returnForm.reportValidity();
+                                return;
+                            }
+
+                            // Kiểm tra có sản phẩm nào được chọn không
+                            const hasSelectedProducts = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                            if (!hasSelectedProducts) {
+                                alert('Vui lòng chọn ít nhất một sản phẩm cần hoàn trả');
+                                return;
+                            }
+
+                            // Hiển thị xác nhận
+                            if (confirm('Bạn có chắc chắn muốn gửi yêu cầu hoàn trả?')) {
+                                // Đóng modal hoàn trả
+                                const returnModalInstance = bootstrap.Modal.getInstance(returnModal);
+                                returnModalInstance.hide();
+
+                                // Hiển thị modal thành công
+                                const successModal = new bootstrap.Modal(returnSuccessModal);
+                                successModal.show();
+
+                                // Cập nhật trạng thái đơn hàng
+                                const orderCard = document.querySelector('#completed .card');
+                                if (orderCard) {
+                                    const statusBadge = orderCard.querySelector('.badge');
+                                    if (statusBadge) {
+                                        statusBadge.className = 'badge bg-warning text-dark fw-semibold px-4 py-2 rounded-pill';
+                                        statusBadge.textContent = 'Đang xử lý hoàn trả';
+                                    }
+                                }
+
+                                // Chuyển tab sang "Đang xử lý"
+                                const processingTab = document.querySelector('#processing-tab');
+                                if (processingTab) {
+                                    processingTab.click();
+                                }
+                            }
+                        });
+                    });
+                </script>
             </div>
         </div>
     </main>
