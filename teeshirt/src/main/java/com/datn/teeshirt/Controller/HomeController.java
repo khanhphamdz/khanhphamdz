@@ -78,7 +78,6 @@ public class HomeController {
     @GetMapping("/employee")
     public String employee() {
         return "/admin/account/employee-management";
-<<<<<<< Updated upstream
     }
 
     @GetMapping("/product-management")
@@ -109,7 +108,20 @@ public class HomeController {
     @GetMapping("/admin/order-detail")
     public String order_detail() {
         return "/admin/order/order-detail";
-=======
->>>>>>> Stashed changes
+    }
+
+    @GetMapping("/attributes-management")
+    public String attribute() {
+        return "/admin/product/attribute-management";
+    }
+
+    @GetMapping("/admin/logout")
+    public String logoutAdmin() {
+        return "/admin/account/danhNhap";
+    }
+
+    @GetMapping("/categories-management")
+    public String cate() {
+        return "/admin/product/category -management";
     }
 }

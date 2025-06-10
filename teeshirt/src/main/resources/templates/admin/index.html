@@ -14,7 +14,7 @@
 
 <body>
     <!-- Main Content -->
-    <main class="w-100 ps-4 pe-4">
+    <main class="w-100 p-4">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Dashboard</h2>
@@ -225,6 +225,122 @@
         </div>
     </main>
 </body>
+    <!-- JavaScript for Charts and Interactivity -->
+    <script>
+        // Revenue Chart
+        const revenueChart = new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: ['18/05', '19/05', '20/05', '21/05', '22/05', '23/05', '24/05'],
+                datasets: [
+                    {
+                        label: 'Doanh thu tại quầy',
+                        data: [5000000, 6000000, 4500000, 7000000, 8000000, 5500000, 9000000],
+                        borderColor: '#1E90FF',
+                        backgroundColor: 'rgba(30, 144, 255, 0.2)',
+                        fill: true
+                    },
+                    {
+                        label: 'Doanh thu online',
+                        data: [3000000, 4000000, 3500000, 5000000, 4500000, 6000000, 7000000],
+                        borderColor: '#FF6347',
+                        backgroundColor: 'rgba(255, 99, 71, 0.2)',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Doanh thu (VNĐ)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Ngày'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Doanh thu theo thời gian'
+                    }
+                }
+            }
+        });
 
+        // Order Status Chart
+        const orderStatusChart = new Chart(document.getElementById('orderStatusChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Đang xử lý', 'Hoàn tất', 'Đã hủy'],
+                datasets: [
+                    {
+                        label: 'Trạng thái đơn hàng',
+                        data: [36, 72, 12],
+                        backgroundColor: ['#FFCE56', '#36A2EB', '#FF6384'],
+                        borderColor: ['#D4A017', '#2E8BC0', '#D53F5A'],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phân bố trạng thái đơn hàng'
+                    }
+                }
+            }
+        });
+
+        // Function to update dashboard based on time filter
+        function updateDashboard() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            // Giả lập cập nhật dữ liệu (thay bằng API thực tế)
+            if (timeFilter === 'today') {
+                document.getElementById('totalRevenue').textContent = '50,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '40';
+                document.getElementById('productsSold').textContent = '120';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '30';
+                document.getElementById('onlineOrders').textContent = '10';
+            } else if (timeFilter === 'week') {
+                document.getElementById('totalRevenue').textContent = '150,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '120';
+                document.getElementById('productsSold').textContent = '350';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '80';
+                document.getElementById('onlineOrders').textContent = '40';
+            } else {
+                document.getElementById('totalRevenue').textContent = '450,000,000 VNĐ';
+                document.getElementById('totalOrders').textContent = '360';
+                document.getElementById('productsSold').textContent = '950';
+                document.getElementById('totalInventory').textContent = '2,500';
+                document.getElementById('counterOrders').textContent = '240';
+                document.getElementById('onlineOrders').textContent = '120';
+            }
+
+            // Cập nhật biểu đồ (giả lập, thay bằng dữ liệu thực tế)
+            revenueChart.data.datasets[0].data = timeFilter === 'today' ? [2000000, 3000000, 2500000, 4000000, 5000000, 3500000, 6000000] : [5000000, 6000000, 4500000, 7000000, 8000000, 5500000, 9000000];
+            revenueChart.data.datasets[1].data = timeFilter === 'today' ? [1000000, 1500000, 2000000, 2500000, 3000000, 4000000, 5000000] : [3000000, 4000000, 3500000, 5000000, 4500000, 6000000, 7000000];
+            revenueChart.update();
+
+            orderStatusChart.data.datasets[0].data = timeFilter === 'today' ? [12, 24, 4] : [36, 72, 12];
+            orderStatusChart.update();
+        }
+    </script>
 </html>
-!

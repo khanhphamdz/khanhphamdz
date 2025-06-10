@@ -1,505 +1,342 @@
 <!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bán hàng tại quầy - Admin</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <style>
-      .product-card {
-        cursor: pointer;
-        transition: transform 0.2s;
+<html lang="vi" th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bán hàng tại quầy - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+</head>
+
+<body>
+  <main class="container-fluid p-4  ">
+      <style>
+    .product-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .product-card:hover {
+      transform: scale(1.05);
+    }
+
+    .cart-table th,
+    .cart-table td {
+      vertical-align: middle;
+    }
+
+    .cart-table .btn-sm {
+      padding: 2px 8px;
+    }
+
+    .delivery-form {
+      display: none;
+    }
+
+    #customToast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      min-width: 240px;
+      max-width: 340px;
+    }
+
+    /* Điều chỉnh kích thước ảnh sản phẩm cho vừa vặn card */
+    .card-img-top {
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px 10px 0 0;
+      background: #f8f9fa;
+    }
+
+    /* Style cho modal hóa đơn */
+    .invoice-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #000;
+    }
+
+    .invoice-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .invoice-info {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .invoice-info h6 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .invoice-info p {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .invoice-table {
+      margin-bottom: 1rem;
+    }
+
+    .invoice-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .invoice-table td,
+    .invoice-table th {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .invoice-total {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .invoice-total p {
+      margin-bottom: 0.3rem;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    .invoice-total .total-amount {
+      font-weight: 700;
+    }
+
+    .invoice-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #000;
+    }
+
+    .invoice-footer p {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .invoice-footer .thank-you {
+      font-weight: 600;
+    }
+
+    @media print {
+      .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
       }
-      .product-card:hover {
-        transform: scale(1.05);
+
+      .modal-content {
+        border: none;
+        box-shadow: none;
       }
-      .cart-table th,
-      .cart-table td {
-        vertical-align: middle;
-      }
-      .cart-table .btn-sm {
-        padding: 2px 8px;
-      }
-      .delivery-form {
+
+      .modal-header,
+      .modal-footer {
         display: none;
       }
-      #customToast {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 9999;
-        min-width: 240px;
-        max-width: 340px;
+
+      .modal-body {
+        padding: 0;
       }
-      /* Điều chỉnh kích thước ảnh sản phẩm cho vừa vặn card */
-      .card-img-top {
-        height: 110px;
-        object-fit: cover;
-        border-radius: 10px 10px 0 0;
-        background: #f8f9fa;
-      }
-      /* Style cho modal hóa đơn */
+
       .invoice-header {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
         border-bottom: 2px solid #000;
       }
 
-      .invoice-header h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
-
-      .invoice-info {
-        margin-bottom: 1rem;
-        text-align: left;
-      }
-
-      .invoice-info h6 {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-      }
-
-      .invoice-info p {
-        margin-bottom: 0.3rem;
-        font-size: 0.9rem;
-      }
-
-      .invoice-table {
-        margin-bottom: 1rem;
-      }
-
-      .invoice-table th {
-        background: #f8f9fa;
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-
-      .invoice-table td,
-      .invoice-table th {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-      }
-
-      .invoice-total {
-        margin-bottom: 1rem;
-        text-align: left;
-      }
-
-      .invoice-total p {
-        margin-bottom: 0.3rem;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9rem;
-      }
-
-      .invoice-total .total-amount {
-        font-weight: 700;
-      }
-
       .invoice-footer {
-        text-align: center;
-        margin-top: 1.5rem;
-        padding-top: 1rem;
         border-top: 1px solid #000;
       }
-
-      .invoice-footer p {
-        margin-bottom: 0.3rem;
-        font-size: 0.9rem;
-      }
-
-      .invoice-footer .thank-you {
-        font-weight: 600;
-      }
-
-      @media print {
-        .modal-dialog {
-          max-width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-
-        .modal-content {
-          border: none;
-          box-shadow: none;
-        }
-
-        .modal-header,
-        .modal-footer {
-          display: none;
-        }
-
-        .modal-body {
-          padding: 0;
-        }
-
-        .invoice-header {
-          border-bottom: 2px solid #000;
-        }
-
-        .invoice-footer {
-          border-top: 1px solid #000;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="container-fluid p-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">Bán hàng tại quầy</h3>
-        <div class="text-end">
-          <div>
-            <span class="me-3">Nhân viên: <strong>Nguyễn Văn A</strong></span>
-          </div>
-          <button class="btn btn-danger rounded-pill mt-1" onclick="logout()">
-            Đăng xuất
-          </button>
+    }
+  </style>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Bán hàng tại quầy</h2>
+      <div class="text-end">
+        <div>
+          <span class="me-3">Nhân viên: <strong>Nguyễn Văn A</strong></span>
         </div>
-      </div>
-      <div class="d-flex gap-2 mb-3 align-items-center">
-        <button
-          class="btn btn-success rounded-pill"
-          id="createOrderBtn"
-          onclick="createOrder()"
-        >
-          <i class="fa fa-plus me-1"></i>Tạo hóa đơn
+        <button class="btn btn-danger rounded-pill mt-1" onclick="logout()">
+          Đăng xuất
         </button>
-        <span class="text-muted small" id="orderLimitMsg"></span>
       </div>
-      <ul class="nav nav-tabs mb-3" id="orderTabs"></ul>
-      <div class="row">
-        <!-- Sản phẩm -->
-        <div class="col-md-7">
-          <div class="card mb-3">
-            <div class="card-body">
-              <div class="row g-3">
-                <div class="col-md-6 d-flex align-items-center gap-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="searchProduct"
-                    placeholder="Tìm kiếm sản phẩm (tên, mã, mã vạch)"
-                    onkeyup="filterProducts()"
-                  />
-                  <button
-                    class="btn btn-outline-secondary"
-                    id="scanQRBtn"
-                    type="button"
-                    onclick="openQRScanModal()"
-                  >
-                    <i class="fa fa-qrcode"></i>
-                  </button>
-                </div>
-                <div class="col-md-6">
-                  <select
-                    class="form-select"
-                    id="filterCategory"
-                    onchange="filterProducts()"
-                  >
-                    <option value="">Tất cả danh mục</option>
-                    <option value="Áo thun">Áo thun</option>
-                    <option value="Áo polo">Áo polo</option>
-                    <option value="Áo khoác">Áo khoác</option>
-                  </select>
-                </div>
+    </div>
+    <div class="d-flex gap-2 mb-3 align-items-center">
+      <button class="btn btn-success rounded-pill" id="createOrderBtn" onclick="createOrder()">
+        <i class="fa fa-plus me-1"></i>Tạo hóa đơn
+      </button>
+      <span class="text-muted small" id="orderLimitMsg"></span>
+    </div>
+    <ul class="nav nav-tabs mb-3" id="orderTabs"></ul>
+    <div class="row">
+      <!-- Sản phẩm -->
+      <div class="col-md-7">
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6 d-flex align-items-center gap-2">
+                <input type="text" class="form-control" id="searchProduct"
+                  placeholder="Tìm kiếm sản phẩm (tên, mã, mã vạch)" onkeyup="filterProducts()" />
+                <button class="btn btn-outline-secondary" id="scanQRBtn" type="button" onclick="openQRScanModal()">
+                  <i class="fa fa-qrcode"></i>
+                </button>
               </div>
-            </div>
-          </div>
-          <div class="row g-3" id="productList">
-            <!-- Sản phẩm mẫu, có thể mở rộng -->
-            <div class="col-4">
-              <div
-                class="card product-card"
-                onclick="addToCart('SP001', 'Áo thun nam', 150000, 50, 'Áo thun', 'https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993686/graphic_tsv_2_pknn8b.png')"
-              >
-                <img
-                  src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993686/graphic_tsv_2_pknn8b.png"
-                  class="card-img-top"
-                  alt="Product"
-                />
-                <div class="card-body text-center">
-                  <h6 class="card-title">Áo thun nam</h6>
-                  <p class="card-text">150.000đ</p>
-                  <p class="card-text text-muted">Tồn: 50</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div
-                class="card product-card"
-                onclick="addToCart('SP002', 'Áo polo xanh', 200000, 30, 'Áo polo', 'https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894538/tsv_white_zkweod.png')"
-              >
-                <img
-                  src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894538/tsv_white_zkweod.png"
-                  class="card-img-top"
-                  alt="Product"
-                />
-                <div class="card-body text-center">
-                  <h6 class="card-title">Áo polo xanh</h6>
-                  <p class="card-text">200.000đ</p>
-                  <p class="card-text text-muted">Tồn: 30</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Giỏ hàng và thanh toán -->
-        <div class="col-md-5">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="fw-bold mb-0">
-                <i class="fa-solid fa-cart-shopping me-2"></i>Giỏ hàng
-              </h5>
-            </div>
-            <div class="card-body">
-              <!-- Thông tin hóa đơn -->
-              <div class="row mb-3">
-                <div class="col-6 small text-muted">
-                  Thời gian tạo: <span id="createdTime"></span>
-                </div>
-                <div class="col-6 text-end">
-                  <select
-                    class="form-select form-select-sm w-auto d-inline"
-                    id="createdBy"
-                    style="min-width: 150px"
-                  >
-                    <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                    <option value="Trần Thị B">Trần Thị B</option>
-                    <option value="Lê Văn C">Lê Văn C</option>
-                  </select>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="table table-hover cart-table" id="cartTable">
-                  <thead>
-                    <tr>
-                      <th>Tên sản phẩm</th>
-                      <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="cartItems"></tbody>
-                </table>
-              </div>
-              <div class="text-end mb-3">
-                <h5>Tổng tiền: <span id="cartTotal">0đ</span></h5>
-              </div>
-              <!-- Thông tin khách hàng -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Khách hàng:</label>
-                <div class="d-flex gap-2">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="customerType"
-                      id="retailCustomer"
-                      value="retail"
-                      checked
-                      onchange="toggleCustomerSelection()"
-                    />
-                    <label class="form-check-label" for="retailCustomer"
-                      >Khách lẻ</label
-                    >
-                  </div>
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="customerType"
-                      id="selectCustomer"
-                      value="select"
-                      onchange="toggleCustomerSelection()"
-                    />
-                    <label class="form-check-label" for="selectCustomer"
-                      >Chọn khách hàng</label
-                    >
-                  </div>
-                </div>
-                <div id="customerSearchBox" class="mt-2" style="display: none">
-                  <input
-                    type="text"
-                    class="form-control mb-2"
-                    id="customerSearchInput"
-                    placeholder="Tìm kiếm tên hoặc SĐT..."
-                    oninput="filterCustomerList()"
-                  />
-                  <div style="max-height: 180px; overflow-y: auto">
-                    <ul class="list-group" id="customerListBox"></ul>
-                  </div>
-                </div>
-              </div>
-              <!-- Bán giao hàng -->
-              <div class="mb-3">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="isDelivery"
-                    onchange="toggleDeliveryForm()"
-                  />
-                  <label class="form-check-label" for="isDelivery"
-                    >Bán giao hàng</label
-                  >
-                </div>
-                <div class="delivery-form mt-2" id="deliveryForm">
-                  <div class="mb-2">
-                    <label class="form-label fw-semibold"
-                      >Địa chỉ giao hàng:</label
-                    >
-                    <textarea
-                      class="form-control"
-                      id="deliveryAddress"
-                      rows="2"
-                      placeholder="Nhập địa chỉ giao hàng"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-              <!-- Thanh toán -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold"
-                  >Phương thức thanh toán:</label
-                >
-                <select class="form-select" id="paymentMethod">
-                  <option value="cash">Tiền mặt</option>
-                  <option value="card">Chuyển khoản</option>
+              <div class="col-md-6">
+                <select class="form-select" id="filterCategory" onchange="filterProducts()">
+                  <option value="">Tất cả danh mục</option>
+                  <option value="Áo thun">Áo thun</option>
+                  <option value="Áo polo">Áo polo</option>
+                  <option value="Áo khoác">Áo khoác</option>
                 </select>
               </div>
-              <div class="mb-3" id="cashPayment" style="display: block">
-                <label class="form-label fw-semibold">Khách trả:</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="customerPayment"
-                  placeholder="Nhập số tiền khách trả"
-                  oninput="calculateChange()"
-                />
-                <div class="mt-2">
-                  <strong>Tiền thối: <span id="changeAmount">0đ</span></strong>
-                </div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-3" id="productList">
+          <!-- Sản phẩm mẫu, có thể mở rộng -->
+          <div class="col-4">
+            <div class="card product-card"
+              onclick="addToCart('SP001', 'Áo thun nam', 150000, 50, 'Áo thun', 'https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993686/graphic_tsv_2_pknn8b.png')">
+              <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747993686/graphic_tsv_2_pknn8b.png"
+                class="card-img-top" alt="Product" />
+              <div class="card-body text-center">
+                <h6 class="card-title">Áo thun nam</h6>
+                <p class="card-text">150.000đ</p>
+                <p class="card-text text-muted">Tồn: 50</p>
               </div>
-              <div class="d-flex gap-2">
-                <button
-                  class="btn btn-danger rounded-pill"
-                  onclick="clearCart()"
-                >
-                  Hủy
-                </button>
-                <button
-                  class="btn btn-primary rounded-pill"
-                  onclick="completeTransaction()"
-                >
-                  Thanh toán
-                </button>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="card product-card"
+              onclick="addToCart('SP002', 'Áo polo xanh', 200000, 30, 'Áo polo', 'https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894538/tsv_white_zkweod.png')">
+              <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894538/tsv_white_zkweod.png"
+                class="card-img-top" alt="Product" />
+              <div class="card-body text-center">
+                <h6 class="card-title">Áo polo xanh</h6>
+                <p class="card-text">200.000đ</p>
+                <p class="card-text text-muted">Tồn: 30</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-    <div id="customToast"></div>
-    <div class="modal fade" id="qrScanModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Quét mã QR</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+      <!-- Giỏ hàng và thanh toán -->
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="fw-bold mb-0">
+              <i class="fa-solid fa-cart-shopping me-2"></i>Giỏ hàng
+            </h5>
           </div>
-          <div class="modal-body">
-            <div id="qr-reader" style="width: 100%"></div>
-            <div id="qr-reader-results"></div>
+          <div class="card-body">
+            <!-- Thông tin hóa đơn -->
+            <div class="row mb-3">
+              <div class="col-6 small text-muted">
+                Thời gian tạo: <span id="createdTime"></span>
+              </div>
+              <div class="col-6 text-end">
+                <select class="form-select form-select-sm w-auto d-inline" id="createdBy" style="min-width: 150px">
+                  <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+                  <option value="Trần Thị B">Trần Thị B</option>
+                  <option value="Lê Văn C">Lê Văn C</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover cart-table" id="cartTable">
+                <thead>
+                  <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="cartItems"></tbody>
+              </table>
+            </div>
+            <div class="text-end mb-3">
+              <h5>Tổng tiền: <span id="cartTotal">0đ</span></h5>
+            </div>
+            <!-- Thông tin khách hàng -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Khách hàng:</label>
+              <div class="d-flex gap-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="customerType" id="retailCustomer" value="retail"
+                    checked onchange="toggleCustomerSelection()" />
+                  <label class="form-check-label" for="retailCustomer">Khách lẻ</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="customerType" id="selectCustomer" value="select"
+                    onchange="toggleCustomerSelection()" />
+                  <label class="form-check-label" for="selectCustomer">Chọn khách hàng</label>
+                </div>
+              </div>
+              <div id="customerSearchBox" class="mt-2" style="display: none">
+                <input type="text" class="form-control mb-2" id="customerSearchInput"
+                  placeholder="Tìm kiếm tên hoặc SĐT..." oninput="filterCustomerList()" />
+                <div style="max-height: 180px; overflow-y: auto">
+                  <ul class="list-group" id="customerListBox"></ul>
+                </div>
+              </div>
+            </div>
+            <!-- Bán giao hàng -->
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="isDelivery" onchange="toggleDeliveryForm()" />
+                <label class="form-check-label" for="isDelivery">Bán giao hàng</label>
+              </div>
+              <div class="delivery-form mt-2" id="deliveryForm">
+                <div class="mb-2">
+                  <label class="form-label fw-semibold">Địa chỉ giao hàng:</label>
+                  <textarea class="form-control" id="deliveryAddress" rows="2"
+                    placeholder="Nhập địa chỉ giao hàng"></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- Thanh toán -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Phương thức thanh toán:</label>
+              <select class="form-select" id="paymentMethod">
+                <option value="cash">Tiền mặt</option>
+                <option value="card">Chuyển khoản</option>
+              </select>
+            </div>
+            <div class="mb-3" id="cashPayment" style="display: block">
+              <label class="form-label fw-semibold">Khách trả:</label>
+              <input type="number" class="form-control" id="customerPayment" placeholder="Nhập số tiền khách trả"
+                oninput="calculateChange()" />
+              <div class="mt-2">
+                <strong>Tiền thối: <span id="changeAmount">0đ</span></strong>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-danger rounded-pill" onclick="clearCart()">
+                Hủy
+              </button>
+              <button class="btn btn-primary rounded-pill" onclick="completeTransaction()">
+                Thanh toán
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="modal fade" id="invoicePreviewModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Xem trước hóa đơn</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body" id="invoiceContent">
-            <!-- Nội dung hóa đơn sẽ được thêm vào đây -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Đóng
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onclick="printInvoiceContent()"
-            >
-              <i class="fas fa-print me-1"></i>In
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="invoiceModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Hóa đơn bán hàng</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body" id="invoiceModalContent">
-            <!-- Nội dung hóa đơn sẽ được thêm vào đây -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Đóng
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onclick="exportToPDF()"
-            >
-              <i class="fas fa-file-pdf me-1"></i>Xuất PDF
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       let carts = [{}]; // Mỗi hóa đơn là 1 cart
       let activeOrder = 0;
@@ -560,11 +397,9 @@
         orderTabs.innerHTML = "";
         for (let i = 0; i < carts.length; i++) {
           orderTabs.innerHTML += `<li class="nav-item">
-            <button class="nav-link${
-              i === activeOrder ? " active" : ""
-            }" onclick="switchOrder(${i})">Hóa đơn ${
-            i + 1
-          } <span class='text-danger' style='cursor:pointer;' onclick='closeOrder(event,${i})'>&times;</span></button>
+            <button class="nav-link${i === activeOrder ? " active" : ""
+            }" onclick="switchOrder(${i})">Hóa đơn ${i + 1
+            } <span class='text-danger' style='cursor:pointer;' onclick='closeOrder(event,${i})'>&times;</span></button>
         </li>`;
         }
       }
@@ -849,28 +684,24 @@
                     <p>HÓA ĐƠN BÁN HÀNG</p>
                     <p>Mã hóa đơn: HD${Date.now().toString().slice(-6)}</p>
                     <p>Ngày: ${dateStr}</p>
-                    <p>Nhân viên: ${
-                      document.getElementById("createdBy").value
-                    }</p>
+                    <p>Nhân viên: ${document.getElementById("createdBy").value
+          }</p>
                 </div>
                 
                 <div class="invoice-info">
                     <h6>Thông tin khách hàng:</h6>
                     <p>
-                        ${
-                          document.getElementById("selectCustomer").checked
-                            ? document.getElementById("customerSearchInput")
-                                .value
-                            : "Khách lẻ"
-                        }
+                        ${document.getElementById("selectCustomer").checked
+            ? document.getElementById("customerSearchInput")
+              .value
+            : "Khách lẻ"
+          }
                     </p>
-                    ${
-                      document.getElementById("isDelivery").checked
-                        ? `<p>Địa chỉ giao hàng: ${
-                            document.getElementById("deliveryAddress").value
-                          }</p>`
-                        : ""
-                    }
+                    ${document.getElementById("isDelivery").checked
+            ? `<p>Địa chỉ giao hàng: ${document.getElementById("deliveryAddress").value
+            }</p>`
+            : ""
+          }
                 </div>
                 
                 <div class="table-responsive invoice-table">
@@ -885,21 +716,21 @@
                         </thead>
                         <tbody>
                             ${cart.items
-                              .map(
-                                (item) => `
+            .map(
+              (item) => `
                                 <tr>
                                     <td>${item.name}</td>
                                     <td class="text-end">${item.quantity}</td>
                                     <td class="text-end">${item.price.toLocaleString(
-                                      "vi-VN"
-                                    )}đ</td>
+                "vi-VN"
+              )}đ</td>
                                     <td class="text-end">${(
-                                      item.price * item.quantity
-                                    ).toLocaleString("vi-VN")}đ</td>
+                  item.price * item.quantity
+                ).toLocaleString("vi-VN")}đ</td>
                                 </tr>
                             `
-                              )
-                              .join("")}
+            )
+            .join("")}
                         </tbody>
                     </table>
                 </div>
@@ -921,14 +752,13 @@
                 
                 <div class="invoice-info">
                     <h6>Thông tin thanh toán:</h6>
-                    <p>Phương thức: ${
-                      document.getElementById("paymentMethod").options[
-                        document.getElementById("paymentMethod").selectedIndex
-                      ].text
-                    }</p>
+                    <p>Phương thức: ${document.getElementById("paymentMethod").options[
+            document.getElementById("paymentMethod").selectedIndex
+          ].text
+          }</p>
                     <p>Khách trả: ${customerPayment.toLocaleString(
-                      "vi-VN"
-                    )}đ</p>
+            "vi-VN"
+          )}đ</p>
                     <p>Tiền thối: ${change.toLocaleString("vi-VN")}đ</p>
                 </div>
                 
@@ -1039,12 +869,10 @@
       // Hiển thị toast thông báo
       function showToast(message, type = "success") {
         let toast = document.getElementById("customToast");
-        toast.innerHTML = `<div class="toast-content" style="padding:16px 24px 18px 20px; border-radius:10px; background:${
-          type === "danger" ? "#dc3545" : "#28a745"
-        }; color:#fff; display:flex; align-items:center; gap:12px; position:relative; min-width:220px; max-width:340px;">
-        <i class='fa ${
-          type === "danger" ? "fa-times-circle" : "fa-check-circle"
-        }' style='font-size:1.4rem;'></i>
+        toast.innerHTML = `<div class="toast-content" style="padding:16px 24px 18px 20px; border-radius:10px; background:${type === "danger" ? "#dc3545" : "#28a745"
+          }; color:#fff; display:flex; align-items:center; gap:12px; position:relative; min-width:220px; max-width:340px;">
+        <i class='fa ${type === "danger" ? "fa-times-circle" : "fa-check-circle"
+          }' style='font-size:1.4rem;'></i>
         <span style='flex:1;'>${message}</span>
         <span class='toast-close' style='position:absolute;top:10px;right:12px;cursor:pointer;font-size:1.2rem;opacity:0.7;'>&times;</span>
         <div class='toast-progress' style='position:absolute;left:0;bottom:0;height:4px;width:100%;background:rgba(255,255,255,0.25);overflow:hidden;border-radius:0 0 10px 10px;'>
@@ -1137,16 +965,16 @@
                     <label class="form-label">Size:</label>
                     <select class="form-select" id="variantSize" onchange="updateVariantStock()">
                         ${sizes
-                          .map((s) => `<option value='${s}'>${s}</option>`)
-                          .join("")}
+            .map((s) => `<option value='${s}'>${s}</option>`)
+            .join("")}
                     </select>
                 </div>
                 <div class="mb-2">
                     <label class="form-label">Màu:</label>
                     <select class="form-select" id="variantColor" onchange="updateVariantStock()">
                         ${colors
-                          .map((c) => `<option value='${c}'>${c}</option>`)
-                          .join("")}
+            .map((c) => `<option value='${c}'>${c}</option>`)
+            .join("")}
                     </select>
                 </div>
                 <div class="mb-2">
@@ -1244,25 +1072,21 @@
           cartItems.innerHTML += `
                 <tr>
                     <td>
-                        <img src="${
-                          item.image || "https://via.placeholder.com/40"
-                        }" alt="img" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px;vertical-align:middle;">
+                        <img src="${item.image || "https://via.placeholder.com/40"
+            }" alt="img" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px;vertical-align:middle;">
                         <span>${item.name}</span>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${
-                          item.id
-                        }', -1)">-</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item.id
+            }', -1)">-</button>
                         <span class="mx-2">${item.quantity}</span>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${
-                          item.id
-                        }', 1)">+</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item.id
+            }', 1)">+</button>
                     </td>
                     <td>${item.price.toLocaleString("vi-VN")}đ</td>
                     <td>${subtotal.toLocaleString("vi-VN")}đ</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="removeFromCart('${
-                      item.id
-                    }')"><i class="fas fa-trash"></i></button></td>
+                    <td><button class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id
+            }')"><i class="fas fa-trash"></i></button></td>
                 </tr>
             `;
         });
@@ -1381,5 +1205,66 @@
         console.warn(`Lỗi quét QR: ${error}`);
       }
     </script>
-  </body>
+    <div id="customToast"></div>
+    <div class="modal fade" id="qrScanModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Quét mã QR</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="qr-reader" style="width: 100%"></div>
+            <div id="qr-reader-results"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="invoicePreviewModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Xem trước hóa đơn</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="invoiceContent">
+            <!-- Nội dung hóa đơn sẽ được thêm vào đây -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Đóng
+            </button>
+            <button type="button" class="btn btn-primary" onclick="printInvoiceContent()">
+              <i class="fas fa-print me-1"></i>In
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="invoiceModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Hóa đơn bán hàng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="invoiceModalContent">
+            <!-- Nội dung hóa đơn sẽ được thêm vào đây -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Đóng
+            </button>
+            <button type="button" class="btn btn-primary" onclick="exportToPDF()">
+              <i class="fas fa-file-pdf me-1"></i>Xuất PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
 </html>

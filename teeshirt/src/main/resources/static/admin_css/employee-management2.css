@@ -15,15 +15,10 @@ main {
 .card {
     border-radius: 28px !important;
     background: rgba(255,255,255,0.7);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
     border: 1.5px solid rgba(255,255,255,0.25);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: box-shadow 0.2s;
-}
-
-.card:hover {
-    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.22);
 }
 
 .card-header {
