@@ -55,9 +55,9 @@ public class HomeController {
         return "admin/index";
     }
 
-    @GetMapping("/counter-sale")
+    @GetMapping("/counter-sale-update")
     public String counter_sale() {
-        return "/admin/order/counter-sales";
+        return "/admin/order/counter-sale-update";
     }
 
     @GetMapping("/admin/promotion-management")
@@ -108,5 +108,20 @@ public class HomeController {
     @GetMapping("/admin/order-detail")
     public String order_detail() {
         return "/admin/order/order-detail";
+    }
+
+    @GetMapping("/attributes-management")
+    public String attribute() {
+        return "/admin/product/attribute-management";
+    }
+
+    @GetMapping("/admin/logout")
+    public String logoutAdmin() {
+        return "/admin/account/danhNhap";
+    }
+
+    @GetMapping("/categories-management")
+    public String cate() {
+        return "/admin/product/category -management";
     }
 }

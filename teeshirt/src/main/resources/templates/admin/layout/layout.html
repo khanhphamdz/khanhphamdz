@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/admin_css/style_order-detail.css" />
     <link rel="stylesheet" href="/admin_css/style_add_product.css" />
     <link rel="stylesheet" href="/admin_css/style_product-detail.css" />
-    <link rel="stylesheet" href="/admin_css/style_counter-sale.css" />
     <!-- Boxiocns CDN Link -->
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,7 +30,7 @@
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="/counter-sale">
+                    <a href="/counter-sale-update">
                         <i class="fa-solid fa-money-bill"></i>
                         <span class="link_name">Bán hàng tại quầy</span>
                     </a>
@@ -48,8 +47,7 @@
                 <ul class="sub-menu">
                     <li><a href="/product-management">Sản phẩm</a></li>
                     <li><a href="/categories-management">Danh mục</a></li>
-                    <li><a href="#">Kích cỡ</a></li>
-                    <li><a href="#">Màu sắc</a></li>
+                    <li><a href="/attributes-management">Các thuộc tính</a></li>
                 </ul>
             </li>
 
@@ -103,7 +101,7 @@
                         <div class="profile_name">Trans H Hà</div>
                         <div class="job">Nhân viên </div>
                     </div>
-                    <i class="bx bx-log-out"></i>
+                    <a href="/admin/logout"><i class="bx bx-log-out"></i></a>
                 </div>
             </li>
         </ul>
@@ -252,51 +250,73 @@
     </script>
     <!-- JavaScript for order -->
     <script>
-        // Fake data for orders
+        // Dữ liệu mẫu
         let orders = [
-            { id: '#ORD001', customer: 'Nguyễn Văn A', status: 'cho-xac-nhan', createdAt: '24/05/2025 14:00', source: 'online', paymentMethod: 'cash', totalAmount: 300000, items: [{ name: 'Áo thun nam', quantity: 2, price: 150000 }] },
-            { id: '#ORD002', customer: 'Trần Thị B', status: 'hoan-tat', createdAt: '24/05/2025 13:30', source: 'counter', paymentMethod: 'card', totalAmount: 200000, items: [{ name: 'Áo polo', quantity: 1, price: 200000 }] },
-            { id: '#ORD003', customer: 'Lê Văn C', status: 'da-huy', createdAt: '23/05/2025 16:00', source: 'online', paymentMethod: 'mobile', totalAmount: 250000, items: [{ name: 'Áo sơ mi', quantity: 1, price: 250000 }] },
-            { id: '#ORD004', customer: 'Phạm Thị D', status: 'dang-chuan-bi', createdAt: '24/05/2025 15:00', source: 'online', paymentMethod: 'card', totalAmount: 450000, items: [{ name: 'Áo khoác', quantity: 1, price: 450000 }] },
-            { id: '#ORD005', customer: 'Hoàng Văn E', status: 'dang-giao', createdAt: '24/05/2025 12:00', source: 'online', paymentMethod: 'card', totalAmount: 600000, items: [{ name: 'Áo len', quantity: 2, price: 300000 }] },
-            { id: '#ORD006', customer: 'Ngô Thị F', status: 'tra-hang', createdAt: '23/05/2025 09:00', source: 'counter', paymentMethod: 'cash', totalAmount: 350000, items: [{ name: 'Áo thun nữ', quantity: 1, price: 350000 }] },
-            { id: '#ORD007', customer: 'Vũ Văn G', status: 'cho-xac-nhan', createdAt: '24/05/2025 16:30', source: 'online', paymentMethod: 'card', totalAmount: 800000, items: [{ name: 'Áo vest', quantity: 1, price: 800000 }] }
+            { id: '#ORD001', customer: 'Nguyễn Văn A', status: 'cho-xac-nhan', createdAt: '2025-05-24T14:00', source: 'online', paymentMethod: 'cash', totalAmount: 300000, items: [{ name: 'Áo thun nam', quantity: 2, price: 150000 }] },
+            { id: '#ORD002', customer: 'Trần Thị B', status: 'hoan-tat', createdAt: '2025-05-24T13:30', source: 'counter', paymentMethod: 'card', totalAmount: 200000, items: [{ name: 'Áo polo', quantity: 1, price: 200000 }] },
+            { id: '#ORD003', customer: 'Lê Văn C', status: 'da-huy', createdAt: '2025-05-23T16:00', source: 'online', paymentMethod: 'mobile', totalAmount: 250000, items: [{ name: 'Áo sơ mi', quantity: 1, price: 250000 }] },
+            { id: '#ORD004', customer: 'Phạm Thị D', status: 'dang-chuan-bi', createdAt: '2025-05-24T15:00', source: 'online', paymentMethod: 'card', totalAmount: 450000, items: [{ name: 'Áo khoác', quantity: 1, price: 450000 }] },
+            { id: '#ORD005', customer: 'Hoàng Văn E', status: 'dang-giao', createdAt: '2025-05-24T12:00', source: 'online', paymentMethod: 'card', totalAmount: 600000, items: [{ name: 'Áo len', quantity: 2, price: 300000 }] },
+            { id: '#ORD006', customer: 'Ngô Thị F', status: 'tra-hang', createdAt: '2025-05-23T09:00', source: 'counter', paymentMethod: 'cash', totalAmount: 350000, items: [{ name: 'Áo thun nữ', quantity: 1, price: 350000 }] },
+            { id: '#ORD007', customer: 'Vũ Văn G', status: 'cho-xac-nhan', createdAt: '2025-05-24T16:30', source: 'online', paymentMethod: 'card', totalAmount: 800000, items: [{ name: 'Áo vest', quantity: 1, price: 800000 }] }
         ];
 
-        // Load orders table
-        function loadOrders(filteredOrders = orders) {
-            const tbody = document.getElementById('orderTable');
+        let currentPage = 1;
+        const perPage = 5;
+        let filteredOrders = [...orders]; // Biến toàn cục cho dữ liệu đã lọc
+
+        // Khởi tạo khi tải trang
+        window.onload = function () {
+            applyFilters(); // Tải trước dữ liệu mẫu
+        };
+
+        // Áp dụng bộ lọc
+        function applyFilters() {
+            const date = document.getElementById('filterDate').value;
+            const status = document.getElementById('filterStatus').value;
+            const source = document.getElementById('filterSource').value;
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+
+            filteredOrders = orders.filter(order => {
+                const createdDate = new Date(order.createdAt).toISOString().split('T')[0];
+                const matchesDate = !date || createdDate === date;
+                const matchesStatus = !status || order.status === status;
+                const matchesSource = !source || order.source === source;
+                const matchesKeyword = !keyword || order.id.toLowerCase().includes(keyword) || order.customer.toLowerCase().includes(keyword);
+                return matchesDate && matchesStatus && matchesSource && matchesKeyword;
+            });
+
+            renderPagination();
+            renderOrders();
+        }
+
+        // Đặt lại bộ lọc
+        function resetFilters() {
+            document.getElementById('filterForm').reset();
+            filteredOrders = [...orders];
+            applyFilters();
+        }
+
+        // Render bảng đơn hàng
+        function renderOrders() {
+            const paginatedOrders = paginateOrders(filteredOrders, currentPage, perPage);
+            const tbody = document.getElementById('orderTablex');
             tbody.innerHTML = '';
-            filteredOrders.forEach((order, index) => {
-                // Chuyển trạng thái và nguồn sang tiếng Việt
-                let statusVN = '';
-                switch (order.status) {
-                    case 'cho-xac-nhan': statusVN = 'Chờ xác nhận'; break;
-                    case 'dang-chuan-bi': statusVN = 'Đang chuẩn bị hàng'; break;
-                    case 'dang-giao': statusVN = 'Đang giao hàng'; break;
-                    case 'hoan-tat': statusVN = 'Hoàn tất'; break;
-                    case 'da-huy': statusVN = 'Đã hủy'; break;
-                    case 'tra-hang': statusVN = 'Trả hàng'; break;
-                    default: statusVN = order.status;
-                }
-                let sourceVN = '';
-                switch (order.source) {
-                    case 'counter': sourceVN = 'Tại quầy'; break;
-                    case 'online': sourceVN = 'Online'; break;
-                    default: sourceVN = order.source;
-                }
+            paginatedOrders.forEach((order, index) => {
+                const statusVN = { 'cho-xac-nhan': 'Chờ xác nhận', 'dang-chuan-bi': 'Đang chuẩn bị', 'dang-giao': 'Đang giao', 'hoan-tat': 'Hoàn tất', 'da-huy': 'Đã hủy', 'tra-hang': 'Trả hàng' }[order.status] || order.status;
+                const sourceVN = { 'counter': 'Tại quầy', 'online': 'Online' }[order.source] || order.source;
                 const row = `
                     <tr>
-                        <td>${index + 1}</td>
+                        <td>${(currentPage - 1) * perPage + index + 1}</td>
                         <td>${order.id}</td>
                         <td>${order.customer}</td>
                         <td>${statusVN}</td>
-                        <td>${order.createdAt}</td>
+                        <td>${new Date(order.createdAt).toLocaleString('vi-VN')}</td>
                         <td>${sourceVN}</td>
-                        <td>${order.totalAmount.toLocaleString()} VNĐ</td>
+                        <td>${order.totalAmount.toLocaleString('vi-VN')} VNĐ</td>
                         <td>
-                            <button class="btn btn-sm btn-info btn-action" onclick="openOrderDetail('${order.id}')">Xem</button>
-                            <a href="/admin/order-detail" class="btn btn-sm btn-warning btn-action">Cập nhật</a>
+                            <button class="btn btn-sm btn-info" onclick="openOrderDetail('${order.id}')"><i class="fa-solid fa-eye"></i></button>
+                            <button class="btn btn-sm btn-danger ms-2" onclick="openCancelOrder('${order.id}')"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -304,136 +324,164 @@
             });
         }
 
-        // Filter orders
-        function filterOrders() {
-            const date = document.getElementById('filterDate').value;
-            const status = document.getElementById('filterStatus').value;
-            const source = document.getElementById('filterSource').value;
-
-            let filteredOrders = orders;
-            if (date) filteredOrders = filteredOrders.filter(o => o.createdAt.startsWith(date.split('-').reverse().join('/')));
-            if (status) filteredOrders = filteredOrders.filter(o => o.status === status);
-            if (source) filteredOrders = filteredOrders.filter(o => o.source === source);
-
-            loadOrders(filteredOrders);
+        // Phân trang
+        function paginateOrders(orders, page, perPage) {
+            const start = (page - 1) * perPage;
+            const end = start + perPage;
+            return orders.slice(start, end);
         }
 
-        // Open order detail modal
+        // Render phân trang
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredOrders.length / perPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const prev = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Trước</a></li>`;
+            pagination.innerHTML += prev;
+
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.innerHTML += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+            }
+
+            const next = `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Sau</a></li>`;
+            pagination.innerHTML += next;
+        }
+
+        // Thay đổi trang
+        function changePage(page) {
+            currentPage = page;
+            renderOrders();
+            renderPagination();
+        }
+
+        // Lọc theo trạng thái từ dropdown
+        document.getElementById('statusDropdown').addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                const status = e.target.getAttribute('data-status');
+                document.getElementById('filterStatus').value = status;
+                applyFilters();
+            }
+        });
+
+        // Mở modal chi tiết
         function openOrderDetail(orderId) {
             const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
             document.getElementById('detailOrderId').textContent = order.id;
             document.getElementById('detailCustomer').textContent = order.customer;
-            document.getElementById('detailCreatedAt').textContent = order.createdAt;
-            document.getElementById('detailSource').textContent = order.source === 'counter' ? 'Tại quầy' : 'Online';
-            document.getElementById('detailStatus').textContent = order.status;
+            document.getElementById('detailCreatedAt').textContent = new Date(order.createdAt).toLocaleString('vi-VN');
+            document.getElementById('detailSource').textContent = { 'counter': 'Tại quầy', 'online': 'Online' }[order.source] || order.source;
             document.getElementById('detailPaymentMethod').textContent = order.paymentMethod;
-            document.getElementById('detailTotalAmount').textContent = order.totalAmount.toLocaleString() + ' VNĐ';
-
-            // Hiển thị các option trạng thái phù hợp
-            const newStatusSelect = document.getElementById('newStatus');
-            if (order.source === 'counter') {
-                // Nếu là đơn hàng tại quầy, chỉ hiện thị 2 trạng thái
-                newStatusSelect.innerHTML = `
-                    <option value="hoan-tat">Hoàn tất</option>
-                    <option value="tra-hang">Trả hàng</option>
-                `;
-            } else {
-                // Nếu là đơn online, hiển thị tất cả trạng thái
-                newStatusSelect.innerHTML = `
-                    <option value="cho-xac-nhan">Chờ xác nhận</option>
-                    <option value="dang-chuan-bi">Đang chuẩn bị hàng</option>
-                    <option value="dang-giao">Đang giao hàng</option>
-                    <option value="hoan-tat">Hoàn tất</option>
-                    <option value="da-huy">Đã hủy</option>
-                    <option value="tra-hang">Trả hàng</option>
-                `;
-            }
-            newStatusSelect.value = order.status;
+            document.getElementById('detailTotalAmount').textContent = order.totalAmount.toLocaleString('vi-VN') + ' VNĐ';
 
             const itemsBody = document.getElementById('orderItems');
             itemsBody.innerHTML = order.items.map(item => `
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.quantity}</td>
-                    <td>${item.price.toLocaleString()} VNĐ</td>
-                    <td>${(item.quantity * item.price).toLocaleString()} VNĐ</td>
+                    <td>${item.price.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>${(item.quantity * item.price).toLocaleString('vi-VN')} VNĐ</td>
                 </tr>
             `).join('');
-            document.getElementById('orderDetailModal').modal('show');
+
+            const newStatus = document.getElementById('newStatus');
+            newStatus.innerHTML = '';
+            const statuses = order.source === 'counter' ? ['hoan-tat', 'tra-hang'] : ['cho-xac-nhan', 'dang-chuan-bi', 'dang-giao', 'hoan-tat', 'da-huy', 'tra-hang'];
+            statuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status;
+                option.textContent = { 'cho-xac-nhan': 'Chờ xác nhận', 'dang-chuan-bi': 'Đang chuẩn bị', 'dang-giao': 'Đang giao', 'hoan-tat': 'Hoàn tất', 'da-huy': 'Đã hủy', 'tra-hang': 'Trả hàng' }[status] || status;
+                if (status === order.status) option.selected = true;
+                newStatus.appendChild(option);
+            });
+
+            new bootstrap.Modal(document.getElementById('orderDetailModal')).show();
         }
 
-        // Update order status
-        function updateOrderStatus(orderId) {
-            openOrderDetail(orderId);
-            // Save status will be handled in saveStatus()
-        }
-
-        // Save status
-        function saveStatus() {
+        // Lưu trạng thái
+        async function saveStatus() {
             const orderId = document.getElementById('detailOrderId').textContent;
             const newStatus = document.getElementById('newStatus').value;
             const order = orders.find(o => o.id === orderId);
 
-            // Kiểm tra nếu là đơn hàng tại quầy
             if (order.source === 'counter' && !['hoan-tat', 'tra-hang'].includes(newStatus)) {
-                alert('Đơn hàng tại quầy chỉ có thể có trạng thái Hoàn tất hoặc Trả hàng!');
+                showToast('Đơn hàng tại quầy chỉ hỗ trợ Hoàn tất hoặc Trả hàng!', 'danger');
                 return;
             }
 
-            order.status = newStatus;
-            document.getElementById('detailStatus').textContent = newStatus;
-            alert(`Trạng thái đơn hàng ${orderId} đã được cập nhật thành ${newStatus}!`);
-            filterOrders();
+            // Giả lập gọi API
+            const response = await fetch(`/api/orders/${orderId}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (response.ok) {
+                order.status = newStatus;
+                showToast(`Cập nhật trạng thái đơn ${orderId} thành ${newStatus} thành công!`, 'success');
+                applyFilters();
+            } else {
+                showToast('Cập nhật thất bại!', 'danger');
+            }
             document.getElementById('orderDetailModal').modal('hide');
         }
 
-        // Open cancel order modal
+        // Mở modal hủy
         function openCancelOrder(orderId) {
             document.getElementById('cancelOrderId').textContent = orderId;
-            document.getElementById('cancelOrderModal').modal('show');
+            new bootstrap.Modal(document.getElementById('cancelOrderModal')).show();
         }
 
-        // Confirm cancel
-        function confirmCancel() {
+        // Xác nhận hủy
+        async function confirmCancel() {
             const orderId = document.getElementById('cancelOrderId').textContent;
             const reason = document.getElementById('cancelReason').value;
             if (!reason) {
-                alert('Vui lòng nhập lý do hủy!');
+                showToast('Vui lòng nhập lý do hủy!', 'warning');
                 return;
             }
-            const order = orders.find(o => o.id === orderId);
-            order.status = 'da-huy';
-            order.note = reason;
-            alert(`Đơn hàng ${orderId} đã được hủy với lý do: ${reason}`);
-            filterOrders();
+
+            // Giả lập gọi API
+            const response = await fetch(`/api/orders/${orderId}/cancel`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'da-huy', note: reason })
+            });
+            if (response.ok) {
+                const order = orders.find(o => o.id === orderId);
+                order.status = 'da-huy';
+                order.note = reason;
+                showToast(`Đơn hàng ${orderId} đã được hủy!`, 'success');
+                applyFilters();
+            } else {
+                showToast('Hủy đơn thất bại!', 'danger');
+            }
             document.getElementById('cancelOrderModal').modal('hide');
         }
 
-        // Filter orders by tab
-        function filterByTab(status) {
-            let filteredOrders = orders;
-            if (status !== 'all') {
-                filteredOrders = orders.filter(order => order.status === status);
-            }
-            loadOrders(filteredOrders);
-
-            // Cập nhật trạng thái active cho tab
-            document.querySelectorAll('#orderStatusTabs .nav-link').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(`tab-${status}`).classList.add('active');
+        // Hiển thị toast
+        function showToast(message, type = 'success') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            setTimeout(() => bsToast.hide(), 3000);
         }
-
-        // Reset filters
-        function resetOrderFilters() {
-            document.getElementById('filterDate').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterSource').value = '';
-            filterOrders();
-        }
-
-        // Load initial data
-        loadOrders();
     </script>
     <!-- quản lý nhân viên -->
     <script>
@@ -1288,268 +1336,268 @@
     <script>
         // Gán sự kiện cho tất cả nút xem (icon con mắt)
         document.addEventListener("DOMContentLoaded", function () {
-          document.querySelectorAll(".btn-eye-view").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              var modal = new bootstrap.Modal(
-                document.getElementById("variantDetailModal")
-              );
-              modal.show();
-            });
-          });
-    
-          // Chỉnh sửa số lượng và giá bán trực tiếp trên bảng
-          document.querySelectorAll(".editable-cell").forEach(function (cell) {
-            cell.addEventListener("click", function (e) {
-              if (cell.querySelector("input")) return; // Đã có input
-              var oldValue = cell.innerText.trim();
-              var input = document.createElement("input");
-              input.type = "number";
-              input.value = oldValue.replace(/[^\d.]/g, "");
-              input.className = "form-control form-control-sm text-center";
-              input.style.width = "90px";
-              input.style.display = "inline-block";
-              input.style.padding = "2px 6px";
-              input.style.fontSize = "1rem";
-              cell.innerHTML = "";
-              cell.appendChild(input);
-              input.focus();
-              input.select();
-              input.addEventListener("blur", function () {
-                var newValue = input.value;
-                if (cell.dataset.type === "price") {
-                  newValue = Number(newValue).toLocaleString("vi-VN") + " VNĐ";
-                }
-                cell.innerHTML = newValue;
-              });
-              input.addEventListener("keydown", function (ev) {
-                if (ev.key === "Enter") {
-                  input.blur();
-                }
-              });
-            });
-          });
-    
-          // Khi bấm nút Lưu, cập nhật lại tất cả các trường editable-info về dạng text
-          var btnSave = document.querySelector(".btn-variant-save");
-          if (btnSave) {
-            btnSave.addEventListener("click", function () {
-              document
-                .querySelectorAll(".editable-info")
-                .forEach(function (info) {
-                  var field = info.dataset.field;
-                  var input = info.querySelector("input, select, textarea");
-                  if (input) {
-                    var newValue = input.value;
-                    if (field === "status") {
-                      newValue = input.options[input.selectedIndex].text;
-                      info.classList.toggle(
-                        "text-success",
-                        newValue === "Đang kinh doanh"
-                      );
-                      info.classList.toggle(
-                        "fw-bold",
-                        newValue === "Đang kinh doanh"
-                      );
-                    }
-                    info.innerHTML = newValue;
-                  }
+            document.querySelectorAll(".btn-eye-view").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    var modal = new bootstrap.Modal(
+                        document.getElementById("variantDetailModal")
+                    );
+                    modal.show();
                 });
             });
-          }
-    
-          // Khi bấm nút Lưu ở card thông tin sản phẩm, chỉ cập nhật các trường editable-info trong card
-          var btnSaveHeader = document.getElementById("btn-save-header");
-          if (btnSaveHeader) {
-            btnSaveHeader.addEventListener("click", function () {
-              // Chỉ lấy các .editable-info trong card thông tin sản phẩm
-              var card = btnSaveHeader.closest(".card-body");
-              if (!card) return;
-              card.querySelectorAll(".editable-info").forEach(function (info) {
-                var field = info.dataset.field;
-                var input = info.querySelector("input, select, textarea");
-                if (input) {
-                  var newValue = input.value;
-                  if (field === "status") {
-                    newValue = input.options[input.selectedIndex].text;
-                    info.classList.toggle(
-                      "text-success",
-                      newValue === "Đang kinh doanh"
-                    );
-                    info.classList.toggle(
-                      "fw-bold",
-                      newValue === "Đang kinh doanh"
-                    );
-                  }
-                  info.innerHTML = newValue;
-                }
-              });
-            });
-          }
-    
-          // Hiện modal chỉnh sửa số lượng & giá chung khi bấm nút
-          var btnEditAll = document.querySelector(".btn-variant-edit");
-          if (btnEditAll) {
-            btnEditAll.addEventListener("click", function () {
-              var modal = new bootstrap.Modal(
-                document.getElementById("editAllModal")
-              );
-              modal.show();
-            });
-          }
-    
-          // Upload ảnh trong modal chi tiết biến thể
-          var btnUploadImage = document.getElementById("btn-upload-image");
-          var inputUploadImage = document.getElementById("input-upload-image");
-          var imageList = document.getElementById("variant-image-list");
-          if (btnUploadImage && inputUploadImage && imageList) {
-            btnUploadImage.addEventListener("click", function () {
-              inputUploadImage.click();
-            });
-            inputUploadImage.addEventListener("change", function (e) {
-              var files = Array.from(e.target.files);
-              files.forEach(function (file) {
-                if (!file.type.startsWith("image/")) return;
-                var reader = new FileReader();
-                reader.onload = function (ev) {
-                  var div = document.createElement("div");
-                  div.style.width = "90px";
-                  div.style.height = "90px";
-                  div.style.borderRadius = "10px";
-                  div.style.overflow = "hidden";
-                  div.style.border = "1.5px solid #eee";
-                  var img = document.createElement("img");
-                  img.src = ev.target.result;
-                  img.style.width = "100%";
-                  img.style.height = "100%";
-                  img.style.objectFit = "cover";
-                  div.appendChild(img);
-                  // Thêm trước nút upload
-                  imageList.insertBefore(div, btnUploadImage);
-                };
-                reader.readAsDataURL(file);
-              });
-              // Reset input để có thể chọn lại cùng file
-              inputUploadImage.value = "";
-            });
-          }
-    
-          // Preview ảnh khi chọn file trong modal thêm biến thể
-          (function () {
-            var input = document.getElementById('variantImageInput');
-            var preview = document.getElementById('variantImagePreview');
-            if (input && preview) {
-              input.addEventListener('change', function (e) {
-                preview.innerHTML = '';
-                var file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                  var reader = new FileReader();
-                  reader.onload = function (ev) {
-                    var img = document.createElement('img');
-                    img.src = ev.target.result;
-                    img.style.maxWidth = '120px';
-                    img.style.maxHeight = '120px';
-                    img.style.borderRadius = '8px';
-                    preview.appendChild(img);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              });
-            }
-          })();
-    
-          // Preview màu sắc khi chọn trong modal thêm biến thể
-          (function () {
-            var colorSelect = document.getElementById('addVariantColor');
-            var colorPreview = document.getElementById('addVariantColorPreview');
-            if (colorSelect && colorPreview) {
-              colorSelect.addEventListener('change', function () {
-                var val = colorSelect.value;
-                var colorMap = { 'Đỏ': 'red', 'Xanh': 'blue', 'Đen': 'black' };
-                colorPreview.style.background = colorMap[val] || '#888';
-              });
-            }
-          })();
-    
-          // Preview và upload nhiều ảnh trong modal thêm biến thể
-          (function () {
-            var btnUpload = document.getElementById('btn-add-variant-upload-image');
-            var inputUpload = document.getElementById('input-add-variant-upload-image');
-            var imageList = document.getElementById('add-variant-image-list');
-            if (btnUpload && inputUpload && imageList) {
-              btnUpload.addEventListener('click', function () {
-                inputUpload.click();
-              });
-              inputUpload.addEventListener('change', function (e) {
-                var files = Array.from(e.target.files);
-                files.forEach(function (file) {
-                  if (!file.type.startsWith("image/")) return;
-                  var reader = new FileReader();
-                  reader.onload = function (ev) {
-                    var div = document.createElement('div');
-                    div.style.width = '90px';
-                    div.style.height = '90px';
-                    div.style.borderRadius = '10px';
-                    div.style.overflow = 'hidden';
-                    div.style.border = '1.5px solid #eee';
-                    div.style.display = 'flex';
-                    div.style.alignItems = 'center';
-                    div.style.justifyContent = 'center';
-                    div.style.background = '#fafbfc';
-                    div.style.marginRight = '8px';
-                    div.style.marginBottom = '8px';
-                    var img = document.createElement('img');
-                    img.src = ev.target.result;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'cover';
-                    div.appendChild(img);
-                    imageList.insertBefore(div, btnUpload);
-                  };
-                  reader.readAsDataURL(file);
+
+            // Chỉnh sửa số lượng và giá bán trực tiếp trên bảng
+            document.querySelectorAll(".editable-cell").forEach(function (cell) {
+                cell.addEventListener("click", function (e) {
+                    if (cell.querySelector("input")) return; // Đã có input
+                    var oldValue = cell.innerText.trim();
+                    var input = document.createElement("input");
+                    input.type = "number";
+                    input.value = oldValue.replace(/[^\d.]/g, "");
+                    input.className = "form-control form-control-sm text-center";
+                    input.style.width = "90px";
+                    input.style.display = "inline-block";
+                    input.style.padding = "2px 6px";
+                    input.style.fontSize = "1rem";
+                    cell.innerHTML = "";
+                    cell.appendChild(input);
+                    input.focus();
+                    input.select();
+                    input.addEventListener("blur", function () {
+                        var newValue = input.value;
+                        if (cell.dataset.type === "price") {
+                            newValue = Number(newValue).toLocaleString("vi-VN") + " VNĐ";
+                        }
+                        cell.innerHTML = newValue;
+                    });
+                    input.addEventListener("keydown", function (ev) {
+                        if (ev.key === "Enter") {
+                            input.blur();
+                        }
+                    });
                 });
-                inputUpload.value = '';
-              });
+            });
+
+            // Khi bấm nút Lưu, cập nhật lại tất cả các trường editable-info về dạng text
+            var btnSave = document.querySelector(".btn-variant-save");
+            if (btnSave) {
+                btnSave.addEventListener("click", function () {
+                    document
+                        .querySelectorAll(".editable-info")
+                        .forEach(function (info) {
+                            var field = info.dataset.field;
+                            var input = info.querySelector("input, select, textarea");
+                            if (input) {
+                                var newValue = input.value;
+                                if (field === "status") {
+                                    newValue = input.options[input.selectedIndex].text;
+                                    info.classList.toggle(
+                                        "text-success",
+                                        newValue === "Đang kinh doanh"
+                                    );
+                                    info.classList.toggle(
+                                        "fw-bold",
+                                        newValue === "Đang kinh doanh"
+                                    );
+                                }
+                                info.innerHTML = newValue;
+                            }
+                        });
+                });
             }
-          })();
-    
-          // Chọn màu sắc trong modal thêm biến thể
-          (function () {
-            var colorBtns = document.querySelectorAll('#addVariantColorGroup .btn-choose-color');
-            var colorInput = document.getElementById('addVariantColor');
-            colorBtns.forEach(function (btn) {
-              btn.addEventListener('click', function () {
-                colorBtns.forEach(function (b) { b.classList.remove('color-active'); });
-                btn.classList.add('color-active');
-                colorInput.value = btn.getAttribute('data-color');
-              });
-            });
-            // Set mặc định
-            if (colorBtns.length) colorBtns[0].classList.add('color-active');
-          })();
-          // Chọn kích cỡ trong modal thêm biến thể (radio version, native)
-          (function () {
-            var sizeRadios = document.querySelectorAll('#addVariantSizeGroup input[type="radio"]');
-            var sizeInput = document.getElementById('addVariantSize');
-            sizeRadios.forEach(function (radio) {
-              radio.addEventListener('change', function () {
-                if (radio.checked) sizeInput.value = radio.value;
-              });
-            });
-          })();
-          // Chọn nhiều kích cỡ trong modal thêm biến thể (checkbox version)
-          (function () {
-            var sizeCheckboxes = document.querySelectorAll('#addVariantSizeGroup .size-checkbox');
-            var sizeInput = document.getElementById('addVariantSize');
-            function updateSizeInput() {
-              var checked = Array.from(sizeCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-              sizeInput.value = checked.join(',');
+
+            // Khi bấm nút Lưu ở card thông tin sản phẩm, chỉ cập nhật các trường editable-info trong card
+            var btnSaveHeader = document.getElementById("btn-save-header");
+            if (btnSaveHeader) {
+                btnSaveHeader.addEventListener("click", function () {
+                    // Chỉ lấy các .editable-info trong card thông tin sản phẩm
+                    var card = btnSaveHeader.closest(".card-body");
+                    if (!card) return;
+                    card.querySelectorAll(".editable-info").forEach(function (info) {
+                        var field = info.dataset.field;
+                        var input = info.querySelector("input, select, textarea");
+                        if (input) {
+                            var newValue = input.value;
+                            if (field === "status") {
+                                newValue = input.options[input.selectedIndex].text;
+                                info.classList.toggle(
+                                    "text-success",
+                                    newValue === "Đang kinh doanh"
+                                );
+                                info.classList.toggle(
+                                    "fw-bold",
+                                    newValue === "Đang kinh doanh"
+                                );
+                            }
+                            info.innerHTML = newValue;
+                        }
+                    });
+                });
             }
-            sizeCheckboxes.forEach(function (cb) {
-              cb.addEventListener('change', updateSizeInput);
-            });
-          })();
+
+            // Hiện modal chỉnh sửa số lượng & giá chung khi bấm nút
+            var btnEditAll = document.querySelector(".btn-variant-edit");
+            if (btnEditAll) {
+                btnEditAll.addEventListener("click", function () {
+                    var modal = new bootstrap.Modal(
+                        document.getElementById("editAllModal")
+                    );
+                    modal.show();
+                });
+            }
+
+            // Upload ảnh trong modal chi tiết biến thể
+            var btnUploadImage = document.getElementById("btn-upload-image");
+            var inputUploadImage = document.getElementById("input-upload-image");
+            var imageList = document.getElementById("variant-image-list");
+            if (btnUploadImage && inputUploadImage && imageList) {
+                btnUploadImage.addEventListener("click", function () {
+                    inputUploadImage.click();
+                });
+                inputUploadImage.addEventListener("change", function (e) {
+                    var files = Array.from(e.target.files);
+                    files.forEach(function (file) {
+                        if (!file.type.startsWith("image/")) return;
+                        var reader = new FileReader();
+                        reader.onload = function (ev) {
+                            var div = document.createElement("div");
+                            div.style.width = "90px";
+                            div.style.height = "90px";
+                            div.style.borderRadius = "10px";
+                            div.style.overflow = "hidden";
+                            div.style.border = "1.5px solid #eee";
+                            var img = document.createElement("img");
+                            img.src = ev.target.result;
+                            img.style.width = "100%";
+                            img.style.height = "100%";
+                            img.style.objectFit = "cover";
+                            div.appendChild(img);
+                            // Thêm trước nút upload
+                            imageList.insertBefore(div, btnUploadImage);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    // Reset input để có thể chọn lại cùng file
+                    inputUploadImage.value = "";
+                });
+            }
+
+            // Preview ảnh khi chọn file trong modal thêm biến thể
+            (function () {
+                var input = document.getElementById('variantImageInput');
+                var preview = document.getElementById('variantImagePreview');
+                if (input && preview) {
+                    input.addEventListener('change', function (e) {
+                        preview.innerHTML = '';
+                        var file = e.target.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                            var reader = new FileReader();
+                            reader.onload = function (ev) {
+                                var img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.style.maxWidth = '120px';
+                                img.style.maxHeight = '120px';
+                                img.style.borderRadius = '8px';
+                                preview.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+            })();
+
+            // Preview màu sắc khi chọn trong modal thêm biến thể
+            (function () {
+                var colorSelect = document.getElementById('addVariantColor');
+                var colorPreview = document.getElementById('addVariantColorPreview');
+                if (colorSelect && colorPreview) {
+                    colorSelect.addEventListener('change', function () {
+                        var val = colorSelect.value;
+                        var colorMap = { 'Đỏ': 'red', 'Xanh': 'blue', 'Đen': 'black' };
+                        colorPreview.style.background = colorMap[val] || '#888';
+                    });
+                }
+            })();
+
+            // Preview và upload nhiều ảnh trong modal thêm biến thể
+            (function () {
+                var btnUpload = document.getElementById('btn-add-variant-upload-image');
+                var inputUpload = document.getElementById('input-add-variant-upload-image');
+                var imageList = document.getElementById('add-variant-image-list');
+                if (btnUpload && inputUpload && imageList) {
+                    btnUpload.addEventListener('click', function () {
+                        inputUpload.click();
+                    });
+                    inputUpload.addEventListener('change', function (e) {
+                        var files = Array.from(e.target.files);
+                        files.forEach(function (file) {
+                            if (!file.type.startsWith("image/")) return;
+                            var reader = new FileReader();
+                            reader.onload = function (ev) {
+                                var div = document.createElement('div');
+                                div.style.width = '90px';
+                                div.style.height = '90px';
+                                div.style.borderRadius = '10px';
+                                div.style.overflow = 'hidden';
+                                div.style.border = '1.5px solid #eee';
+                                div.style.display = 'flex';
+                                div.style.alignItems = 'center';
+                                div.style.justifyContent = 'center';
+                                div.style.background = '#fafbfc';
+                                div.style.marginRight = '8px';
+                                div.style.marginBottom = '8px';
+                                var img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                div.appendChild(img);
+                                imageList.insertBefore(div, btnUpload);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                        inputUpload.value = '';
+                    });
+                }
+            })();
+
+            // Chọn màu sắc trong modal thêm biến thể
+            (function () {
+                var colorBtns = document.querySelectorAll('#addVariantColorGroup .btn-choose-color');
+                var colorInput = document.getElementById('addVariantColor');
+                colorBtns.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        colorBtns.forEach(function (b) { b.classList.remove('color-active'); });
+                        btn.classList.add('color-active');
+                        colorInput.value = btn.getAttribute('data-color');
+                    });
+                });
+                // Set mặc định
+                if (colorBtns.length) colorBtns[0].classList.add('color-active');
+            })();
+            // Chọn kích cỡ trong modal thêm biến thể (radio version, native)
+            (function () {
+                var sizeRadios = document.querySelectorAll('#addVariantSizeGroup input[type="radio"]');
+                var sizeInput = document.getElementById('addVariantSize');
+                sizeRadios.forEach(function (radio) {
+                    radio.addEventListener('change', function () {
+                        if (radio.checked) sizeInput.value = radio.value;
+                    });
+                });
+            })();
+            // Chọn nhiều kích cỡ trong modal thêm biến thể (checkbox version)
+            (function () {
+                var sizeCheckboxes = document.querySelectorAll('#addVariantSizeGroup .size-checkbox');
+                var sizeInput = document.getElementById('addVariantSize');
+                function updateSizeInput() {
+                    var checked = Array.from(sizeCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    sizeInput.value = checked.join(',');
+                }
+                sizeCheckboxes.forEach(function (cb) {
+                    cb.addEventListener('change', updateSizeInput);
+                });
+            })();
         });
-      </script>
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     
