@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+<html lang="vi"
+    th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý giảm giá - Admin</title>
+    <th:block th:fragment="styles">
+        <style>
+            .status-badge {
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 0.85em;
+                font-weight: 500;
+            }
+
+            .status-active {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-scheduled {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+
+            .status-ended {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .action-buttons .btn {
+                padding: 0.25rem 0.5rem;
+                margin: 0 2px;
+            }
+
+            .action-buttons .btn i {
+                font-size: 0.875rem;
+            }
+        </style>
+    </th:block>
 </head>
 
 <body>
@@ -381,7 +416,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-money-bill-wave me-2"></i>Giá trị giảm giá</label>
+                                    <label class="form-label"><i class="fas fa-money-bill-wave me-2"></i>Giá trị giảm
+                                        giá</label>
                                     <input type="number" class="form-control" required>
                                 </div>
                             </div>
@@ -402,7 +438,8 @@
                             <!-- Phần chọn nhóm sản phẩm -->
                             <div class="row mb-3" id="groupSelection" style="display: none;">
                                 <div class="col-12">
-                                    <label class="form-label"><i class="fas fa-layer-group me-2"></i>Chọn nhóm sản phẩm</label>
+                                    <label class="form-label"><i class="fas fa-layer-group me-2"></i>Chọn nhóm sản
+                                        phẩm</label>
                                     <select class="form-select" multiple size="5">
                                         <option value="1">Áo thun nam</option>
                                         <option value="2">Áo thun nữ</option>
@@ -419,7 +456,8 @@
                                     <input type="number" class="form-control" placeholder="Đơn hàng từ...">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-users me-2"></i>Giới hạn đối tượng</label>
+                                    <label class="form-label"><i class="fas fa-users me-2"></i>Giới hạn đối
+                                        tượng</label>
                                     <select class="form-select">
                                         <option value="all">Tất cả khách hàng</option>
                                         <option value="new">Khách hàng mới (dưới 3 tháng)</option>
@@ -432,11 +470,13 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-calendar-plus me-2"></i>Ngày bắt đầu</label>
+                                    <label class="form-label"><i class="fas fa-calendar-plus me-2"></i>Ngày bắt
+                                        đầu</label>
                                     <input type="date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-calendar-times me-2"></i>Ngày kết thúc</label>
+                                    <label class="form-label"><i class="fas fa-calendar-times me-2"></i>Ngày kết
+                                        thúc</label>
                                     <input type="date" class="form-control" required>
                                 </div>
                             </div>
@@ -526,6 +566,8 @@
                 </div>
             </div>
         </div>
+    </main>
+    <th:block th:fragment="scripts">
         <script>
             // Quản lý trạng thái và quy trình khuyến mãi
             const PromotionStatus = {
@@ -766,7 +808,7 @@
             document.querySelectorAll('form').forEach(form => {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
+
                     try {
                         // Validate form
                         if (!validateForm(form)) {
@@ -778,7 +820,7 @@
                         const data = Object.fromEntries(formData.entries());
 
                         // Xử lý dữ liệu
-                        switch(form.id) {
+                        switch (form.id) {
                             case 'promotionForm':
                                 await handlePromotionSubmit(data);
                                 break;
@@ -900,11 +942,11 @@
             }
 
             // Xử lý hiển thị/ẩn phần chọn sản phẩm/nhóm sản phẩm
-            document.getElementById('applyType').addEventListener('change', function() {
+            document.getElementById('applyType').addEventListener('change', function () {
                 const productSelection = document.getElementById('productSelection');
                 const groupSelection = document.getElementById('groupSelection');
-                
-                switch(this.value) {
+
+                switch (this.value) {
                     case 'single':
                         productSelection.style.display = 'block';
                         groupSelection.style.display = 'none';
@@ -920,34 +962,7 @@
                 }
             });
         </script>
-        <style>
-            .status-badge {
-                padding: 5px 10px;
-                border-radius: 15px;
-                font-size: 0.85em;
-                font-weight: 500;
-            }
-            .status-active {
-                background-color: #d4edda;
-                color: #155724;
-            }
-            .status-scheduled {
-                background-color: #fff3cd;
-                color: #856404;
-            }
-            .status-ended {
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-            .action-buttons .btn {
-                padding: 0.25rem 0.5rem;
-                margin: 0 2px;
-            }
-            .action-buttons .btn i {
-                font-size: 0.875rem;
-            }
-        </style>
-    </main>
+    </th:block>
 </body>
 
 </html>

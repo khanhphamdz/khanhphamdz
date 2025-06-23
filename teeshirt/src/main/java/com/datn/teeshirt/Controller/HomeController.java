@@ -1,38 +1,36 @@
 package com.datn.teeshirt.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.datn.teeshirt.DTO.ProductDTO;
+import com.datn.teeshirt.Service.ProductService;
 
 @Controller
 public class HomeController {
+    @Autowired
+    ProductService productService;
+
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        Page<ProductDTO> listLatestProducts = productService.findLatestProducts();
+        model.addAttribute("listLatestProducts", listLatestProducts);
         return "customer/index";
     }
 
-    @GetMapping("/product")
+    @GetMapping("/product/detail/{id}")
+    public String product(@PathVariable Long id, Model model) {
+        ProductDTO productDTO = productService.findById(id);
+        model.addAttribute("product", productDTO);
+        return "customer/product/product-detail";
+    }   
+    @GetMapping("/product/list-products")
     public String product() {
         return "customer/product/product-list";
-    }
-
-    @GetMapping("/detail")
-    public String product_detail() {
-        return "customer/product/product-detail";
-    }
-
-    @GetMapping("/cart")
-    public String cart() {
-        return "customer/account/shopping-cart";
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "customer/account/login-register";
-    }
-
-    @GetMapping("/checkout")
-    public String checkout() {
-        return "customer/account/checkout";
     }
 
     @GetMapping("/about")
@@ -43,85 +41,5 @@ public class HomeController {
     @GetMapping("/contact")
     public String contact() {
         return "customer/contact";
-    }
-
-    @GetMapping("/account")
-    public String account() {
-        return "customer/account/account";
-    }
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin/index";
-    }
-
-    @GetMapping("/counter-sale-update")
-    public String counter_sale() {
-        return "/admin/order/counter-sale-update";
-    }
-
-    @GetMapping("/admin/promotion-management")
-    public String promotionManagement() {
-        return "/admin/product/promotion-management";
-    }
-
-    @GetMapping("/admin/refund-management")
-    public String refundManagement() {
-        return "/admin/product/refund-management";
-    }
-
-    @GetMapping("/order")
-    public String order() {
-        return "/admin/order/order-management";
-    }
-
-    @GetMapping("/employee")
-    public String employee() {
-        return "/admin/account/employee-management";
-    }
-
-    @GetMapping("/product-management")
-    public String productManagement() {
-        return "/admin/product/product-management";
-    }
-
-    @GetMapping("/add-product")
-    public String add_product() {
-        return "/admin/product/product-add-management";
-    }
-
-    @GetMapping("/product-detail")
-    public String detail_product() {
-        return "/admin/product/product-detail-management";
-    }
-
-    @GetMapping("/customer-management")
-    public String customerManagement() {
-        return "/admin/account/customer-management";
-    }
-
-    @GetMapping("/admin/comment-manegement")
-    public String commentManagement() {
-        return "/admin/feedback-management";
-    }
-
-    @GetMapping("/admin/order-detail")
-    public String order_detail() {
-        return "/admin/order/order-detail";
-    }
-
-    @GetMapping("/attributes-management")
-    public String attribute() {
-        return "/admin/product/attribute-management";
-    }
-
-    @GetMapping("/admin/logout")
-    public String logoutAdmin() {
-        return "/admin/account/danhNhap";
-    }
-
-    @GetMapping("/categories-management")
-    public String cate() {
-        return "/admin/product/category -management";
     }
 }

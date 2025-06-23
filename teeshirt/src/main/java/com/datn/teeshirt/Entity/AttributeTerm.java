@@ -30,7 +30,7 @@ public class AttributeTerm {
     @JoinColumn(name = "attribute_id", nullable = false)
     private Attribute attribute;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = true, length = 100)
     private String name;
 
     @OneToMany(mappedBy = "term")
@@ -39,4 +39,4 @@ public class AttributeTerm {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-} 
+}

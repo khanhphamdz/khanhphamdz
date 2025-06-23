@@ -205,18 +205,6 @@
   transition: all 0.3s ease;
 }
 
-.btn-success {
-  color: #fff;
-  padding: 12px 30px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-}
-
-.btn-success:hover {
-  background-color: var(--secondary-color);
-  color: white;
-}
-
 /*
   Thông tin cam kết sản phẩm
 */

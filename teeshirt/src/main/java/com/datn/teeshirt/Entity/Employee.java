@@ -18,7 +18,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -60,17 +59,15 @@ public class Employee {
     @Column(name = "hire_date")
     private LocalDate hireDate;
 
-    @Default
     @Column(name = "status", length = 20)
     @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE;
+    private Status status;
 
     @Column(name = "citizen_id", length = 12, unique = true)
     private String citizenId;
 
     @Column(name = "role", nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String role;
 
     @OneToMany(mappedBy = "employee")
     private List<Order> orders;
@@ -87,14 +84,10 @@ public class Employee {
     private LocalDateTime updatedAt;
 
     public enum Gender {
-        MALE, FEMALE, OTHER
+        male, female, order
     }
 
     public enum Status {
-        ACTIVE, INACTIVE, TERMINATED
-    }
-
-    public enum Role {
-        ADMIN, STAFF
+        active, inactive, terminated
     }
 } 

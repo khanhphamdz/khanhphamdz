@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tee Shirt Vibe - Quản lý sản phẩm</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <th:block th:fragment="styles">
+        <!-- If there are page specific styles, add them here -->
+    </th:block>
 </head>
-
 <body>
     <main class="product-manage-page p-4">
         <div class="page-header">
@@ -75,95 +75,10 @@
                 </tbody>
             </table>
         </div>
-        <script>
-            // Dữ liệu mẫu sản phẩm
-            const products = [
-                {
-                    id: 1,
-                    name: 'Áo thun cổ tròn',
-                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
-                    price: 150000,
-                    category: 'Áo thun',
-                    stockStatus: 'Còn hàng',
-                    createdAt: '2023-10-01'
-                },
-                {
-                    id: 2,
-                    name: 'Áo sơ mi nam',
-                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
-                    price: 250000,
-                    category: 'Áo sơ mi',
-                    stockStatus: 'Còn hàng',
-                    createdAt: '2023-10-02'
-                },
-                {
-                    id: 3,
-                    name: 'Áo ba lỗ thể thao',
-                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
-                    price: 120000,
-                    category: 'Áo ba lỗ',
-                    stockStatus: 'Hết hàng',
-                    createdAt: '2023-10-03'
-                },
-                {
-                    id: 4,
-                    name: 'Áo hoodie mùa đông',
-                    imageUrl: 'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg',
-                    price: 350000,
-                    category: 'Áo hoodie',
-                    stockStatus: 'Còn hàng',
-                    createdAt: '2023-10-04'
-                }
-            ];
-            function displayProducts() {
-                const productList = document.getElementById('product-list');
-                productList.innerHTML = ''; // Xóa nội dung cũ
-    
-                products.forEach((product, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <th>${index + 1}</th>
-                        <th><img src="${product.imageUrl}" alt="${product.name}" style="max-width: 70px;"></th>
-                        <td>${product.name}</td>
-                        <td>${product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                        <td>${product.category}</td>
-                        <td>${product.stockStatus}</td>
-                        <td>${new Date(product.createdAt).toLocaleDateString()}</td>
-                        <td>
-                            <a href="/product-detail" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
-                        </td>
-                    `;
-                    productList.appendChild(row);
-                });
-            }
-            displayProducts();
-            document.getElementById('btn-search').addEventListener('click', () => {
-                const searchQuery = document.getElementById('search-product').value.toLowerCase();
-                const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
-                const productList = document.getElementById('product-list');
-                productList.innerHTML = ''; // Xóa nội dung cũ
-    
-                filteredProducts.forEach((product, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <th>${index + 1}</th>
-                        <th><img src="${product.imageUrl}" alt="${product.name}" style="max-width: 70px;"></th>
-                        <td>${product.name}</td>
-                        <td>${product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                        <td>${product.category}</td>
-                        <td>${product.stockStatus}</td>
-                        <td>${new Date(product.createdAt).toLocaleDateString()}</td>
-                        <td>
-                            <a href="/product-detail" class="btn btn-sm btn-primary" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
-                        </td>
-                    `;
-                    productList.appendChild(row);
-                });
-            });
-        </script>
     </main>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <th:block th:fragment="scripts">
+        <script src="/admin_js/product-management.js"></script>
+    </th:block>
 </body>
 
 </html>

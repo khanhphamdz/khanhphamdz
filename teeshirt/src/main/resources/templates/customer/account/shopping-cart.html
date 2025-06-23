@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi" th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ Hàng | Tee Shirt Vibe</title>
+    <th:block th:fragment="styles">
+        <!-- If there are page specific styles, add them here -->
+    </th:block>
 </head>
 <body>
     <main class="container mt-5" style="padding-top: 100px;">
@@ -65,5 +68,8 @@
             </div>
         </div>
     </main>
+    <th:block th:fragment="scripts">
+
+    </th:block>
 </body>
 </html>

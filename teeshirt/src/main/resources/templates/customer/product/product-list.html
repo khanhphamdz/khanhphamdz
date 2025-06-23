@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi"
+    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
     <title>Sản Phẩm | Tee Shirt Vibe</title>
+    <th:block th:fragment="styles">
+       <link rel="stylesheet" href="/customer_css/product_css/style_product_list.css">
+    </th:block>
 </head>
 
 <body>
@@ -178,7 +182,7 @@
 
                         <div class="product-txt">
                             <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                <a href="/product/detail/1" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
                                     Esprit Ruffle Shirt
                                 </a>
                                 <span class="stext-105 cl3">
@@ -457,36 +461,38 @@
                 </div>
             </div>
         </div>
-        <script>
-            const checkboxes = document.querySelectorAll('.form-check-input');
-            checkboxes.forEach(checkbox => {
-                console.log(checkbox);
+        <th:block th:fragment="scripts">
+            <script>
+                const checkboxes = document.querySelectorAll('.form-check-input');
+                checkboxes.forEach(checkbox => {
+                    console.log(checkbox);
 
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        checkboxes.forEach(orther => {
-                            if (orther !== checkbox) {
-                                orther.checked = false;
-                            }
-                        });
-                    }
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            checkboxes.forEach(orther => {
+                                if (orther !== checkbox) {
+                                    orther.checked = false;
+                                }
+                            });
+                        }
+                    });
                 });
-            });
-            const color_checkboxes = document.querySelectorAll('.color-checkbox');
-            color_checkboxes.forEach(checkbox => {
-                console.log(checkbox);
+                const color_checkboxes = document.querySelectorAll('.color-checkbox');
+                color_checkboxes.forEach(checkbox => {
+                    console.log(checkbox);
 
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        color_checkboxes.forEach(orther => {
-                            if (orther !== checkbox) {
-                                orther.checked = false;
-                            }
-                        });
-                    }
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            color_checkboxes.forEach(orther => {
+                                if (orther !== checkbox) {
+                                    orther.checked = false;
+                                }
+                            });
+                        }
+                    });
                 });
-            });
-        </script>
+            </script>
+        </th:block>
     </main>
 </body>
 

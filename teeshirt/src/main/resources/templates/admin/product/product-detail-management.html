@@ -1,75 +1,76 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="en"
+    th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết sản phẩm</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" href="/admin_css/style_product-detail.css" />
+        <style>
+            #product-list th,
+            #product-list td {
+                vertical-align: middle;
+            }
 
+            .category-tree {
+                padding: 10px;
+            }
+
+            .category-item {
+                margin-left: 20px;
+            }
+
+            .form-check {
+                margin-bottom: 5px;
+            }
+
+            .form-check-label {
+                cursor: pointer;
+            }
+
+            .variant-table th,
+            .variant-table td {
+                font-size: 14px;
+                padding: 8px;
+                vertical-align: middle;
+            }
+
+            .image-preview img {
+                width: 70px;
+
+                object-fit: cover;
+                margin-right: 5px;
+                border-radius: 5px;
+            }
+
+            .border-dashed {
+                border-style: dashed !important;
+            }
+
+            .upload-box {
+                transition: all 0.3s ease;
+            }
+
+            .upload-box:hover {
+                border-color: #0d6efd !important;
+                cursor: pointer;
+            }
+
+            .variant-checkbox {
+                cursor: pointer;
+            }
+        </style>
+    </th:block>
 </head>
 
 <body>
     <main class="product-manage-page p-4">
-      <style>
-        #product-list th,
-        #product-list td {
-            vertical-align: middle;
-        }
-
-        .category-tree {
-            padding: 10px;
-        }
-
-        .category-item {
-            margin-left: 20px;
-        }
-
-        .form-check {
-            margin-bottom: 5px;
-        }
-
-        .form-check-label {
-            cursor: pointer;
-        }
-
-        .variant-table th,
-        .variant-table td {
-            font-size: 14px;
-            padding: 8px;
-            vertical-align: middle;
-        }
-
-        .image-preview img {
-            width: 70px;
-
-            object-fit: cover;
-            margin-right: 5px;
-            border-radius: 5px;
-        }
-
-        .border-dashed {
-            border-style: dashed !important;
-        }
-
-        .upload-box {
-            transition: all 0.3s ease;
-        }
-
-        .upload-box:hover {
-            border-color: #0d6efd !important;
-            cursor: pointer;
-        }
-
-        .variant-checkbox {
-            cursor: pointer;
-        }
-    </style>
-         <div class="page-header d-flex justify-content-between align-items-center">
+        <div class="page-header d-flex justify-content-between align-items-center">
             <h3 class="page-title mb-0">Sửa sản phẩm</h3>
-            <button class="btn btn-success" id="add-product-btn">
-             Cập nhật
+            <button class="btn btn-success" id="update-product-btn">
+                Cập nhật
             </button>
         </div>
         <div class="page-content mt-4">
@@ -146,105 +147,6 @@
                                                 <div class="list-attribute mt-4">
                                                     <div class="accordion border-bottom"
                                                         id="accordionPanelsStayOpenExample">
-                                                        <div class="accordion-item">
-                                                            <h2 class="accordion-header">
-                                                                <div class="accordion-button d-flex align-items-center justify-content-between collapsed ps-0"
-                                                                    data-bs-toggle="collapse"
-                                                                    data-bs-target="#panelsStayOpen-collapseThree"
-                                                                    aria-expanded="false"
-                                                                    aria-controls="panelsStayOpen-collapseThree"
-                                                                    style="cursor: pointer;">
-                                                                    <div
-                                                                        class="d-flex align-items-center justify-content-between w-100 me-3">
-                                                                        <span class="text-dark fw-bold">Màu sắc</span>
-                                                                        <button type="button"
-                                                                            class="border-0 bg-transparent text-danger">Xóa</button>
-                                                                    </div>
-                                                                </div>
-                                                            </h2>
-                                                            <div id="panelsStayOpen-collapseThree"
-                                                                class="accordion-collapse collapse"
-                                                                aria-labelledby="panelsStayOpen-headingThree">
-                                                                <div class="accordion-body p-0 mt-4 mb-1">
-                                                                    <div class="d-flex">
-                                                                        <span class="w-25">Tên: <strong>Màu
-                                                                                sắc</strong></span>
-                                                                        <div class="w-75">
-                                                                            <div class="form-group">
-                                                                                <label for="attribute-color"
-                                                                                    class="form-label">Giá trị:</label>
-                                                                                <textarea class="form-control"
-                                                                                    id="attribute-color"
-                                                                                    placeholder="Nhập giá trị thuộc tính"></textarea>
-                                                                            </div>
-                                                                            <div class="button-group mt-2">
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary">Chọn
-                                                                                    tất cả</button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary">Không
-                                                                                    chọn</button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary float-end"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#add-attribute-Modal">Tạo
-                                                                                    giá trị</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Thêm thuộc tính Kích cỡ -->
-                                                        <div class="accordion-item">
-                                                            <h2 class="accordion-header">
-                                                                <div class="accordion-button d-flex align-items-center justify-content-between collapsed ps-0"
-                                                                    data-bs-toggle="collapse"
-                                                                    data-bs-target="#panelsStayOpen-collapseSize"
-                                                                    aria-expanded="false"
-                                                                    aria-controls="panelsStayOpen-collapseSize"
-                                                                    style="cursor: pointer;">
-                                                                    <div
-                                                                        class="d-flex align-items-center justify-content-between w-100 me-3">
-                                                                        <span class="text-dark fw-bold">Kích cỡ</span>
-                                                                        <button type="button"
-                                                                            class="border-0 bg-transparent text-danger">Xóa</button>
-                                                                    </div>
-                                                                </div>
-                                                            </h2>
-                                                            <div id="panelsStayOpen-collapseSize"
-                                                                class="accordion-collapse collapse"
-                                                                aria-labelledby="panelsStayOpen-headingSize">
-                                                                <div class="accordion-body p-0 mt-4 mb-1">
-                                                                    <div class="d-flex">
-                                                                        <span class="w-25">Tên: <strong>Kích
-                                                                                cỡ</strong></span>
-                                                                        <div class="w-75">
-                                                                            <div class="form-group">
-                                                                                <label for="attribute-size"
-                                                                                    class="form-label">Giá trị:</label>
-                                                                                <textarea class="form-control"
-                                                                                    id="attribute-size"
-                                                                                    placeholder="Nhập giá trị thuộc tính"></textarea>
-                                                                            </div>
-                                                                            <div class="button-group mt-2">
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary">Chọn
-                                                                                    tất cả</button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary">Không
-                                                                                    chọn</button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-primary float-end"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#add-attribute-Modal">Tạo
-                                                                                    giá trị</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="collapse mt-4" id="collapseAttribute">
@@ -288,83 +190,22 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Danh sách biến thể</label>
-                                                    <table class="table variant-table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th width="40">
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
-                                                                            id="select-all-variants">
-                                                                    </div>
-                                                                </th>
-                                                                <th>Biến thể</th>
-                                                                <th>Giá</th>
-                                                                <th>Tồn kho</th>
-                                                                <th>Hình ảnh</th>
-                                                                <th>Hành động</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="variantsList">
-                                                            <tr data-id="1">
-                                                                <td>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input variant-checkbox"
-                                                                            type="checkbox" value="1">
-                                                                    </div>
-                                                                </td>
-                                                                <td>Đen, M</td>
-                                                                <td><input type="number"
-                                                                        class="form-control price-input" value="150000"
-                                                                        min="0"></td>
-                                                                <td><input type="number"
-                                                                        class="form-control stock-input" value="20"
-                                                                        min="0"></td>
-                                                                <td>
-                                                                    <div class="image-preview">
-                                                                        <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
-                                                                            alt="Đen" title="Đen">
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <button class="btn btn-sm btn-primary me-1"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#edit-variant-Modal"><i
-                                                                            class="fas fa-edit"></i></button>
-                                                                    <button class="btn btn-sm btn-danger"><i
-                                                                            class="fas fa-trash"></i></button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr data-id="2">
-                                                                <td>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input variant-checkbox"
-                                                                            type="checkbox" value="2">
-                                                                    </div>
-                                                                </td>
-                                                                <td>Trắng, L</td>
-                                                                <td><input type="number"
-                                                                        class="form-control price-input" value="150000"
-                                                                        min="0"></td>
-                                                                <td><input type="number"
-                                                                        class="form-control stock-input" value="15"
-                                                                        min="0"></td>
-                                                                <td>
-                                                                    <div class="image-preview">
-                                                                        <img src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
-                                                                            alt="Trắng" title="Trắng">
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <button class="btn btn-sm btn-primary me-1"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#edit-variant-Modal"><i
-                                                                            class="fas fa-edit"></i></button>
-                                                                    <button class="btn btn-sm btn-danger"><i
-                                                                            class="fas fa-trash"></i></button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <div class="variant-list">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>SKU</th>
+                                                                    <th>Giá</th>
+                                                                    <th>Tồn kho</th>
+                                                                    <th>Trạng thái</th>
+                                                                    <th>Thao tác</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="variantsList">
+                                                                <!-- Biến thể sẽ được thêm vào đây bằng JavaScript -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                                 <div class="button-group mt-4">
                                                     <button class="btn btn-success" onclick="saveVariants()">Lưu biến
@@ -400,36 +241,6 @@
                     <div class="card">
                         <div class="card-header">Danh mục sản phẩm</div>
                         <div class="category-tree card-body">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="category-bags">
-                                <label class="form-check-label" for="category-bags">Bags</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="category-uncategorized" checked>
-                                <label class="form-check-label" for="category-uncategorized">Uncategorized</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="category-booking">
-                                <label class="form-check-label" for="category-booking">Booking</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="category-clothing">
-                                <label class="form-check-label" for="category-clothing">Clothing</label>
-                            </div>
-                            <div class="category-item">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="category-hoodies">
-                                    <label class="form-check-label" for="category-hoodies">Hoodies</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="category-men">
-                                    <label class="form-check-label" for="category-men">Men</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="category-tshirts">
-                                    <label class="form-check-label" for="category-tshirts">T-Shirts</label>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -438,7 +249,8 @@
                         <div class="card-header">Ảnh sản phẩm</div>
                         <div class="card-body text-center">
                             <div class="product-image-preview mb-2">
-                                <img id="main-product-image" src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
+                                <img id="main-product-image"
+                                    src="https://media3.coolmate.me/cdn-cgi/image/width=672,height=990,quality=85/uploads/May2025/t-shirt-the-thao-nam-flexline-active-Xanh_bong_dem_7.jpg"
                                     alt="Ảnh sản phẩm" class="img-fluid w-100" style="cursor:pointer;">
                                 <input type="file" id="main-product-image-input" accept="image/*" class="d-none">
                             </div>
@@ -447,766 +259,157 @@
                 </div>
             </div>
         </div>
-        <!-- Modal thêm giá trị -->
-        <div class="modal fade" id="add-attribute-Modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        <!-- Modal thêm giá trị thuộc tính -->
+        <div class="modal fade" id="add-attribute-term-modal" tabindex="-1" aria-labelledby="addAttributeTermModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Thêm giá trị mới</h5>
+                        <h5 class="modal-title" id="addAttributeTermModalLabel">Thêm giá trị thuộc tính</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="new-attribute-value" class="form-label">Nhập giá trị mới</label>
-                            <input type="text" class="form-control" id="new-attribute-value"
+                        <input type="hidden" id="modal-attribute-id">
+                        <div class="mb-3">
+                            <label for="modal-attribute-term" class="form-label">Giá trị mới</label>
+                            <input type="text" class="form-control" id="modal-attribute-term"
                                 placeholder="Nhập giá trị mới">
                         </div>
-                        <div class="modal-footer mt-1">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" onclick="addAttributeValue()">Thêm</button>
-                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" id="btn-modal-add-attribute-term">Thêm</button>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Modal chỉnh sửa biến thể -->
-        <div class="modal fade" id="edit-variant-Modal" tabindex="-1" aria-labelledby="editVariantModalLabel"
+        <div class="modal fade" id="variantDetailModal" tabindex="-1" aria-labelledby="variantDetailModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editVariantModalLabel">Chỉnh sửa biến thể</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content rounded-3 shadow-lg">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="variantDetailModalLabel">
+                            <i class="fas fa-edit me-2"></i>Chỉnh sửa biến thể
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <form id="edit-variant-form">
-                            <input type="hidden" id="edit-variant-id">
-                            <div class="row mb-4"> <!-- Cột trái cho hình ảnh -->
-                                <div class="col-md-5">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label d-block">Hình ảnh</label>
-                                        <div class="image-upload-container border p-3 rounded mb-3"
-                                            style="height: 289px; display: flex; flex-direction: column; justify-content: center;">
-                                            <div class="upload-box border border-dashed rounded p-3 text-center"
-                                                style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-
-                                                <i class="fas fa-cloud-upload-alt fs-3 text-secondary"></i>
-                                                <p class="mb-0 mt-2">Kéo và thả hình ảnh vào đây hoặc nhấn để chọn ảnh
-                                                </p>
-                                                <input type="file" class="d-none" id="image-upload-input"
-                                                    accept="image/*">
-                                                <button type="button" class="btn btn-outline-primary mt-2"
-                                                    onclick="document.getElementById('image-upload-input').click()">Chọn
-                                                    ảnh</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="modal-body p-4 bg-light">
+                        <form id="variantDetailForm" class="needs-validation" novalidate>
+                            <input type="hidden" id="variantId" />
+                            <!-- Mã sản phẩm và Barcode -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantSku" class="form-label fw-medium">
+                                        SKU <span class="text-danger">*</span>
+                                        <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                            title="Mã định danh duy nhất cho biến thể"></i>
+                                    </label>
+                                    <input type="text" class="form-control" id="variantSku" required />
+                                    <div class="invalid-feedback">Vui lòng nhập SKU.</div>
                                 </div>
-                                <!-- Cột phải cho các thông tin khác -->
-                                <div class="col-md-7">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-variant-sku" class="form-label">Mã sản phẩm</label>
-                                                <input type="text" class="form-control" id="edit-variant-sku"
-                                                    placeholder="Nhập mã sản phẩm">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-variant-stock" class="form-label">Tồn kho</label>
-                                                <input type="number" class="form-control" id="edit-variant-stock"
-                                                    placeholder="Nhập số lượng tồn kho">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="edit-variant-price" class="form-label">Giá (đ)</label>
-                                                <input type="number" class="form-control" id="edit-variant-price"
-                                                    placeholder="Nhập giá">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label for="edit-variant-sale-price" class="form-label mb-0">Giá ưu
-                                                        đãi (đ)</label>
-                                                    <button type="button"
-                                                        class="btn btn-link text-primary p-0 text-decoration-none"
-                                                        id="schedule-button">Lên lịch</button>
-                                                </div>
-                                                <input type="number" class="form-control" id="edit-variant-sale-price"
-                                                    placeholder="Nhập giá ưu đãi">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3" id="schedule-dates" style="display: none;">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-start-date" class="form-label">Ngày bắt đầu</label>
-                                                <input type="date" class="form-control" id="edit-start-date">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="edit-end-date" class="form-label">Ngày kết thúc</label>
-                                                <input type="date" class="form-control" id="edit-end-date">
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantBarcode" class="form-label fw-medium">Barcode</label>
+                                    <input type="text" class="form-control" id="variantBarcode" />
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="edit-variant-size" class="form-label">Size</label>
-                                        <select class="form-select" id="edit-variant-size">
-                                            <option value="">-- Chọn size --</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
-                                            <option value="XXL">XXL</option>
-                                        </select>
-                                    </div>
+                            <!-- Giá gốc và khuyến mãi -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantPrice" class="form-label fw-medium">
+                                        Giá gốc <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="variantPrice" required min="0"
+                                        step="1000" />
+                                    <div class="invalid-feedback">Vui lòng nhập giá gốc hợp lệ.</div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="edit-variant-color" class="form-label">Màu</label>
-                                        <select class="form-select" id="edit-variant-color">
-                                            <option value="">-- Chọn màu --</option>
-                                            <option value="Đen">Đen</option>
-                                            <option value="Trắng">Trắng</option>
-                                            <option value="Xanh">Xanh</option>
-                                            <option value="Đỏ">Đỏ</option>
-                                            <option value="Vàng">Vàng</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="edit-variant-material" class="form-label">Chất liệu</label>
-                                        <select class="form-select" id="edit-variant-material">
-                                            <option value="">-- Chọn chất liệu --</option>
-                                            <option value="Cotton">Cotton</option>
-                                            <option value="Polyester">Polyester</option>
-                                            <option value="Nylon">Nylon</option>
-                                            <option value="Thun">Thun</option>
-                                            <option value="Len">Len</option>
-                                        </select>
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantDiscountPrice" class="form-label fw-medium">Giá khuyến
+                                        mãi</label>
+                                    <input type="number" class="form-control" id="variantDiscountPrice" min="0"
+                                        step="1000" />
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="edit-variant-description" class="form-label">Mô tả</label>
-                                        <textarea class="form-control" id="edit-variant-description" rows="3"
-                                            placeholder="Nhập mô tả sản phẩm"></textarea>
-                                    </div>
+                            <!-- Thời gian khuyến mãi -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantDiscountStart" class="form-label fw-medium">Bắt đầu khuyến
+                                        mãi</label>
+                                    <input type="datetime-local" class="form-control" id="variantDiscountStart" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantDiscountEnd" class="form-label fw-medium">Kết thúc khuyến
+                                        mãi</label>
+                                    <input type="datetime-local" class="form-control" id="variantDiscountEnd" />
                                 </div>
                             </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="button" class="btn btn-primary" onclick="saveVariantEdit()">Lưu</button>
+                            <!-- Tồn kho và trạng thái -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantQuantity" class="form-label fw-medium">
+                                        Tồn kho <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="variantQuantity" required min="0" />
+                                    <div class="invalid-feedback">Vui lòng nhập số lượng tồn kho hợp lệ.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="variantIsActive" class="form-label fw-medium">Trạng thái</label>
+                                    <select class="form-select" id="variantIsActive">
+                                        <option value="true">Hoạt động</option>
+                                        <option value="false">Ngừng bán</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Ảnh biến thể -->
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">
+                                    Ảnh biến thể
+                                    <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                        title="Tải lên các hình ảnh đại diện cho biến thể"></i>
+                                </label>
+                                <div class="border border-2 border-dashed rounded p-3 text-center position-relative">
+                                    <input type="file"
+                                        class="form-control-file position-absolute top-0 start-0 w-100 h-100 opacity-0"
+                                        id="variantImage" accept="image/*" multiple />
+                                    <div>
+                                        <i class="fas fa-cloud-upload-alt text-muted fs-4 mb-2"></i>
+                                        <p class="mb-0 text-muted">Kéo thả hoặc nhấp để tải ảnh lên</p>
+                                    </div>
+                                </div>
+                                <div id="variantImageList" class="mt-3 d-flex flex-wrap gap-2">
+                                    <!-- Ảnh sẽ được thêm vào đây bằng JavaScript -->
+                                </div>
+                            </div>
+                            <!-- Thuộc tính -->
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Thuộc tính</label>
+                                <div id="variantAttributes" class="border rounded p-3 bg-white">
+                                    <!-- Thuộc tính sẽ được thêm vào đây bằng JavaScript -->
+                                </div>
                             </div>
                         </form>
                     </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Đóng
+                        </button>
+                        <button type="button" class="btn btn-danger" id="deleteVariantBtn">
+                            <i class="fas fa-trash me-2"></i>Xóa
+                        </button>
+                        <button type="button" class="btn btn-primary" id="saveVariantBtn">
+                            <i class="fas fa-save me-2"></i>Lưu
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
+                                aria-hidden="true"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <script>        // Dữ liệu mẫu
-          let product = {
-              id: 1,
-              name: "Áo thun cổ tròn",
-              sku: "ATC-001",
-              categories: ["T-Shirts", "Men"],
-              attributes: [
-                  { name: "Màu sắc", values: ["Đen", "Trắng"] },
-                  { name: "Kích thước", values: ["M", "L"] }
-              ],
-              variants: [
-                  {
-                      id: 1,
-                      color: "Đen",
-                      size: "M",
-                      price: 150000,
-                      stock: 10,
-                      sku: "pt00053",
-                      weight: "0.2",
-                      dimensions: { length: "30", width: "20", height: "2" },
-                      images: ["https://example.com/images/black-1.jpg", "https://example.com/images/black-2.jpg"]
-                  },
-                  {
-                      id: 2,
-                      color: "Trắng",
-                      size: "L",
-                      price: 170000,
-                      stock: 15,
-                      sku: "pt00054",
-                      weight: "0.22",
-                      dimensions: { length: "32", width: "22", height: "2" },
-                      images: ["https://example.com/images/white-1.jpg"]
-                  }
-              ],
-              images: {
-                  "Đen": ["https://example.com/images/black-1.jpg", "https://example.com/images/black-2.jpg"],
-                  "Trắng": ["https://example.com/images/white-1.jpg"]
-              }
-          };
-  
-          let currentAttributeName = null;
-  
-          // Khởi tạo quản lý sự kiện khi trang được tải
-          document.addEventListener('DOMContentLoaded', function () {
-              // Khởi tạo chức năng chọn tất cả các variant
-              const selectAllCheckbox = document.getElementById('select-all-variants');
-              if (selectAllCheckbox) {
-                  selectAllCheckbox.addEventListener('change', function () {
-                      const isChecked = this.checked;
-                      document.querySelectorAll('.variant-checkbox').forEach(checkbox => {
-                          checkbox.checked = isChecked;
-                      });
-                  });
-              }
-  
-              // Khởi tạo nút áp dụng chỉnh sửa hàng loạt
-              const applyBulkActionBtn = document.getElementById('apply-bulk-action');
-              if (applyBulkActionBtn) {
-                  applyBulkActionBtn.addEventListener('click', function () {
-                      applyBulkAction();
-                  });
-              }
-  
-              // Xử lý sự kiện nút lên lịch trong modal chỉnh sửa biến thể
-              const scheduleButton = document.getElementById('schedule-button');
-              if (scheduleButton) {
-                  scheduleButton.addEventListener('click', function () {
-                      const scheduleDates = document.getElementById('schedule-dates');
-                      if (scheduleDates.style.display === 'none') {
-                          scheduleDates.style.display = 'flex';
-                      } else {
-                          scheduleDates.style.display = 'none';
-                      }
-                  });
-              }
-  
-              // Thiết lập ngày mặc định cho các trường ngày
-              const today = new Date();
-              const tomorrow = new Date(today);
-              tomorrow.setDate(tomorrow.getDate() + 7);
-  
-              const startDate = document.getElementById('edit-start-date');
-              const endDate = document.getElementById('edit-end-date');
-  
-              if (startDate && endDate) {
-                  // Format ngày theo định dạng YYYY-MM-DD
-                  const formatDate = (date) => {
-                      const year = date.getFullYear();
-                      const month = String(date.getMonth() + 1).padStart(2, '0');
-                      const day = String(date.getDate()).padStart(2, '0');
-                      return `${year}-${month}-${day}`;
-                  };
-  
-                  startDate.value = formatDate(today);
-                  endDate.value = formatDate(tomorrow);
-              }
-  
-              // Ảnh sản phẩm: click vào ảnh để chọn file, chọn xong preview ảnh
-    const mainImg = document.getElementById('main-product-image');
-    const mainImgInput = document.getElementById('main-product-image-input');
-    if(mainImg && mainImgInput) {
-        mainImg.addEventListener('click', function() {
-            mainImgInput.click();
-        });
-        mainImgInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    mainImg.src = ev.target.result;
-                }
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
-    }
-          });
-  
-          // Load dữ liệu ban đầu
-          document.getElementById('product-name').value = product.name;
-          document.getElementById('product-description').value = product.sku;
-          document.getElementById('attribute-color').value = product.attributes[0].values.join(', ');
-          document.getElementById('attribute-size').value = product.attributes[1].values.join(', ');
-          product.categories.forEach(category => {
-              const checkbox = document.querySelector(`#category-${category.toLowerCase()}`);
-              if (checkbox) checkbox.checked = true;
-          });
-  
-          // Mở modal thêm giá trị thuộc tính
-          document.querySelector('#add-attribute-Modal').addEventListener('show.bs.modal', function (event) {
-              // Xác định thuộc tính đang được mở dựa trên nút được nhấn
-              const button = event.relatedTarget; // Nút gọi modal
-              const accordionItem = button.closest('.accordion-item');
-              const attributeTitle = accordionItem ? accordionItem.querySelector('.text-dark.fw-bold').textContent : "Màu sắc";
-              currentAttributeName = attributeTitle;
-          });
-  
-          // Thêm giá trị thuộc tính mới
-          function addAttributeValue() {
-              const newValue = document.getElementById('new-attribute-value').value.trim();
-              if (!newValue) {
-                  alert('Vui lòng nhập giá trị mới!');
-                  return;
-              }
-  
-              const attribute = product.attributes.find(attr => attr.name === currentAttributeName);
-              if (attribute && !attribute.values.includes(newValue)) {
-                  attribute.values.push(newValue);
-  
-                  // Cập nhật giá trị trong textarea tương ứng
-                  if (currentAttributeName === "Màu sắc") {
-                      document.getElementById('attribute-color').value = attribute.values.join(', ');
-                  } else if (currentAttributeName === "Kích cỡ") {
-                      document.getElementById('attribute-size').value = attribute.values.join(', ');
-                  }
-              }
-  
-              bootstrap.Modal.getInstance(document.getElementById('add-attribute-Modal')).hide();
-              document.getElementById('new-attribute-value').value = '';
-          }
-  
-          // Lưu thuộc tính
-          function saveAttributes() {
-              // Lưu giá trị cho thuộc tính màu sắc
-              const colorValues = document.getElementById('attribute-color').value.split(',').map(v => v.trim()).filter(v => v);
-              const colorAttribute = product.attributes.find(attr => attr.name === "Màu sắc");
-              if (colorAttribute) {
-                  colorAttribute.values = colorValues;
-              }
-  
-              // Lưu giá trị cho thuộc tính kích cỡ
-              const sizeValues = document.getElementById('attribute-size').value.split(',').map(v => v.trim()).filter(v => v);
-              const sizeAttribute = product.attributes.find(attr => attr.name === "Kích thước");
-              if (sizeAttribute) {
-                  sizeAttribute.values = sizeValues;
-              }
-  
-              alert('Đã lưu thuộc tính!');
-          }
-  
-          // Tạo biến thể từ thuộc tính
-          function generateVariants() {
-              const variantsList = document.getElementById('variantsList');
-              variantsList.innerHTML = '';
-  
-              const colors = product.attributes.find(attr => attr.name === "Màu sắc")?.values || [];
-              const sizes = product.attributes.find(attr => attr.name === "Kích thước")?.values || [];
-  
-              if (colors.length === 0 || sizes.length === 0) {
-                  alert('Vui lòng nhập đầy đủ thuộc tính màu sắc và kích thước!');
-                  return;
-              }
-  
-              let variantId = product.variants.length + 1;
-              colors.forEach(color => {
-                  sizes.forEach(size => {
-                      const existingVariant = product.variants.find(v => v.color === color && v.size === size);
-                      const variant = existingVariant || {
-                          id: variantId++,
-                          color,
-                          size,
-                          price: 150000, // Giá mặc định
-                          stock: 10,     // Tồn kho mặc định
-                          images: product.images[color] || []
-                      };
-  
-                      if (!existingVariant) product.variants.push(variant);
-  
-                      const row = `
-                          <tr data-id="${variant.id}">
-                              <td>
-                                  <div class="form-check">
-                                      <input class="form-check-input variant-checkbox" type="checkbox" value="${variant.id}">
-                                  </div>
-                              </td>
-                              <td>${color}, ${size}</td>
-                              <td><input type="number" class="form-control price-input" value="${variant.price}" min="0"></td>
-                              <td><input type="number" class="form-control stock-input" value="${variant.stock}" min="0"></td>                            <td>
-                                  <div class="image-preview">
-                                      ${variant.images && variant.images.length > 0 ? `<img src="${variant.images[0]}" alt="${color}" title="${color}">` : ''}
-                                  </div>
-                              </td>
-                              <td>
-                                  <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#edit-variant-Modal" onclick="editVariant(${variant.id})"><i class="fas fa-edit"></i></button>
-                                  <button class="btn btn-sm btn-danger" onclick="deleteVariant(${variant.id})"><i class="fas fa-trash"></i></button>
-                              </td>
-                          </tr>
-                      `;
-                      variantsList.innerHTML += row;
-                  });
-              });
-          }
-  
-          // Chỉnh sửa hình ảnh của biến thể
-          function editImages(variantId) {
-              const variant = product.variants.find(v => v.id === variantId);
-              if (!variant) return;
-  
-              const color = variant.color;
-              const images = product.images[color] || [];
-  
-              const imageInput = prompt(`Nhập URL hình ảnh cho ${color} (cách nhau bằng dấu phẩy):`, images.join(', '));
-              if (imageInput) {
-                  const newImages = imageInput.split(',').map(img => img.trim()).filter(img => img);
-                  product.images[color] = newImages;
-                  variant.images = newImages;
-                  generateVariants(); // Cập nhật lại bảng
-              }
-          }
-  
-          // Xóa biến thể
-          function deleteVariant(variantId) {
-              product.variants = product.variants.filter(v => v.id !== variantId);
-              generateVariants();
-          }
-  
-          // Lưu biến thể
-          function saveVariants() {
-              const rows = document.querySelectorAll('#variantsList tr');
-              rows.forEach(row => {
-                  const variantId = parseInt(row.dataset.id);
-                  const variant = product.variants.find(v => v.id === variantId);
-                  if (variant) {
-                      variant.price = parseInt(row.querySelector('.price-input').value) || 0;
-                      variant.stock = parseInt(row.querySelector('.stock-input').value) || 0;
-                  }
-              });
-              alert('Đã lưu biến thể!');
-              console.log('Dữ liệu biến thể:', product.variants);
-          }        // Mở modal chỉnh sửa biến thể
-          function editVariant(variantId) {
-              const variant = product.variants.find(v => v.id === variantId);
-              if (!variant) return;
-  
-              // Thay đổi tiêu đề modal
-              document.getElementById('editVariantModalLabel').textContent = 'Chỉnh sửa biến thể';
-  
-              // Điền dữ liệu vào form chỉnh sửa
-              document.getElementById('edit-variant-id').value = variant.id; document.getElementById('edit-variant-sku').value = variant.sku || '';
-              document.getElementById('edit-variant-price').value = variant.price || 0;
-              document.getElementById('edit-variant-sale-price').value = variant.salePrice || 0;
-              document.getElementById('edit-variant-stock').value = variant.stock || 0;
-              document.getElementById('edit-variant-description').value = variant.description || '';
-              document.getElementById('edit-variant-size').value = variant.size || '';
-              document.getElementById('edit-variant-color').value = variant.color || '';
-              document.getElementById('edit-variant-material').value = variant.material || '';
-  
-              // Hiển thị lịch giá ưu đãi nếu có
-              const scheduleDates = document.getElementById('schedule-dates');
-              if (variant.salePriceSchedule) {
-                  scheduleDates.style.display = 'flex';
-                  document.getElementById('edit-start-date').value = variant.salePriceSchedule.startDate || '';
-                  document.getElementById('edit-end-date').value = variant.salePriceSchedule.endDate || '';
-              } else {
-                  scheduleDates.style.display = 'none';
-              }            // Hiển thị hình ảnh đầu tiên nếu có
-              if (variant.images && variant.images.length > 0) {
-                  const uploadBox = document.querySelector('.upload-box');
-                  uploadBox.innerHTML = `
-                      <img src="${variant.images[0]}" alt="${variant.color}" class="img-fluid" style="max-height: 170px; object-fit: contain;">
-                      <button type="button" class="btn btn-outline-danger mt-2" onclick="removeVariantImage()">Xóa ảnh</button>
-                  `;
-              } else {
-                  resetImageUploadBox();
-              }
-  
-          }
-  
-          // Xóa ảnh trong modal chỉnh sửa biến thể
-          function removeVariantImage() {
-              resetImageUploadBox();
-          }        // Đặt lại vùng tải lên hình ảnh về trạng thái mặc định
-          function resetImageUploadBox() {
-              const uploadBox = document.querySelector('.upload-box');
-              uploadBox.innerHTML = `
-                  <i class="fas fa-cloud-upload-alt fs-3 text-secondary"></i>
-                  <p class="mb-0 mt-2">Kéo và thả hình ảnh vào đây hoặc nhấn để chọn ảnh</p>
-                  <input type="file" class="d-none" id="image-upload-input" accept="image/*">
-                  <button type="button" class="btn btn-outline-primary mt-2" onclick="document.getElementById('image-upload-input').click()">Chọn ảnh</button>
-              `;
-  
-              // Thêm sự kiện cho file input
-              document.getElementById('image-upload-input').addEventListener('change', handleImageUpload);
-          }
-  
-          // Reset lại modal để thêm biến thể mới
-          function resetVariantModal() {
-              // Reset các trường form về giá trị mặc định
-              document.getElementById('edit-variant-id').value = '';
-              document.getElementById('edit-variant-sku').value = '';
-              document.getElementById('edit-variant-price').value = '';
-              document.getElementById('edit-variant-sale-price').value = '';
-              document.getElementById('edit-variant-stock').value = '';
-              document.getElementById('edit-variant-description').value = '';
-              document.getElementById('edit-variant-size').value = '';
-              document.getElementById('edit-variant-color').value = '';
-              document.getElementById('edit-variant-material').value = '';
-              // Ẩn lịch giá ưu đãi
-              document.getElementById('schedule-dates').style.display = 'none';
-              // Xóa ảnh tạm khi thêm mới
-              window.tempVariantImages = [];
-              // Reset vùng upload ảnh về trắng
-              if (typeof renderVariantImages === 'function') {
-                  renderVariantImages([]);
-              } else {
-                  resetImageUploadBox();
-              }
-              // Thay đổi tiêu đề modal
-              document.getElementById('editVariantModalLabel').textContent = 'Thêm biến thể';
-          }
-  
-          // Xử lý tải lên hình ảnh
-          function handleImageUpload(e) {
-              if (e.target.files && e.target.files[0]) {
-                  const reader = new FileReader();
-                  reader.onload = function (e) {
-                      const uploadBox = document.querySelector('.upload-box');
-                      uploadBox.innerHTML = `
-                          <img src="${e.target.result}" alt="Uploaded" class="img-fluid" style="max-height: 170px; object-fit: contain;">
-                          <button type="button" class="btn btn-outline-danger mt-2" onclick="removeVariantImage()">Xóa ảnh</button>
-                      `;
-                  }
-                  reader.readAsDataURL(e.target.files[0]);
-              }
-          }// Lưu thay đổi biến thể
-          function saveVariantEdit() {
-              const variantId = parseInt(document.getElementById('edit-variant-id').value);
-              const variant = product.variants.find(v => v.id === variantId);
-              if (!variant) return;
-  
-              // Cập nhật thông tin biến thể
-              variant.sku = document.getElementById('edit-variant-sku').value;
-              variant.price = parseInt(document.getElementById('edit-variant-price').value) || 0;
-              variant.salePrice = parseInt(document.getElementById('edit-variant-sale-price').value) || 0;
-              variant.stock = parseInt(document.getElementById('edit-variant-stock').value) || 0;
-              variant.description = document.getElementById('edit-variant-description').value;
-  
-              // Lưu thông tin lịch giá ưu đãi
-              const scheduleDates = document.getElementById('schedule-dates');
-              if (scheduleDates && scheduleDates.style.display !== 'none') {
-                  variant.salePriceSchedule = {
-                      startDate: document.getElementById('edit-start-date').value,
-                      endDate: document.getElementById('edit-end-date').value
-                  };
-              }
-  
-              // Cập nhật hình ảnh nếu có thay đổi
-              const uploadedImage = document.querySelector('.upload-box img');
-              if (uploadedImage) {
-                  // Nếu đã tải lên ảnh mới
-                  if (uploadedImage.src.startsWith('data:')) {
-                      // Trong triển khai thực tế, bạn sẽ cần tải lên ảnh lên máy chủ và lấy URL
-                      // Nhưng ở đây, chúng ta giả định rằng đây là URL hợp lệ
-                      variant.images = [uploadedImage.src];
-                      if (product.images[variant.color]) {
-                          product.images[variant.color][0] = uploadedImage.src;
-                      } else {
-                          product.images[variant.color] = [uploadedImage.src];
-                      }
-                  }
-              } else {
-                  // Nếu người dùng đã xóa ảnh
-                  variant.images = [];
-                  if (product.images[variant.color]) {
-                      product.images[variant.color] = [];
-                  }
-              }
-  
-              alert('Đã lưu thay đổi biến thể!');
-              generateVariants(); // Cập nhật lại bảng biến thể
-  
-          }
-  
-          // Xử lý chỉnh sửa hàng loạt
-          function applyBulkAction() {
-              const action = document.getElementById('bulk-action-select').value;
-              if (!action) {
-                  alert('Vui lòng chọn một hành động!');
-                  return;
-              }
-  
-              // Lấy danh sách các biến thể được chọn
-              const selectedVariants = [];
-              document.querySelectorAll('.variant-checkbox:checked').forEach(checkbox => {
-                  const variantId = parseInt(checkbox.value);
-                  const variant = product.variants.find(v => v.id === variantId);
-                  if (variant) {
-                      selectedVariants.push(variant);
-                  }
-              });
-  
-              if (selectedVariants.length === 0) {
-                  alert('Vui lòng chọn ít nhất một biến thể!');
-                  return;
-              }
-  
-              switch (action) {
-                  case 'price':
-                      bulkEditPrice(selectedVariants);
-                      break;
-                  case 'stock':
-                      bulkEditStock(selectedVariants);
-                      break;
-                  case 'delete':
-                      bulkDeleteVariants(selectedVariants);
-                      break;
-              }
-          }
-  
-          // Chỉnh sửa giá hàng loạt
-          function bulkEditPrice(variants) {
-              const newPrice = prompt('Nhập giá mới cho tất cả biến thể đã chọn:', '150000');
-              if (newPrice === null) return; // Người dùng đã hủy
-  
-              const price = parseInt(newPrice);
-              if (isNaN(price) || price < 0) {
-                  alert('Vui lòng nhập một giá trị hợp lệ!');
-                  return;
-              }
-  
-              variants.forEach(variant => {
-                  variant.price = price;
-              });
-  
-              alert(`Đã cập nhật giá ${price}đ cho ${variants.length} biến thể!`);
-              generateVariants(); // Cập nhật lại bảng biến thể
-          }
-  
-          // Chỉnh sửa số lượng tồn kho hàng loạt
-          function bulkEditStock(variants) {
-              const newStock = prompt('Nhập số lượng tồn kho mới cho tất cả biến thể đã chọn:', '10');
-              if (newStock === null) return; // Người dùng đã hủy
-  
-              const stock = parseInt(newStock);
-              if (isNaN(stock) || stock < 0) {
-                  alert('Vui lòng nhập một giá trị hợp lệ!');
-                  return;
-              }
-  
-              variants.forEach(variant => {
-                  variant.stock = stock;
-              });
-  
-              alert(`Đã cập nhật tồn kho ${stock} cho ${variants.length} biến thể!`);
-              generateVariants(); // Cập nhật lại bảng biến thể
-          }
-  
-          // Xóa biến thể hàng loạt
-          function bulkDeleteVariants(variants) {
-              if (!confirm(`Bạn có chắc chắn muốn xóa ${variants.length} biến thể đã chọn không?`)) {
-                  return;
-              }
-  
-              const variantIds = variants.map(v => v.id);
-              product.variants = product.variants.filter(v => !variantIds.includes(v.id));
-  
-              alert(`Đã xóa ${variants.length} biến thể!`);
-              generateVariants(); // Cập nhật lại bảng biến thể
-          }
-  
-          // Thêm sự kiện kéo và thả hình ảnh
-          document.addEventListener('DOMContentLoaded', function () {
-              const uploadBox = document.querySelector('.upload-box');
-              if (uploadBox) {
-                  uploadBox.addEventListener('dragover', function (e) {
-                      e.preventDefault();
-                      this.classList.add('border-primary');
-                  });
-  
-                  uploadBox.addEventListener('dragleave', function (e) {
-                      e.preventDefault();
-                      this.classList.remove('border-primary');
-                  });
-                  uploadBox.addEventListener('drop', function (e) {
-                      e.preventDefault();
-                      this.classList.remove('border-primary');
-  
-                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                          const file = e.dataTransfer.files[0];
-                          if (file.type.startsWith('image/')) {
-                              const reader = new FileReader();
-                              reader.onload = function (e) {
-                                  uploadBox.innerHTML = `
-                                      <img src="${e.target.result}" alt="Uploaded" class="img-fluid" style="max-height: 170px; object-fit: contain;">
-                                      <button type="button" class="btn btn-outline-danger mt-2" onclick="removeVariantImage()">Xóa ảnh</button>
-                                  `;
-                              }
-                              reader.readAsDataURL(file);
-                          }
-                      }
-                  });
-  
-                  // Khởi tạo sự kiện cho input file
-                  const fileInput = document.getElementById('image-upload-input');
-                  if (fileInput) {
-                      fileInput.addEventListener('change', handleImageUpload);
-                  }
-              }
-          });
-      </script>
-      <script src="https://cdn.tiny.cloud/1/et9y6eu5ib5fny3s9tq79yff3wkv7jvtmjb30kmw42aouimt/tinymce/7/tinymce.min.js"
-          referrerpolicy="origin"></script>
-      <script>
-          tinymce.init({
-              selector: '#product-description-editor',
-              height: 300,
-              plugins: [
-                  // Core editing features
-                  'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                  // Your account includes a free trial of TinyMCE premium features
-                  // Try the most popular premium features until Jun 19, 2025:
-                  'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-              ],
-              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-              tinycomments_mode: 'embedded',
-              tinycomments_author: 'Author name',
-              mergetags_list: [
-                  { value: 'First.Name', title: 'First Name' },
-                  { value: 'Email', title: 'Email' },
-              ],
-              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-          });
-          tinymce.init({
-              selector: '#product-short-description-editor',
-              height: 300,
-              plugins: [
-                  // Core editing features
-                  'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                  // Your account includes a free trial of TinyMCE premium features
-                  // Try the most popular premium features until Jun 19, 2025:
-                  'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-              ],
-              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-              tinycomments_mode: 'embedded',
-              tinycomments_author: 'Author name',
-              mergetags_list: [
-                  { value: 'First.Name', title: 'First Name' },
-                  { value: 'Email', title: 'Email' },
-              ],
-              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-          });
-      </script> 
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-
-
+    <th:block th:fragment="scripts">
+        <script src="/admin_js/product-detail.js"></script>
+    </th:block>
 </body>
 
 </html>

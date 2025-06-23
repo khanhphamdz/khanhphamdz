@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi"
+  th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Về chúng tôi - TeeVibe</title>
+  <th:block th:fragment="styles">
+    <!-- If there are page specific styles, add them here -->
+  </th:block>
 </head>
 
 <body>
@@ -147,6 +151,9 @@
       </ul>
     </section>
   </main>
+  <th:block th:fragment="scripts">
+
+  </th:block>
 </body>
 
 </html>

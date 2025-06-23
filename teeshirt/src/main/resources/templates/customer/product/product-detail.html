@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="vi" th:replace="~{/customer/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi"
+      th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chi tiết sản phẩm - Tee Shirt Vibe</title>
+  <th:block th:fragment="styles">
+    <link rel="stylesheet" href="/customer_css/product_css/style_product_detail.css">
+    <link rel="stylesheet" href="/customer_css/product_css/style_product_list.css">
+  </th:block>
 </head>
 
 <body>
@@ -20,25 +25,25 @@
       <!-- ảnh sản phẩm -->
       <div class="col-6">
         <div class="product-gallery">
-          <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894537/tsv_brown_umzvjc.png"
-            alt="Product Image" class="main-image" />
+          <img th:src="${#lists.isEmpty(product.images) ? 
+                    'https://res.cloudinary.com/dzfxd7vnz/image/upload/v1748244107/Screenshot_2025-01-17_100744_ktodkf.png' : 
+                    product.images[0].imageUrl}" alt="Product Image" class="main-image" />
+
           <div class="thumbnail-container">
-            <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894537/tsv_black.png" alt="Thumbnail 1"
-              class="thumbnail active" />
-            <img src="https://res.cloudinary.com/dbqllv3nz/image/upload/v1747894538/tsv_white_zkweod.png"
-              alt="Thumbnail 2" class="thumbnail" />
-            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-              alt="Thumbnail 3" class="thumbnail" />
+            <th:block th:each="img : ${product.images}">
+              <img th:src="${img.imageUrl}" th:alt="${img.image_type}" class="thumbnail active" />
+            </th:block>
           </div>
         </div>
+
       </div>
 
       <!-- thông tin sản phẩm -->
       <div class="col-6">
         <div class="product-info">
-          <h1 class="product-title">TeeShirtVibe Basic Tee</h1>
-          <div class="product-price">1.299.000 ₫</div>
-          <p class="product-description">
+          <h1 class="product-title" th:text="${product.name}">TeeShirtVibe Basic Tee</h1>
+          <span class="product-price"></span>
+          <p class="product-description" th:text="${product.description}">
             Áo thun cao cấp với chất liệu vải dày dặn, thiết kế hiện đại và
             phong cách. Sản phẩm được may thủ công với đường nét tinh tế, mang
             lại sự sang trọng và thoải mái cho người mặc.
@@ -47,22 +52,14 @@
           <!-- chọn màu -->
           <div class="color-options">
             <h5 class="p-0 m-0">Màu sắc:</h5>
-            <div class="color-option">
-              <span class="color-circle active" style="background-color: #000"></span>
-              <span>Đen</span>
-            </div>
-            <div class="color-option">
-              <span class="color-circle" style="background-color: #fff; border: 1px solid #ddd"></span>
-              <span>Trắng</span>
-            </div>
-            <div class="color-option">
-              <span class="color-circle" style="background-color: #e74c3c"></span>
-              <span>Đỏ</span>
-            </div>
-            <div class="color-option">
-              <span class="color-circle" style="background-color: #3498db"></span>
-              <span>Xanh dương</span>
-            </div>
+            <th:block th:each="attr : ${product.attributes}">
+              <th:block th:if="${attr.attributeName == 'Màu s?c'}">
+                <div th:each="value : ${attr.attributeValue}" class="color-option">
+                  <span class="color-circle active" style="background-color: #000"></span>
+                  <span th:text="${value.term}"></span>
+                </div>
+              </th:block>
+            </th:block>
           </div>
 
           <!-- size lầm =))) -->
@@ -299,6 +296,9 @@
       </div>
     </div>
   </main>
+  <th:block th:fragment="scripts">
+    <script src="/customer_js/product_js/product_detail.js"></script>
+  </th:block>
 </body>
 
 </html>

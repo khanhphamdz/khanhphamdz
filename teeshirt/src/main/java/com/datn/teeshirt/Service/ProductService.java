@@ -1,5 +1,6 @@
 package com.datn.teeshirt.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.datn.teeshirt.DTO.AttributeDTO;
 import com.datn.teeshirt.DTO.CategoryDTO;
-import com.datn.teeshirt.DTO.ProductAttributeDTO;
 import com.datn.teeshirt.DTO.ProductDTO;
 import com.datn.teeshirt.DTO.ProductImageDTO;
 import com.datn.teeshirt.DTO.ProductVariantDTO;
-import com.datn.teeshirt.DTO.AttributeDTO;
 import com.datn.teeshirt.Entity.Category;
 import com.datn.teeshirt.Entity.Product;
 import com.datn.teeshirt.Repository.ProductRepository;
@@ -31,16 +32,6 @@ public class ProductService {
                 dto.setShortDescription(product.getShortDescription());
                 dto.setIsFeatured(product.getIsFeatured());
                 dto.setStatus(product.getStatus());
-                dto.setAttributes(
-                                product.getProductAttributes().stream()
-                                                .map(pa -> {
-                                                        return ProductAttributeDTO.builder()
-                                                                        .productAttributeId(pa.getProductAttributeId())
-                                                                        .attributeName(pa.getAttribute().getName())
-                                                                        .attributeValue(pa.getTerm().getName())
-                                                                        .build();
-                                                })
-                                                .collect(Collectors.toList()));
                 dto.setCategories(
                                 product.getProductCategories().stream()
                                                 .map(pc -> {
@@ -81,22 +72,60 @@ public class ProductService {
                                                                                                                 .build();
                                                                                         })
                                                                                         .collect(Collectors.toList()))
-                                                                        .images(variant.getImages().stream()
-                                                                                        .map(vi -> {
-                                                                                                return ProductImageDTO
-                                                                                                                .builder()
-                                                                                                                .imageId(vi.getImageId())
-                                                                                                                .imageUrl(vi.getImageUrl())
-                                                                                                                .image_type(String
-                                                                                                                                .valueOf(vi.getImageType()))
-                                                                                                                .build();
-                                                                                        })
-                                                                                        .collect(Collectors.toList()))
                                                                         .build();
                                                 })
                                                 .collect(Collectors.toList()));
-                dto.setCreatedAt(product.getCreatedAt());
-                dto.setUpdatedAt(product.getUpdatedAt());
+                dto.setImages(product.getImages().stream()
+                                .map(pi -> {
+                                        return ProductImageDTO
+                                                        .builder()
+                                                        .imageId(pi.getImageId())
+                                                        .productId(pi.getProduct() != null
+                                                                        && pi.getProduct().getProductId() != null
+                                                                                        ? String.valueOf(pi.getProduct()
+                                                                                                        .getProductId())
+                                                                                        : "No")
+                                                        .variantId(pi.getVariant() != null
+                                                                        && pi.getVariant().getVariantId() != null
+                                                                                        ? String.valueOf(pi.getVariant()
+                                                                                                        .getVariantId())
+                                                                                        : "No")
+                                                        .imageUrl(pi.getImageUrl())
+                                                        .image_type(String
+                                                                        .valueOf(pi.getImageType()))
+                                                        .build();
+                                })
+                                .collect(Collectors.toList()));
+                dto.setAttributes(
+                                product.getProductAttributes().stream()
+                                                .collect(Collectors.groupingBy(pa -> pa.getAttribute().getName()))
+                                                .entrySet().stream()
+                                                .map(entry -> {
+                                                        // Mỗi entry là 1 thuộc tính, value là list ProductAttribute (có
+                                                        // thể nhiều giá trị)
+                                                        var first = entry.getValue().get(0);
+                                                        return com.datn.teeshirt.DTO.ProductAttributeDTO.builder()
+                                                                        .productAttributeId(
+                                                                                        first.getProductAttributeId())
+                                                                        .attributeName(entry.getKey())
+                                                                        .attributeValue(
+                                                                                        entry.getValue().stream()
+                                                                                                        .filter(pa -> pa.getTerm() != null)
+                                                                                                        .map(pa -> com.datn.teeshirt.DTO.AttributeTermsDTO
+                                                                                                                        .builder()
+                                                                                                                        .termId(pa.getTerm()
+                                                                                                                                        .getTermId())
+                                                                                                                        .attributeId(pa.getAttribute()
+                                                                                                                                        .getAttributeId())
+                                                                                                                        .term(pa.getTerm()
+                                                                                                                                        .getName())
+                                                                                                                        .build())
+                                                                                                        .collect(Collectors
+                                                                                                                        .toList()))
+                                                                        .isVariation(first.getIsVariation())
+                                                                        .build();
+                                                })
+                                                .collect(Collectors.toList()));
                 return dto;
         }
 
@@ -104,5 +133,61 @@ public class ProductService {
                 Pageable pageable = PageRequest.of(page, 10);
                 Page<Product> page_product = repository.findAllActive(pageable);
                 return page_product.map(this::convertToProductDTO);
+        }
+
+        public Page<ProductDTO> findLatestProducts() {
+                Pageable pageable = PageRequest.of(0, 8);
+                Page<Product> page_product = repository.findLatestProducts(pageable);
+                return page_product.map(this::convertToProductDTO);
+        }
+
+        public ProductDTO findById(Long id) {
+                Product product = repository.findById(id).get();
+                return convertToProductDTO(product);
+        }
+
+        public List<ProductDTO> searchProduct(String keyword) {
+                System.out.println("Searching for keyword: " + keyword);
+                List<Product> listProduct = repository.search(keyword);
+                System.out.println("Found " + listProduct.size() + " products from repository");
+                List<ProductDTO> result = listProduct.stream()
+                                .map(product -> {
+                                        System.out.println("Converting product: " + product.getName());
+                                        return convertToProductDTO(product);
+                                })
+                                .collect(Collectors.toList());
+                System.out.println("Final result size: " + result.size());
+                return result;
+        }
+
+        @Transactional
+        public ProductDTO createProduct(ProductDTO productDTO) {
+                Product product = new Product();
+                product.setName(productDTO.getName());
+                product.setDescription(productDTO.getDescription());
+                product.setShortDescription(productDTO.getShortDescription());
+                product.setIsFeatured(productDTO.getIsFeatured());
+                product.setStatus(productDTO.getStatus());
+                // TODO: Gán danh mục, thuộc tính, ảnh, variants nếu cần
+                Product saved = repository.save(product);
+                return convertToProductDTO(saved);
+        }
+
+        @Transactional
+        public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+                Product product = repository.findById(id).orElseThrow();
+                product.setName(productDTO.getName());
+                product.setDescription(productDTO.getDescription());
+                product.setShortDescription(productDTO.getShortDescription());
+                product.setIsFeatured(productDTO.getIsFeatured());
+                product.setStatus(productDTO.getStatus());
+                // TODO: Gán danh mục, thuộc tính, ảnh, variants nếu cần
+                Product saved = repository.save(product);
+                return convertToProductDTO(saved);
+        }
+
+        @Transactional
+        public void deleteProduct(Long id) {
+                repository.deleteById(id);
         }
 }

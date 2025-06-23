@@ -1,66 +1,81 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+<html lang="vi"
+    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý danh mục</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <style>
-        .category-card {
-            border-radius: 16px;
-            box-shadow: 0 2px 12px 0 rgba(255,152,0,0.10);
-            background: #fff;
-        }
-        .category-form-label {
-            font-weight: 600;
-            color: #ff9800;
-        }
-        .btn-add-category {
-            background: linear-gradient(90deg, #147dee 50%, #901de8 100%);
-            color: #fff;
-            font-weight: 600;
-            border-radius: 10px;
-            padding: 0.55rem 1.5rem;
-            box-shadow: 0 2px 8px 0 rgba(255,152,0,0.13);
-            border: none;
-            transition: background 0.18s, box-shadow 0.18s;
-        }
-        .btn-add-category:hover {
-            background: linear-gradient(90deg, #d40674 60%, #ae0230 100%);
-            color: antiquewhite;
-        }
-        .table thead th {
-            background-color: #ffe0b2 !important;
-            color: #333;
-            font-weight: 600;
-            border-bottom: 2.5px solid #ff9800;
-        }
-        .table thead th:first-child {
-            border-top-left-radius: 12px;
-        }
-        .table thead th:last-child {
-            border-top-right-radius: 12px;
-        }
-        .card-header {
-            background: #fff !important;
-            border-bottom: none !important; /* Xoá gạch vàng dưới header */
-        }
-        .modal-content {
-            background: #fff;
-            border-radius: 16px;
-            border: 1.5px solid #ffd180;
-        }
-        .modal-header {
-            background: #ffe0b2;
-            border-bottom: 1.5px solid #ffd180;
-        }
-        .modal-footer {
-            background: #fff;
-            border-top: 1.5px solid #ffd180;
-        }
-    </style>
+    <th:block th:fragment="styles">
+        <style>
+            .category-card {
+                border-radius: 16px;
+                box-shadow: 0 2px 12px 0 rgba(255, 152, 0, 0.10);
+                background: #fff;
+            }
+
+            .category-form-label {
+                font-weight: 600;
+                color: #ff9800;
+            }
+
+            .btn-add-category {
+                background: linear-gradient(90deg, #147dee 50%, #901de8 100%);
+                color: #fff;
+                font-weight: 600;
+                border-radius: 10px;
+                padding: 0.55rem 1.5rem;
+                box-shadow: 0 2px 8px 0 rgba(255, 152, 0, 0.13);
+                border: none;
+                transition: background 0.18s, box-shadow 0.18s;
+            }
+
+            .btn-add-category:hover {
+                background: linear-gradient(90deg, #d40674 60%, #ae0230 100%);
+                color: antiquewhite;
+            }
+
+            .table thead th {
+                background-color: #ffe0b2 !important;
+                color: #333;
+                font-weight: 600;
+                border-bottom: 2.5px solid #ff9800;
+            }
+
+            .table thead th:first-child {
+                border-top-left-radius: 12px;
+            }
+
+            .table thead th:last-child {
+                border-top-right-radius: 12px;
+            }
+
+            .card-header {
+                background: #fff !important;
+                border-bottom: none !important;
+                /* Xoá gạch vàng dưới header */
+            }
+
+            .modal-content {
+                background: #fff;
+                border-radius: 16px;
+                border: 1.5px solid #ffd180;
+            }
+
+            .modal-header {
+                background: #ffe0b2;
+                border-bottom: 1.5px solid #ffd180;
+            }
+
+            .modal-footer {
+                background: #fff;
+                border-top: 1.5px solid #ffd180;
+            }
+        </style>
+    </th:block>
+
 </head>
+
 <body>
     <main class="d-flex flex-column p-3 w-100">
         <h3 class="fw-bold text-center mb-3">Quản lý danh mục</h3>
@@ -71,7 +86,8 @@
                     <div class="col-md-6 col-12 d-flex flex-column justify-content-between">
                         <div class="mb-3">
                             <label class="form-label">Tên danh mục</label>
-                            <input type="text" class="form-control" style="width: 600px;" placeholder="Nhập tên danh mục">
+                            <input type="text" class="form-control" style="width: 600px;"
+                                placeholder="Nhập tên danh mục">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Đường dẫn (slug)</label>
@@ -89,10 +105,12 @@
                     <div class="col-md-6 col-12 d-flex flex-column justify-content-between align-items-start">
                         <div class="mb-3 flex-grow-1 w-100">
                             <label class="form-label">Mô tả</label>
-                            <textarea class="form-control" style="height: 122px; " placeholder="Nhập mô tả danh mục"></textarea>
+                            <textarea class="form-control" style="height: 122px; "
+                                placeholder="Nhập mô tả danh mục"></textarea>
                         </div>
                         <div class="text-end w-100 mb-3">
-                            <button type="submit" class="btn btn-add-category"><i class="fa-solid fa-plus me-1"></i>Thêm danh mục</button>
+                            <button type="submit" class="btn btn-add-category"><i class="fa-solid fa-plus me-1"></i>Thêm
+                                danh mục</button>
                         </div>
                     </div>
                 </form>
@@ -100,7 +118,8 @@
         </div>
         <!-- Khung dưới: Bảng danh mục -->
         <div class="card category-card flex-grow-1 d-flex flex-column">
-            <div class="card-header border-0 pb-0 d-flex align-items-center justify-content-between pt-2" style="margin-top: 8px;">
+            <div class="card-header border-0 pb-0 d-flex align-items-center justify-content-between pt-2"
+                style="margin-top: 8px;">
                 <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách danh mục</h5>
             </div>
             <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
@@ -124,7 +143,8 @@
                                 <td>25</td>
                                 <td><span class="badge bg-success">Đang bán</span></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryDetailModal">
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#categoryDetailModal">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
@@ -136,7 +156,8 @@
                                 <td>18</td>
                                 <td><span class="badge bg-success">Đang bán</span></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryDetailModal">
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#categoryDetailModal">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
@@ -148,7 +169,8 @@
                                 <td>12</td>
                                 <td><span class="badge bg-secondary">Ngừng bán</span></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#categoryDetailModal">
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#categoryDetailModal">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
@@ -161,66 +183,69 @@
     </main>
 
     <!-- Modal chi tiết/sửa danh mục -->
-    <div class="modal fade" id="categoryDetailModal" tabindex="-1" aria-labelledby="categoryDetailModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title fw-bold" id="categoryDetailModalLabel">Chi tiết danh mục</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Tên danh mục</label>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control" value="Áo thun" readonly>
+    <div class="modal fade" id="categoryDetailModal" tabindex="-1" aria-labelledby="categoryDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="categoryDetailModalLabel">Chi tiết danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Đường dẫn (slug)</label>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control" value="ao-thun" readonly>
+                <div class="modal-body">
+                    <form>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Tên danh mục</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="Áo thun" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Đường dẫn (slug)</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="ao-thun" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Danh mục cha</label>
+                            <div class="col-sm-9">
+                                <select class="form-select">
+                                    <option selected>Không có</option>
+                                    <option>Áo thun</option>
+                                    <option>Áo polo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Mô tả</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" rows="2" readonly>Mô tả áo thun</textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Ngày tạo</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="2024-06-01 10:00:00" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label fw-bold">Ngày cập nhật</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="2024-06-08 09:30:00" disabled>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Danh mục cha</label>
-                <div class="col-sm-9">
-                  <select class="form-select">
-                    <option selected>Không có</option>
-                    <option>Áo thun</option>
-                    <option>Áo polo</option>
-                  </select>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary">Lưu</button>
                 </div>
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Mô tả</label>
-                <div class="col-sm-9">
-                  <textarea class="form-control" rows="2" readonly>Mô tả áo thun</textarea>
-                </div>
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Ngày tạo</label>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control" value="2024-06-01 10:00:00" disabled>
-                </div>
-              </div>
-              <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Ngày cập nhật</label>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control" value="2024-06-08 09:30:00" disabled>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary">Lưu</button>
-          </div>
+            </div>
         </div>
-      </div>
     </div>
     <!-- Kết thúc modal -->
+    <th:block th:fragment="scripts">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    </th:block>
 </body>
+
 </html>

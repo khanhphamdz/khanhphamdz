@@ -25,7 +25,6 @@ public class ProductVariantDTO {
     private Integer quantityInStock;
     private Boolean isActive;
     private List<AttributeDTO> attributes;
-    private List<ProductImageDTO> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

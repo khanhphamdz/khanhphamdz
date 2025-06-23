@@ -16,4 +16,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     
     @Query("SELECT pv FROM ProductVariant pv WHERE pv.quantityInStock > 0 AND pv.isActive = true")
     List<ProductVariant> findInStock();
+
+    List<ProductVariant> findByProduct_ProductId(Long productId);
 } 

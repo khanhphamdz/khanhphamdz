@@ -5,6 +5,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý trả hàng - Admin Dashboard</title>
+    <th:block th:fragment="styles">
+        <!-- If there are page specific styles, add them here -->
+        <style>
+            /* Timeline styles */
+            .timeline {
+                position: relative;
+                padding: 20px 0;
+            }
+
+            .timeline-item {
+                position: relative;
+                padding-left: 40px;
+                margin-bottom: 20px;
+            }
+
+            .timeline-marker {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+            }
+
+            .timeline-content {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 4px;
+            }
+
+            .timeline-item:before {
+                content: '';
+                position: absolute;
+                left: 7px;
+                top: 15px;
+                height: calc(100% + 5px);
+                width: 1px;
+                background: #dee2e6;
+            }
+
+            .timeline-item:last-child:before {
+                display: none;
+            }
+
+            /* Thêm style cho các trạng thái */
+            .status-badge {
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+            .status-pending {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+
+            .status-contacting {
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            .status-approved {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-rejected {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .status-completed {
+                background-color: #e2e3e5;
+                color: #383d41;
+            }
+
+            .action-buttons .btn {
+                padding: 0.25rem 0.5rem;
+                margin: 0 2px;
+            }
+
+            .action-buttons .btn:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+            }
+        </style>
+    </th:block>
 </head>
 
 <body>
@@ -53,8 +141,7 @@
                     <div class="row mb-4 align-items-end">
                         <div class="col-md-6">
                             <div class="search-box d-flex align-items-center">
-                                <input type="text" class="form-control w-50 me-2"
-                                    placeholder="Tìm kiếm đơn hàng...">
+                                <input type="text" class="form-control w-50 me-2" placeholder="Tìm kiếm đơn hàng...">
                                 <button class="btn btn-success">
                                     <i class="fas fa-search me-1"></i>
                                     <span>Tìm kiếm</span>
@@ -100,8 +187,8 @@
                                             data-bs-target="#viewRefundModal">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn btn-primary" title="Liên hệ khách hàng" data-bs-toggle="modal"
-                                            data-bs-target="#contactCustomerModal">
+                                        <button class="btn btn-primary" title="Liên hệ khách hàng"
+                                            data-bs-toggle="modal" data-bs-target="#contactCustomerModal">
                                             <i class="fas fa-phone"></i>
                                         </button>
                                         <button class="btn btn-success" title="Duyệt" data-bs-toggle="modal"
@@ -241,11 +328,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nội dung liên hệ</label>
-                            <textarea class="form-control" rows="4" placeholder="Nhập nội dung cần trao đổi với khách hàng..."></textarea>
+                            <textarea class="form-control" rows="4"
+                                placeholder="Nhập nội dung cần trao đổi với khách hàng..."></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ghi chú nội bộ</label>
-                            <textarea class="form-control" rows="2" placeholder="Ghi chú cho nhân viên khác..."></textarea>
+                            <textarea class="form-control" rows="2"
+                                placeholder="Ghi chú cho nhân viên khác..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -279,7 +368,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>
-                            <textarea class="form-control" rows="3" placeholder="Nhập ghi chú về việc duyệt trả hàng..."></textarea>
+                            <textarea class="form-control" rows="3"
+                                placeholder="Nhập ghi chú về việc duyệt trả hàng..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -310,7 +400,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Chi tiết lý do</label>
-                            <textarea class="form-control" rows="3" placeholder="Nhập chi tiết lý do từ chối..."></textarea>
+                            <textarea class="form-control" rows="3"
+                                placeholder="Nhập chi tiết lý do từ chối..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -438,93 +529,24 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Đóng
                         </button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactCustomerModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#contactCustomerModal">
                             <i class="fas fa-phone me-2"></i>Liên hệ khách hàng
                         </button>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveRefundModal">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#approveRefundModal">
                             <i class="fas fa-check me-2"></i>Duyệt yêu cầu
                         </button>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectRefundModal">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#rejectRefundModal">
                             <i class="fas fa-times me-2"></i>Từ chối
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <style>
-            /* Timeline styles */
-            .timeline {
-                position: relative;
-                padding: 20px 0;
-            }
-            .timeline-item {
-                position: relative;
-                padding-left: 40px;
-                margin-bottom: 20px;
-            }
-            .timeline-marker {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 15px;
-                height: 15px;
-                border-radius: 50%;
-            }
-            .timeline-content {
-                background: #f8f9fa;
-                padding: 15px;
-                border-radius: 4px;
-            }
-            .timeline-item:before {
-                content: '';
-                position: absolute;
-                left: 7px;
-                top: 15px;
-                height: calc(100% + 5px);
-                width: 1px;
-                background: #dee2e6;
-            }
-            .timeline-item:last-child:before {
-                display: none;
-            }
-            /* Thêm style cho các trạng thái */
-            .status-badge {
-                padding: 5px 10px;
-                border-radius: 15px;
-                font-size: 0.85rem;
-                font-weight: 500;
-            }
-            .status-pending {
-                background-color: #fff3cd;
-                color: #856404;
-            }
-            .status-contacting {
-                background-color: #cce5ff;
-                color: #004085;
-            }
-            .status-approved {
-                background-color: #d4edda;
-                color: #155724;
-            }
-            .status-rejected {
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-            .status-completed {
-                background-color: #e2e3e5;
-                color: #383d41;
-            }
-            .action-buttons .btn {
-                padding: 0.25rem 0.5rem;
-                margin: 0 2px;
-            }
-            .action-buttons .btn:disabled {
-                opacity: 0.65;
-                cursor: not-allowed;
-            }
-        </style>
-
+    </main>
+    <th:block th:fragment="scripts">
         <script>
             // Xử lý hiển thị thời gian chờ
             function updateWaitingTime() {
@@ -561,7 +583,7 @@
             // Tính toán độ ưu tiên dựa trên các yếu tố
             function calculatePriority(refund) {
                 let score = 0;
-                
+
                 // Yếu tố thời gian
                 const waitingDays = Math.floor((new Date() - new Date(refund.createdAt)) / (1000 * 60 * 60 * 24));
                 if (waitingDays > 3) score += 3;
@@ -623,7 +645,7 @@
                     }
 
                     // Xử lý hoàn tiền theo phương thức
-                    switch(method) {
+                    switch (method) {
                         case 'bank':
                             await processBankRefund(refundId, amount);
                             break;
@@ -637,7 +659,7 @@
 
                     // Cập nhật trạng thái
                     await updateRefundStatus(refundId, RefundStatus.COMPLETED);
-                    
+
                     // Gửi thông báo
                     await sendRefundNotification(refundId);
 
@@ -713,7 +735,7 @@
             document.querySelectorAll('form').forEach(form => {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
+
                     // Validate form
                     if (!validateForm(form)) {
                         return;
@@ -724,7 +746,7 @@
                     const data = Object.fromEntries(formData.entries());
 
                     // Thực hiện hành động tương ứng
-                    switch(form.id) {
+                    switch (form.id) {
                         case 'contactForm':
                             await handleCustomerContact(data);
                             break;
@@ -802,7 +824,7 @@
                     if (success) {
                         // Cập nhật trạng thái
                         await updateRefundStatus(data.refundId, RefundStatus.APPROVED);
-                        
+
                         // Gửi thông báo
                         await sendNotification({
                             type: 'approval',
@@ -856,7 +878,7 @@
                 console.log('Updating status:', { refundId, status });
             }
         </script>
-    </main>
+    </th:block>
 </body>
 
 </html>

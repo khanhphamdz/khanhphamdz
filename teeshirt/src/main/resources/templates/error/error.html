@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang lỗi</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8d7da; color: #721c24; text-align: center; padding: 50px; }
+        .error-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; padding: 40px 60px; }
+        h1 { font-size: 48px; margin-bottom: 10px; }
+        h2 { font-size: 32px; margin-bottom: 10px; }
+        p { font-size: 20px; }
+        a { color: #721c24; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 th:text="${errorCode}">Mã lỗi</h1>
+        <h2 th:text="${errorTitle}">Tiêu đề lỗi</h2>
+        <p th:text="${errorMessage}">Thông báo lỗi</p>
+        <p><a href="/">Quay về trang chủ</a></p>
+    </div>
+</body>
+</html> 

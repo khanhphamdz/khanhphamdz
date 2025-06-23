@@ -35,11 +35,11 @@ public class ProductImage {
     private Long imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = true)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id")
+    @JoinColumn(name = "variant_id", nullable = true)
     private ProductVariant variant;
 
     @Column(name = "image_url", nullable = false, length = 255)

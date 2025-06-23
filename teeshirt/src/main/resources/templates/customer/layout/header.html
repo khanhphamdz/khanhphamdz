@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="UTF-8" />
@@ -21,7 +21,7 @@
       <ul class="main-menu d-flex mb-0 list-unstyled align-items-center">
         <li class="me-4"><a href="/" class="menu-link">Trang Chủ</a></li>
         <li class="me-4">
-          <a href="/product" class="menu-link">Sản Phẩm</a>
+          <a href="/product/list-products" class="menu-link">Sản Phẩm</a>
           <ul class="sub-menu">
             <li><a href="" class="menu-link">T-Shirts</a></li>
             <li><a href="" class="menu-link">Hoodies</a></li>
@@ -53,80 +53,39 @@
       </div>
     </div>
   </header>
-  <!-- ModalSearch -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content p-3">
-        <div class="search-modal">
-          <h4 class="title">Tìm kiếm sản phẩm</h4>
-          <div class="form-input">
-            <i class="fas fa-search"></i>
-            <input type="text" id="filter" placeholder="Tìm sản phẩm mong muốn..." />
-          </div>
-        </div>
+<!-- ModalSearch -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm sản phẩm</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
 
-        <div class="product-search-list">
-          <div>
-            <h3>Loading...</h3>
+      <!-- Body -->
+      <div class="modal-body">
+        <form class="row g-2 align-items-center">
+          <div class="col-md-10">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+              <input type="text" class="form-control" id="filter" placeholder="Tìm sản phẩm mong muốn...">
+            </div>
           </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-success w-100" id="btn-search-product">Tìm kiếm</button>
+          </div>
+        </form>
+
+        <!-- Kết quả tìm kiếm -->
+        <div class="mt-4 product-search-list">
+          <h6 class="text-muted">Loading...</h6>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    window.addEventListener('scroll', function () {
-      const header = document.getElementById('main-header');
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-        header.classList.remove('transparent-header');
-      } else {
-        header.classList.remove('scrolled');
-        header.classList.add('transparent-header');
-      }
-    });
-    const products = document.querySelector('.product-search-list')
-    const filter = document.getElementById('filter')
-    const listItems = []
-    document.querySelector('.btn-search').addEventListener('click', () => {
-      getData()
-    })
-    filter.addEventListener('input', (e) => filterData(e.target.value))
-
-    async function getData() {
-      const res = await fetch('https://fakestoreapi.com/products')
-
-      const results = await res.json()
- 
-      // Clear products
-      products.innerHTML = ''
-
-      results.forEach((product) => {
-        const div = document.createElement('div')
-        div.setAttribute('class', 'product-search-item')
-        listItems.push(div)
-
-        div.innerHTML = `
-			<img src="${product.image}" alt="">
-			<div class="product-search-item-detail">
-				<h4>${product.title.slice(0, 30)}</h4>
-				<p>$${product.price}</p>
-			</div>
-        `
-        products.appendChild(div)
-      })
-    }
-
-    function filterData(search) {
-      listItems.forEach((item) => {
-        if (item.innerText.toLowerCase().includes(search.toLowerCase())) {
-          item.classList.remove('hide')
-        } else {
-          item.classList.add('hide')
-        }
-      })
-    }
-  </script>
 </body>
 
 </html>

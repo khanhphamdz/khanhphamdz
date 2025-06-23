@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="admin/layout/layout :: view(~{::title}, ~{::main})">
+<html lang="en"
+    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tee Shirt Vibe - Chi tiết đơn hàng</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" href="/customer_css/product_css/style_order-detail.css">
+    </th:block>
 </head>
 
 <body>
@@ -144,338 +145,338 @@
                 </div>
             </div>
 
-        <!-- Modal Sửa thông tin đơn hàng -->
-        <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editOrderModalLabel">Thay đổi thông tin đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="orderForm">
-                            <div class="mb-3">
-                                <label for="editCustomer" class="form-label">Tên khách hàng</label>
-                                <input type="text" class="form-control" id="editCustomer" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editPhone" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="editPhone" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editAddress" class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" id="editAddress" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editNote" class="form-label">Ghi chú</label>
-                                <textarea class="form-control" id="editNote" rows="3"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-primary" onclick="saveOrderInfo()">Lưu</button>
+            <!-- Modal Sửa thông tin đơn hàng -->
+            <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editOrderModalLabel">Thay đổi thông tin đơn hàng</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="orderForm">
+                                <div class="mb-3">
+                                    <label for="editCustomer" class="form-label">Tên khách hàng</label>
+                                    <input type="text" class="form-control" id="editCustomer" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editPhone" class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="editPhone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editAddress" class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" id="editAddress" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editNote" class="form-label">Ghi chú</label>
+                                    <textarea class="form-control" id="editNote" rows="3"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary" onclick="saveOrderInfo()">Lưu</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal Lịch sử thao tác -->
-        <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="historyModalLabel">Lịch sử thao tác</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Thời gian</th>
-                                    <th>Người thao tác</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTable"></tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <!-- Modal Lịch sử thao tác -->
+            <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="historyModalLabel">Lịch sử thao tác</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Thời gian</th>
+                                        <th>Người thao tác</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTable"></tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
     </main>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script>
-        // Fake data for order and products
-        let order = {
-            id: 'HD881712',
-            customer: 'xxx',
-            phone: '0378500000',
-            status: 'cho-xac-nhan',
-            createdAt: '25-12-2023 10:56',
-            source: 'online',
-            address: '10 Trung Duong Thanh, Xa Ven Thinh, Huyen Cho Don, Bac Kan',
-            note: 'Nhap mo ta',
-            items: [
-                { id: 1, name: 'Giay The Thao Nam Nike Nike Dbreak-Type', color: 'Đen', quantity: 1, price: 2500000, status: 'Thanh cong', image: 'https://via.placeholder.com/50' },
-                { id: 2, name: 'Giay Chay Nam Adidas Ultraboost Cc 1 Dna FZ2545', color: 'Đen', quantity: 1, price: 2500000, status: 'Thanh cong', image: 'https://via.placeholder.com/50' }
-            ],
-            shipping: 0,
-            discount: 150000,
-            finalAmount: 4850000
-        };
-
-        let history = [
-            { timestamp: '25-12-2023 10:56', user: 'Admin', action: 'Tạo đơn hàng HD881712' }
-        ];
-
-        const currentUser = 'Admin';
-        const currentTime = '01-06-2025 11:00';
-
-        // Load order details
-        function loadOrderDetails() {
-            document.getElementById('orderTitle').textContent = `Chi tiết đơn hàng ${order.id}`;
-            document.getElementById('detailOrderId').textContent = order.id;
-            document.getElementById('detailStatus').textContent = order.status === 'cho-xac-nhan' ? 'Chờ xác nhận' : order.status;
-            document.getElementById('detailSource').textContent = order.source === 'online' ? 'ONLINE' : 'Tại quầy';
-            document.getElementById('detailCustomer').textContent = order.customer;
-            document.getElementById('detailPhone').textContent = order.phone;
-            document.getElementById('detailAddress').textContent = order.address;
-            document.getElementById('detailCreatedAt').textContent = order.createdAt;
-            document.getElementById('detailPaymentMethod').textContent = 'Thanh toán khi nhận hàng';
-            document.getElementById('detailNote').textContent = order.note || 'Không có';
-
-            loadOrderItems();
-            loadHistory();
-            updateSummary();
-        }
-
-        // Load order items
-        function loadOrderItems() {
-            const itemsBody = document.getElementById('orderItems');
-            itemsBody.innerHTML = '';
-            order.items.forEach((item, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><img src="${item.image}" alt="${item.name}"></td>
-                        <td>${item.name}</td>
-                        <td>${item.color}</td>
-                        <td>${item.quantity}</td>
-                        <td>${(item.price * item.quantity).toLocaleString()} VND</td>
-                        <td><span class="badge ${item.status === 'Thanh cong' ? 'bg-success' : 'bg-warning'}">${item.status}</span></td>
-                        <td>
-                            <button class="btn btn-success btn-sm btn-custom me-1" onclick="confirmItem(${index})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-danger btn-sm btn-custom" onclick="deleteItem(${index})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                itemsBody.innerHTML += row;
-            });
-        }
-
-        // Load history
-        function loadHistory() {
-            const historyBody = document.getElementById('historyTable');
-            historyBody.innerHTML = '';
-            history.forEach(entry => {
-                const row = `
-                    <tr>
-                        <td>${entry.timestamp}</td>
-                        <td>${entry.user}</td>
-                        <td>${entry.action}</td>
-                    </tr>
-                `;
-                historyBody.innerHTML += row;
-            });
-        }
-
-        // Update summary
-        function updateSummary() {
-            const total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            order.finalAmount = total + order.shipping - order.discount;
-            document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' VND';
-            document.getElementById('summaryShipping').textContent = order.shipping.toLocaleString() + ' VND';
-            document.getElementById('summaryDiscount').textContent = order.discount.toLocaleString() + ' VND';
-            document.getElementById('summaryTemp').textContent = (total + order.shipping).toLocaleString() + ' VND';
-            document.getElementById('summaryFinal').textContent = order.finalAmount.toLocaleString() + ' VND';
-        }
-
-        // Open Add Product Modal
-        function openAddProductModal() {
-            document.getElementById('productModalLabel').textContent = 'Thêm sản phẩm';
-            document.getElementById('productForm').reset();
-            document.getElementById('productIndex').value = '';
-            document.getElementById('productQuantity').value = 1;
-            document.getElementById('productColor').value = 'Đen';
-        }
-
-        // Save Product
-        function saveProduct() {
-            const productName = document.getElementById('productName').value;
-            const productColor = document.getElementById('productColor').value;
-            const quantity = parseInt(document.getElementById('productQuantity').value);
-            const index = document.getElementById('productIndex').value;
-
-            if (!productName || quantity < 1) {
-                alert('Vui lòng chọn sản phẩm và nhập số lượng hợp lệ!');
-                return;
-            }
-
-            const price = { 'Áo thun nam': 150000, 'Áo polo': 200000, 'Áo sơ mi': 250000, 'Áo khoác': 450000, 'Áo len': 300000 }[productName] || 0;
-            const product = {
-                id: order.items.length + 1,
-                name: productName,
-                color: productColor,
-                quantity: quantity,
-                price: price,
-                status: 'Chờ xác nhận',
-                image: 'https://via.placeholder.com/50'
+    <th:block th:fragment="scripts">
+        <script>
+            // Fake data for order and products
+            let order = {
+                id: 'HD881712',
+                customer: 'xxx',
+                phone: '0378500000',
+                status: 'cho-xac-nhan',
+                createdAt: '25-12-2023 10:56',
+                source: 'online',
+                address: '10 Trung Duong Thanh, Xa Ven Thinh, Huyen Cho Don, Bac Kan',
+                note: 'Nhap mo ta',
+                items: [
+                    { id: 1, name: 'Giay The Thao Nam Nike Nike Dbreak-Type', color: 'Đen', quantity: 1, price: 2500000, status: 'Thanh cong', image: 'https://via.placeholder.com/50' },
+                    { id: 2, name: 'Giay Chay Nam Adidas Ultraboost Cc 1 Dna FZ2545', color: 'Đen', quantity: 1, price: 2500000, status: 'Thanh cong', image: 'https://via.placeholder.com/50' }
+                ],
+                shipping: 0,
+                discount: 150000,
+                finalAmount: 4850000
             };
 
-            if (index === '') {
-                order.items.push(product);
-                history.push({ timestamp: currentTime, user: currentUser, action: `Thêm sản phẩm "${productName}"` });
-            } else {
-                order.items[index] = product;
-                history.push({ timestamp: currentTime, user: currentUser, action: `Sửa sản phẩm "${order.items[index].name}"` });
+            let history = [
+                { timestamp: '25-12-2023 10:56', user: 'Admin', action: 'Tạo đơn hàng HD881712' }
+            ];
+
+            const currentUser = 'Admin';
+            const currentTime = '01-06-2025 11:00';
+
+            // Load order details
+            function loadOrderDetails() {
+                document.getElementById('orderTitle').textContent = `Chi tiết đơn hàng ${order.id}`;
+                document.getElementById('detailOrderId').textContent = order.id;
+                document.getElementById('detailStatus').textContent = order.status === 'cho-xac-nhan' ? 'Chờ xác nhận' : order.status;
+                document.getElementById('detailSource').textContent = order.source === 'online' ? 'ONLINE' : 'Tại quầy';
+                document.getElementById('detailCustomer').textContent = order.customer;
+                document.getElementById('detailPhone').textContent = order.phone;
+                document.getElementById('detailAddress').textContent = order.address;
+                document.getElementById('detailCreatedAt').textContent = order.createdAt;
+                document.getElementById('detailPaymentMethod').textContent = 'Thanh toán khi nhận hàng';
+                document.getElementById('detailNote').textContent = order.note || 'Không có';
+
+                loadOrderItems();
+                loadHistory();
+                updateSummary();
             }
 
-            loadOrderDetails();
-            document.getElementById('productModal').modal('hide');
-        }
+            // Load order items
+            function loadOrderItems() {
+                const itemsBody = document.getElementById('orderItems');
+                itemsBody.innerHTML = '';
+                order.items.forEach((item, index) => {
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><img src="${item.image}" alt="${item.name}"></td>
+                            <td>${item.name}</td>
+                            <td>${item.color}</td>
+                            <td>${item.quantity}</td>
+                            <td>${(item.price * item.quantity).toLocaleString()} VND</td>
+                            <td><span class="badge ${item.status === 'Thanh cong' ? 'bg-success' : 'bg-warning'}">${item.status}</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm btn-custom me-1" onclick="confirmItem(${index})"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-danger btn-sm btn-custom" onclick="deleteItem(${index})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    itemsBody.innerHTML += row;
+                });
+            }
 
-        // Confirm Item
-        function confirmItem(index) {
-            order.items[index].status = 'Thanh cong';
-            history.push({ timestamp: currentTime, user: currentUser, action: `Xác nhận sản phẩm "${order.items[index].name}"` });
-            loadOrderDetails();
-        }
+            // Load history
+            function loadHistory() {
+                const historyBody = document.getElementById('historyTable');
+                historyBody.innerHTML = '';
+                history.forEach(entry => {
+                    const row = `
+                        <tr>
+                            <td>${entry.timestamp}</td>
+                            <td>${entry.user}</td>
+                            <td>${entry.action}</td>
+                        </tr>
+                    `;
+                    historyBody.innerHTML += row;
+                });
+            }
 
-        // Delete Item
-        function deleteItem(index) {
-            const deletedProduct = order.items[index];
-            order.items.splice(index, 1);
-            history.push({ timestamp: currentTime, user: currentUser, action: `Xóa sản phẩm "${deletedProduct.name}"` });
-            loadOrderDetails();
-        }
+            // Update summary
+            function updateSummary() {
+                const total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                order.finalAmount = total + order.shipping - order.discount;
+                document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' VND';
+                document.getElementById('summaryShipping').textContent = order.shipping.toLocaleString() + ' VND';
+                document.getElementById('summaryDiscount').textContent = order.discount.toLocaleString() + ' VND';
+                document.getElementById('summaryTemp').textContent = (total + order.shipping).toLocaleString() + ' VND';
+                document.getElementById('summaryFinal').textContent = order.finalAmount.toLocaleString() + ' VND';
+            }
 
-        // Open Edit Order Modal
-        function openEditOrderModal() {
-            document.getElementById('editCustomer').value = order.customer;
-            document.getElementById('editPhone').value = order.phone;
-            document.getElementById('editAddress').value = order.address;
-            document.getElementById('editNote').value = order.note || '';
-        }
+            // Open Add Product Modal
+            function openAddProductModal() {
+                document.getElementById('productModalLabel').textContent = 'Thêm sản phẩm';
+                document.getElementById('productForm').reset();
+                document.getElementById('productIndex').value = '';
+                document.getElementById('productQuantity').value = 1;
+                document.getElementById('productColor').value = 'Đen';
+            }
 
-        // Save Order Info
-        function saveOrderInfo() {
-            order.customer = document.getElementById('editCustomer').value;
-            order.phone = document.getElementById('editPhone').value;
-            order.address = document.getElementById('editAddress').value;
-            order.note = document.getElementById('editNote').value;
-            history.push({ timestamp: currentTime, user: currentUser, action: 'Cập nhật thông tin đơn hàng' });
-            loadOrderDetails();
-            document.getElementById('editOrderModal').modal('hide');
-        }
+            // Save Product
+            function saveProduct() {
+                const productName = document.getElementById('productName').value;
+                const productColor = document.getElementById('productColor').value;
+                const quantity = parseInt(document.getElementById('productQuantity').value);
+                const index = document.getElementById('productIndex').value;
 
-        // Confirm Order
-        function confirmOrder() {
-            const statuses = ['cho-xac-nhan', 'dang-chuan-bi', 'dang-giao', 'hoan-tat'];
-            const currentIndex = statuses.indexOf(order.status);
-            if (currentIndex < statuses.length - 1) {
-                order.status = statuses[currentIndex + 1];
-                history.push({ timestamp: currentTime, user: currentUser, action: `Xác nhận đơn hàng: ${order.status}` });
+                if (!productName || quantity < 1) {
+                    alert('Vui lòng chọn sản phẩm và nhập số lượng hợp lệ!');
+                    return;
+                }
+
+                const price = { 'Áo thun nam': 150000, 'Áo polo': 200000, 'Áo sơ mi': 250000, 'Áo khoác': 450000, 'Áo len': 300000 }[productName] || 0;
+                const product = {
+                    id: order.items.length + 1,
+                    name: productName,
+                    color: productColor,
+                    quantity: quantity,
+                    price: price,
+                    status: 'Chờ xác nhận',
+                    image: 'https://via.placeholder.com/50'
+                };
+
+                if (index === '') {
+                    order.items.push(product);
+                    history.push({ timestamp: currentTime, user: currentUser, action: `Thêm sản phẩm "${productName}"` });
+                } else {
+                    order.items[index] = product;
+                    history.push({ timestamp: currentTime, user: currentUser, action: `Sửa sản phẩm "${order.items[index].name}"` });
+                }
+
+                loadOrderDetails();
+                document.getElementById('productModal').modal('hide');
+            }
+
+            // Confirm Item
+            function confirmItem(index) {
+                order.items[index].status = 'Thanh cong';
+                history.push({ timestamp: currentTime, user: currentUser, action: `Xác nhận sản phẩm "${order.items[index].name}"` });
                 loadOrderDetails();
             }
-        }
 
-        // Cancel Order
-        function cancelOrder() {
-            order.status = 'da-huy';
-            history.push({ timestamp: currentTime, user: currentUser, action: 'Hủy đơn hàng' });
-            loadOrderDetails();
-        }
-
-        // Load initial data
-        window.onload = () => {
-            loadOrderDetails();
-            document.getElementById('editOrderModal').addEventListener('show.bs.modal', openEditOrderModal);
-        };
-    </script>
-    <!-- Re-add the second script block for manual timeline control -->
-    <script>
-        // Danh sách trạng thái đơn hàng (có thể lấy từ API)
-        const orderStatuses = [
-            { status: "Chờ xác nhận", date: "02/06/2025 14:04" },
-            { status: "Đã xác nhận", date: "02/06/2025 14:10" },
-            { status: "Đang giao hàng", date: "03/06/2025 09:00" },
-            { status: "Đã giao hàng", date: "04/06/2025 15:30" },
-            { status: "Hoàn tất", date: "04/06/2025 16:00" }
-        ];
-
-        let currentStatusIndex = 0;
-
-        // Hàm render trạng thái
-        function renderTimeline() {
-            const timeline = document.getElementById('orderTimeline');
-            timeline.innerHTML = ''; // Xóa timeline hiện tại
-
-            // Render các trạng thái đến trạng thái hiện tại
-            for (let i = 0; i <= currentStatusIndex; i++) {
-                const status = orderStatuses[i];
-                const timelineItem = document.createElement('div');
-                timelineItem.className = `timeline-item ${i <= currentStatusIndex ? 'active' : ''}`;
-                timelineItem.innerHTML = `
-                        <div class="timeline-step">${i + 1}</div>
-                        <div class="timeline-label">${status.status}</div>
-                        <div class="timeline-date">${status.date}</div>
-                    `;
-                timeline.appendChild(timelineItem);
-
+            // Delete Item
+            function deleteItem(index) {
+                const deletedProduct = order.items[index];
+                order.items.splice(index, 1);
+                history.push({ timestamp: currentTime, user: currentUser, action: `Xóa sản phẩm "${deletedProduct.name}"` });
+                loadOrderDetails();
             }
 
-            // Điều chỉnh hiển thị nút "Quay lại" và "Bước tiếp theo"
-            const prevBtn = document.getElementById('prevStepBtn');
-            const nextBtn = document.getElementById('nextStepBtn');
-            if (currentStatusIndex <= 0) {
-                prevBtn.style.display = 'none';
-            } else {
-                prevBtn.style.display = 'inline-block';
+            // Open Edit Order Modal
+            function openEditOrderModal() {
+                document.getElementById('editCustomer').value = order.customer;
+                document.getElementById('editPhone').value = order.phone;
+                document.getElementById('editAddress').value = order.address;
+                document.getElementById('editNote').value = order.note || '';
             }
-            if (currentStatusIndex >= orderStatuses.length - 1) {
-                nextBtn.style.display = 'none';
-            } else {
-                nextBtn.style.display = 'inline-block';
-            }
-        }
 
-        // Hàm hiển thị trạng thái tiếp theo
-        function showNextStatus() {
-            if (currentStatusIndex < orderStatuses.length - 1) {
-                currentStatusIndex++;
-                renderTimeline();
+            // Save Order Info
+            function saveOrderInfo() {
+                order.customer = document.getElementById('editCustomer').value;
+                order.phone = document.getElementById('editPhone').value;
+                order.address = document.getElementById('editAddress').value;
+                order.note = document.getElementById('editNote').value;
+                history.push({ timestamp: currentTime, user: currentUser, action: 'Cập nhật thông tin đơn hàng' });
+                loadOrderDetails();
+                document.getElementById('editOrderModal').modal('hide');
             }
-        }
 
-        // Hàm hiển thị trạng thái trước đó
-        function showPrevStatus() {
-            if (currentStatusIndex > 0) {
-                currentStatusIndex--;
-                renderTimeline();
+            // Confirm Order
+            function confirmOrder() {
+                const statuses = ['cho-xac-nhan', 'dang-chuan-bi', 'dang-giao', 'hoan-tat'];
+                const currentIndex = statuses.indexOf(order.status);
+                if (currentIndex < statuses.length - 1) {
+                    order.status = statuses[currentIndex + 1];
+                    history.push({ timestamp: currentTime, user: currentUser, action: `Xác nhận đơn hàng: ${order.status}` });
+                    loadOrderDetails();
+                }
             }
-        }
 
-        // Khởi tạo timeline với trạng thái đầu tiên
-        renderTimeline(0);
-    </script>
+            // Cancel Order
+            function cancelOrder() {
+                order.status = 'da-huy';
+                history.push({ timestamp: currentTime, user: currentUser, action: 'Hủy đơn hàng' });
+                loadOrderDetails();
+            }
+
+            // Load initial data
+            window.onload = () => {
+                loadOrderDetails();
+                document.getElementById('editOrderModal').addEventListener('show.bs.modal', openEditOrderModal);
+            };
+        </script>
+        <!-- Re-add the second script block for manual timeline control -->
+        <script>
+            // Danh sách trạng thái đơn hàng (có thể lấy từ API)
+            const orderStatuses = [
+                { status: "Chờ xác nhận", date: "02/06/2025 14:04" },
+                { status: "Đã xác nhận", date: "02/06/2025 14:10" },
+                { status: "Đang giao hàng", date: "03/06/2025 09:00" },
+                { status: "Đã giao hàng", date: "04/06/2025 15:30" },
+                { status: "Hoàn tất", date: "04/06/2025 16:00" }
+            ];
+
+            let currentStatusIndex = 0;
+
+            // Hàm render trạng thái
+            function renderTimeline() {
+                const timeline = document.getElementById('orderTimeline');
+                timeline.innerHTML = ''; // Xóa timeline hiện tại
+
+                // Render các trạng thái đến trạng thái hiện tại
+                for (let i = 0; i <= currentStatusIndex; i++) {
+                    const status = orderStatuses[i];
+                    const timelineItem = document.createElement('div');
+                    timelineItem.className = `timeline-item ${i <= currentStatusIndex ? 'active' : ''}`;
+                    timelineItem.innerHTML = `
+                            <div class="timeline-step">${i + 1}</div>
+                            <div class="timeline-label">${status.status}</div>
+                            <div class="timeline-date">${status.date}</div>
+                        `;
+                    timeline.appendChild(timelineItem);
+
+                }
+
+                // Điều chỉnh hiển thị nút "Quay lại" và "Bước tiếp theo"
+                const prevBtn = document.getElementById('prevStepBtn');
+                const nextBtn = document.getElementById('nextStepBtn');
+                if (currentStatusIndex <= 0) {
+                    prevBtn.style.display = 'none';
+                } else {
+                    prevBtn.style.display = 'inline-block';
+                }
+                if (currentStatusIndex >= orderStatuses.length - 1) {
+                    nextBtn.style.display = 'none';
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                }
+            }
+
+            // Hàm hiển thị trạng thái tiếp theo
+            function showNextStatus() {
+                if (currentStatusIndex < orderStatuses.length - 1) {
+                    currentStatusIndex++;
+                    renderTimeline();
+                }
+            }
+
+            // Hàm hiển thị trạng thái trước đó
+            function showPrevStatus() {
+                if (currentStatusIndex > 0) {
+                    currentStatusIndex--;
+                    renderTimeline();
+                }
+            }
+
+            // Khởi tạo timeline với trạng thái đầu tiên
+            renderTimeline(0);
+        </script>
+    </th:block>
 </body>
 
 </html>
