@@ -67,23 +67,20 @@ public class ProductVariant {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @OneToMany(mappedBy = "variant")
-    private List<VariantAttribute> variantAttributes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id", nullable = false)
+    private Color color;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "size_id", nullable = false)
+    private Size size;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id", nullable = false)
+    private Material material;
 
     @OneToMany(mappedBy = "variant")
     private List<ProductImage> images;
-
-    @OneToMany(mappedBy = "variant")
-    private List<CartItem> cartItems;
-
-    @OneToMany(mappedBy = "variant")
-    private List<OrderItem> orderItems;
-
-    @OneToMany(mappedBy = "exchangeVariant")
-    private List<ReturnRequest> returnRequests;
-
-    @OneToMany(mappedBy = "variant")
-    private List<ReturnRequestItem> returnRequestItems;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -9,8 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,9 +35,8 @@ public class Employee {
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
-    @Column(name = "gender", length = 10)
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    @Column(name = "gender", nullable = false)
+    private Boolean gender;
 
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
@@ -60,14 +57,13 @@ public class Employee {
     private LocalDate hireDate;
 
     @Column(name = "status", length = 20)
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private String status;
 
     @Column(name = "citizen_id", length = 12, unique = true)
     private String citizenId;
 
-    @Column(name = "role", nullable = false, length = 20)
-    private String role;
+    @Column(name = "role", nullable = false)
+    private Boolean role;
 
     @OneToMany(mappedBy = "employee")
     private List<Order> orders;
@@ -82,12 +78,4 @@ public class Employee {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public enum Gender {
-        male, female, order
-    }
-
-    public enum Status {
-        active, inactive, terminated
-    }
 } 

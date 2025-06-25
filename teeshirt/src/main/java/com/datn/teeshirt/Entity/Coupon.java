@@ -9,8 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -64,10 +62,8 @@ public class Coupon {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Default
     @Column(name = "apply_to_customer", nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private ApplyToCustomer applyToCustomer = ApplyToCustomer.ALL;
+    private String applyToCustomer;
 
     @OneToMany(mappedBy = "coupon")
     private List<Order> orders;
@@ -79,8 +75,4 @@ public class Coupon {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public enum ApplyToCustomer {
-        ALL, NEW, SPECIFIC
-    }
 } 

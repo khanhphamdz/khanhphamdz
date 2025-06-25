@@ -1,5 +1,6 @@
 package com.datn.teeshirt.Entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,14 +10,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,28 +36,27 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "name", nullable = false, length = 200)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "description", length = 1000)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "short_description", length = 500)
     private String shortDescription;
 
-    @Default
-    @Column(name = "is_featured")
-    private Boolean isFeatured = false;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    @Default
+    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal basePrice;
+
     @Column(name = "status")
-    private Boolean status = true;
+    private Boolean status;
 
     @OneToMany(mappedBy = "product")
     private List<ProductCategory> productCategories;
-
-    @OneToMany(mappedBy = "product")
-    private List<ProductAttribute> productAttributes;
 
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> variants;

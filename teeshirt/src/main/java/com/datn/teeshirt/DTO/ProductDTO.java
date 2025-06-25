@@ -18,14 +18,13 @@ public class ProductDTO {
     private String name;
     private String description;
     private String shortDescription;
-    private Boolean isFeatured;
+    private Long categoryId;
+    private String categoryName;
+    private BigDecimal basePrice;
     private Boolean status;
-    private List<ProductAttributeDTO> attributes;
     private List<CategoryDTO> categories;
     private List<ProductVariantDTO> variants;
     private List<ProductImageDTO> images;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

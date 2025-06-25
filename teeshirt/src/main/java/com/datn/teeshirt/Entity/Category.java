@@ -35,11 +35,8 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
-
-    @Column(name = "description", length = 500)
-    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -47,9 +44,6 @@ public class Category {
 
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
-
-    @OneToMany(mappedBy = "category")
-    private List<ProductCategory> productCategories;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
