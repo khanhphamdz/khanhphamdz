@@ -26,11 +26,11 @@ public class SecurityConfig {
     // return new BCryptPasswordEncoder();
     // }
 
-    @SuppressWarnings("deprecation")
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance(); // Sử dụng NoOpPasswordEncoder
-    }
+    // @SuppressWarnings("deprecation")
+    // @Bean
+    // public PasswordEncoder passwordEncoder() {
+    // return NoOpPasswordEncoder.getInstance();
+    // }
 
     @Bean
     public LogoutSuccessHandler customerLogoutSuccessHandler() {
@@ -75,7 +75,7 @@ public class SecurityConfig {
 
                         // Admin và Staff endpoints
                         // .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers( "/admin/product-management").hasRole("ADMIN")
+                        .requestMatchers("/admin/product-management").hasRole("ADMIN")
                         .requestMatchers("/api/**").permitAll()
 
                         // Default deny
