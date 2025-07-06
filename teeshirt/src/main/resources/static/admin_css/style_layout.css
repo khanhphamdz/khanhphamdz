@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* font-family: "Poppins", sans-serif; */
+  font-family: "Poppins", sans-serif;
 }
 .sidebar {
   position: fixed;
@@ -196,7 +196,7 @@
 .sidebar .profile-details .profile_name,
 .sidebar .profile-details .job {
   color: #fff;
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -206,7 +206,7 @@
   display: none;
 }
 .sidebar .profile-details .job {
-  font-size: 12px;
+  font-size: 10px;
 }
 .home-section {
   position: relative;

@@ -96,9 +96,6 @@ input[type="number"].big-spin {
   height: 32px;
   border-radius: 6px;
 }
-#variantDetailModal .modal-body .form-select {
-  width: 120px;
-}
 #variantDetailModal .modal-body .btn.btn-sm {
   padding: 0.25rem 0.6rem;
   font-size: 1rem;
@@ -128,6 +125,84 @@ input[type="number"].big-spin {
   object-fit: cover;
 }
 #variantDetailModal
+  .modal-body
+  .d-flex.flex-wrap.justify-content-center.gap-3
+  > div
+  span {
+  color: #888;
+  font-size: 1.1rem;
+  text-align: center;
+}
+/* Modal thêm biến thể */
+/* Style cho form chi tiết biến thể */
+#addVariantModal .modal-body form .row.align-items-center {
+  margin-bottom: 18px;
+}
+#addVariantModal .modal-body form .form-label {
+  color: #000000;
+  font-size: 1.08rem;
+  text-align: left;
+  white-space: normal;
+  padding-right: 0;
+  min-width: unset;
+}
+#addVariantModal .modal-body form .form-control,
+#addVariantModal .modal-body form .form-select {
+  max-width: 220px;
+  min-width: 120px;
+  display: inline-block;
+}
+#addVariantModal
+  .modal-body
+  form
+  .d-flex.align-items-center.gap-2
+  > .rounded {
+  margin-left: 8px;
+  margin-right: 0;
+}
+#addVariantModal .modal-body form .col-8 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#addVariantModal
+  .modal-body
+  .d-flex.align-items-center.flex-grow-1
+  > .rounded {
+  width: 48px;
+  height: 32px;
+  border-radius: 6px;
+}
+#addVariantModal .modal-body .btn.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 1rem;
+}
+#addVariantModal
+  .modal-body
+  .d-flex.flex-wrap.justify-content-center.gap-3
+  > div {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafbfc;
+  cursor: pointer;
+}
+#addVariantModal
+  .modal-body
+  .d-flex.flex-wrap.justify-content-center.gap-3
+  > div
+  img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#addVariantModal
   .modal-body
   .d-flex.flex-wrap.justify-content-center.gap-3
   > div

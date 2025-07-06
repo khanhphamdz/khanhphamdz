@@ -27,4 +27,7 @@ public class ProductDTO {
     private List<ProductImageDTO> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long materialId;
+    private String materialName;
+    private Double averageRating;
 }

@@ -21,7 +21,7 @@
       <ul class="main-menu d-flex mb-0 list-unstyled align-items-center">
         <li class="me-4"><a href="/" class="menu-link">Trang Chủ</a></li>
         <li class="me-4">
-          <a href="/product/list-products" class="menu-link">Sản Phẩm</a>
+          <a href="/product" class="menu-link">Sản Phẩm</a>
           <ul class="sub-menu">
             <li><a href="" class="menu-link">T-Shirts</a></li>
             <li><a href="" class="menu-link">Hoodies</a></li>
@@ -46,46 +46,57 @@
         <a href="/account" class="text-dark position-relative me-3">
           <i class="fa-solid fa-user fs-5"></i>
         </a>
-        <a href="/cart" class="text-dark position-relative ">
+        <button id="btn-show-cart-item" class="p-0 bg-transparent border-0 shadow-none text-dark position-relative" type="button"
+          data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
           <i class="fas fa-shopping-cart fs-5"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">2</span>
-        </a>
+          <span id="cart-badge"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"></span>
+        </button>
       </div>
     </div>
   </header>
-<!-- ModalSearch -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <!-- Header -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm sản phẩm</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-      </div>
+  <!-- ModalSearch -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Header -->
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm sản phẩm</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
 
-      <!-- Body -->
-      <div class="modal-body">
-        <form class="row g-2 align-items-center">
-          <div class="col-md-10">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" id="filter" placeholder="Tìm sản phẩm mong muốn...">
+        <!-- Body -->
+        <div class="modal-body">
+          <form class="row g-2 align-items-center">
+            <div class="col-md-10">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="filter" placeholder="Tìm sản phẩm mong muốn...">
+              </div>
             </div>
-          </div>
-          <div class="col-md-2">
-            <button type="button" class="btn btn-success w-100" id="btn-search-product">Tìm kiếm</button>
-          </div>
-        </form>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-success w-100" id="btn-search-product">Tìm kiếm</button>
+            </div>
+          </form>
 
-        <!-- Kết quả tìm kiếm -->
-        <div class="mt-4 product-search-list">
-          <h6 class="text-muted">Loading...</h6>
+          <!-- Kết quả tìm kiếm -->
+          <div class="mt-4 product-search-list">
+            <h6 class="text-muted">Loading...</h6>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
+  <!-- Offcanvas giỏ hàng -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
+    <div class="offcanvas-header">
+      <h5 id="offcanvasCartLabel">Giỏ hàng của bạn</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
+    </div>
+    <div class="offcanvas-body" id="cart-offcanvas-body">
+      <!-- Danh sách sản phẩm sẽ render ở đây -->
+    </div>
+  </div>
 </body>
 
 </html>

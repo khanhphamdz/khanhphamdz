@@ -6,29 +6,33 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.core.userdetails.UserDetailsService;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+// import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.core.annotation.Order;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.datn.teeshirt.Security.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // @Bean
-    // public PasswordEncoder passwordEncoder() {
-    // return new BCryptPasswordEncoder();
-    // }
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // @SuppressWarnings("deprecation")
     // @Bean
-    // public PasswordEncoder passwordEncoder() {
+    // public PasswordEncoder noPasswordEncoder() {
     // return NoOpPasswordEncoder.getInstance();
     // }
 
@@ -55,58 +59,71 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationSuccessHandler successHandler)
-            throws Exception {
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    // Filter chain cho admin
+    @SuppressWarnings("removal")
+    @Bean
+    @Order(1)
+    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/admin/**")
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest().hasRole("ADMIN"))
+                .formLogin(form -> form
+                        .loginPage("/admin/login")
+                        .loginProcessingUrl("/admin/perform-admin-login")
+                        .defaultSuccessUrl("/admin", true)
+                        .failureUrl("/admin/login?error")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/admin/logout")
+                        .logoutSuccessUrl("/admin/login")
+                        .permitAll())
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/static/**",
-                                "/admin_css/**",
-                                "/customer_css/**",
-                                "/customer_js/**",
-                                "/images/**")
+                .headers(headers -> headers
+                        .frameOptions().sameOrigin()
+                        .contentTypeOptions().disable());
+
+        return http.build();
+    }
+
+    // Filter chain cho client
+    @Bean
+    @Order(2)
+    public SecurityFilterChain clientFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/**")
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/static/**", "/admin_css/**", "/admin_js/**", "/customer_css/**",
+                                "/customer_js/**", "/images/**")
                         .permitAll()
-                        // Public endpoints
-                        .requestMatchers("/", "/product/**", "/login", "/admin/login", "/register").permitAll()
-
-                        // Customer endpoints
-                        .requestMatchers("/account/**", "/cart/**", "/wishlist/**", "/checkout/**").hasRole("customer")
-
-                        // Admin và Staff endpoints
-                        // .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/admin/product-management").hasRole("ADMIN")
-                        .requestMatchers("/api/**").permitAll()
-
-                        // Default deny
+                        .requestMatchers("/", "/home", "/product/**", "/about", "/contact", "/account/login",
+                                "/account/forgot-password")
+                        .permitAll()
+                        .requestMatchers("/account/**", "/cart/**", "/shopping-cart/**  ").hasRole("CUSTOMER")
                         .anyRequest().permitAll())
-                .formLogin(form -> {
-                    form
-                            .loginProcessingUrl("/perform-login")
-                            .loginPage("/customer/account/login-register")
-                            .successHandler(successHandler)
-                            .failureUrl("/customer/account/login-register?error")
-                            .permitAll();
-                })
-                // Configure admin login separately
-                .formLogin(form -> {
-                    form
-                            .loginProcessingUrl("/perform-admin-login")
-                            .loginPage("/admin/login")
-                            .successHandler(successHandler)
-                            .failureUrl("/admin/login?error")
-                            .permitAll();
-                })
-                .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessHandler(customerLogoutSuccessHandler())
+                .formLogin(form -> form
+                        .loginPage("/account/login")
+                        .loginProcessingUrl("/perform-login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/account/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout"))
-                        .logoutSuccessHandler(adminLogoutSuccessHandler())
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
                         .permitAll())
-                .exceptionHandling(ex -> ex
-                        .accessDeniedPage("/error/403"));
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

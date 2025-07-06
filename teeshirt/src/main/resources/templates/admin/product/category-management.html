@@ -1,251 +1,147 @@
 <!DOCTYPE html>
-<html lang="vi"
-    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
-
+<html lang="en"
+      th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý danh mục</title>
     <th:block th:fragment="styles">
-        <style>
-            .category-card {
-                border-radius: 16px;
-                box-shadow: 0 2px 12px 0 rgba(255, 152, 0, 0.10);
-                background: #fff;
-            }
-
-            .category-form-label {
-                font-weight: 600;
-                color: #ff9800;
-            }
-
-            .btn-add-category {
-                background: linear-gradient(90deg, #147dee 50%, #901de8 100%);
-                color: #fff;
-                font-weight: 600;
-                border-radius: 10px;
-                padding: 0.55rem 1.5rem;
-                box-shadow: 0 2px 8px 0 rgba(255, 152, 0, 0.13);
-                border: none;
-                transition: background 0.18s, box-shadow 0.18s;
-            }
-
-            .btn-add-category:hover {
-                background: linear-gradient(90deg, #d40674 60%, #ae0230 100%);
-                color: antiquewhite;
-            }
-
-            .table thead th {
-                background-color: #ffe0b2 !important;
-                color: #333;
-                font-weight: 600;
-                border-bottom: 2.5px solid #ff9800;
-            }
-
-            .table thead th:first-child {
-                border-top-left-radius: 12px;
-            }
-
-            .table thead th:last-child {
-                border-top-right-radius: 12px;
-            }
-
-            .card-header {
-                background: #fff !important;
-                border-bottom: none !important;
-                /* Xoá gạch vàng dưới header */
-            }
-
-            .modal-content {
-                background: #fff;
-                border-radius: 16px;
-                border: 1.5px solid #ffd180;
-            }
-
-            .modal-header {
-                background: #ffe0b2;
-                border-bottom: 1.5px solid #ffd180;
-            }
-
-            .modal-footer {
-                background: #fff;
-                border-top: 1.5px solid #ffd180;
-            }
-        </style>
+        <link rel="stylesheet" href="/admin_css/category-management.css" />
     </th:block>
-
 </head>
-
 <body>
-    <main class="d-flex flex-column p-3 w-100">
-        <h3 class="fw-bold text-center mb-3">Quản lý danh mục</h3>
-        <!-- Khung trên: Thêm danh mục trực tiếp -->
-        <div class="card category-card mb-4">
-            <div class="card-body py-3">
-                <form class="row g-3 px-2 pb-2">
-                    <div class="col-md-6 col-12 d-flex flex-column justify-content-between">
+<main class="container py-4" th:fragment="main">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý danh mục sản phẩm</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Thêm danh mục</button>
+    </div>
+
+    <!-- Search Form -->
+    <form th:action="@{/admin/product/category}" method="get" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" th:value="${search}" placeholder="Tìm kiếm theo tên...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Category Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tên danh mục</th>
+                    <th>Danh mục cha</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat, iter : ${categories?.content}" th:if="${categories != null}">
+                    <td th:text="${iter.index + 1 + (categories.number * categories.size)}"></td>
+                    <td th:text="${cat.name}"></td>
+                    <td th:text="${cat.parentName}"></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" 
+                                th:attr="data-id=${cat.categoryId},data-name=${cat.name},data-parent=${cat.parentId}" 
+                                onclick="showEditCategoryModal(this)">Sửa</button>
+                        <button class="btn btn-sm btn-danger" 
+                                th:attr="data-id=${cat.categoryId}" 
+                                onclick="deleteCategory(this)">Xóa</button>
+                    </td>
+                </tr>
+                <tr th:if="${categories == null || categories.content.empty}">
+                    <td colspan="4" class="text-center">Không có dữ liệu</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${categories != null && categories.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${categories.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/product/category(search=${search}, page=${categories.number - 1})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, categories.totalPages - 1)}"
+                th:classappend="${pageNum == categories.number} ? 'active'">
+                <a class="page-link" th:href="@{/admin/product/category(search=${search}, page=${pageNum})}" th:text="${pageNum + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${categories.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/product/category(search=${search}, page=${categories.number + 1})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Thêm Danh Mục -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addCategoryForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalLabel">Thêm danh mục</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Tên danh mục</label>
-                            <input type="text" class="form-control" style="width: 600px;"
-                                placeholder="Nhập tên danh mục">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Đường dẫn (slug)</label>
-                            <input type="text" class="form-control" style="width: 600px;" placeholder="Nhập đường dẫn">
+                            <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="addCategoryName" maxlength="100" required />
+                            <div class="invalid-feedback" id="addCategoryNameError"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Danh mục cha</label>
-                            <select class="form-select" style="width: 600px;">
-                                <option value="">Không có</option>
-                                <option value="1">Áo thun</option>
-                                <option value="2">Áo polo</option>
+                            <select class="form-select" name="parentId" id="addCategoryParent">
+                                <option value="">-- Không có --</option>
+                                <option th:each="p : ${categories?.content}" th:value="${p.categoryId}" th:text="${p.name}"></option>
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6 col-12 d-flex flex-column justify-content-between align-items-start">
-                        <div class="mb-3 flex-grow-1 w-100">
-                            <label class="form-label">Mô tả</label>
-                            <textarea class="form-control" style="height: 122px; "
-                                placeholder="Nhập mô tả danh mục"></textarea>
-                        </div>
-                        <div class="text-end w-100 mb-3">
-                            <button type="submit" class="btn btn-add-category"><i class="fa-solid fa-plus me-1"></i>Thêm
-                                danh mục</button>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- Khung dưới: Bảng danh mục -->
-        <div class="card category-card flex-grow-1 d-flex flex-column">
-            <div class="card-header border-0 pb-0 d-flex align-items-center justify-content-between pt-2"
-                style="margin-top: 8px;">
-                <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách danh mục</h5>
-            </div>
-            <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
-                <div class="flex-grow-1 overflow-auto">
-                    <table class="table table-hover align-middle text-center mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 60px;">#</th>
-                                <th class="text-center">Tên danh mục</th>
-                                <th class="text-center">Đường dẫn</th>
-                                <th class="text-center">Số sản phẩm</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Áo thun</td>
-                                <td>ao-thun</td>
-                                <td>25</td>
-                                <td><span class="badge bg-success">Đang bán</span></td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#categoryDetailModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Áo polo</td>
-                                <td>ao-polo</td>
-                                <td>18</td>
-                                <td><span class="badge bg-success">Đang bán</span></td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#categoryDetailModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Áo khoác</td>
-                                <td>ao-khoac</td>
-                                <td>12</td>
-                                <td><span class="badge bg-secondary">Ngừng bán</span></td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#categoryDetailModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
+    </div>
 
-    <!-- Modal chi tiết/sửa danh mục -->
-    <div class="modal fade" id="categoryDetailModal" tabindex="-1" aria-labelledby="categoryDetailModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+    <!-- Modal Sửa Danh Mục -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="categoryDetailModalLabel">Chi tiết danh mục</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Tên danh mục</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" value="Áo thun" readonly>
-                            </div>
+                <form id="editCategoryForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editCategoryModalLabel">Sửa danh mục</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="categoryId" id="editCategoryId" />
+                        <div class="mb-3">
+                            <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="editCategoryName" maxlength="100" required />
+                            <div class="invalid-feedback" id="editCategoryNameError"></div>
                         </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Đường dẫn (slug)</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" value="ao-thun" readonly>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục cha</label>
+                            <select class="form-select" name="parentId" id="editCategoryParent">
+                                <option value="">-- Không có --</option>
+                                <option th:each="p : ${categories?.content}" th:value="${p.categoryId}" th:text="${p.name}"></option>
+                            </select>
                         </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Danh mục cha</label>
-                            <div class="col-sm-9">
-                                <select class="form-select">
-                                    <option selected>Không có</option>
-                                    <option>Áo thun</option>
-                                    <option>Áo polo</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Mô tả</label>
-                            <div class="col-sm-9">
-                                <textarea class="form-control" rows="2" readonly>Mô tả áo thun</textarea>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Ngày tạo</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" value="2024-06-01 10:00:00" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label fw-bold">Ngày cập nhật</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" value="2024-06-08 09:30:00" disabled>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary">Lưu</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    <!-- Kết thúc modal -->
-    <th:block th:fragment="scripts">
-
-    </th:block>
+</main>
+<th:block th:fragment="scripts">
+    <script src="/admin_js/category-management.js"></script>
+</th:block>
 </body>
-
 </html>

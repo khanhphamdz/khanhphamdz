@@ -6,12 +6,6 @@ body {
     min-height: 100vh;
 }
 
-main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-bottom: 40px;
-}
-
 .card {
     border-radius: 28px !important;
     background: rgba(255,255,255,0.7);

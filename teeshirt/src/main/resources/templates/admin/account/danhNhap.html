@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -8,44 +7,44 @@
     <title>Login</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
-    <th:block th:fragment="styles">
-        <link rel="stylesheet" href="/admin_css/dangNhap.css">
-    </th:block>
+    <link rel="stylesheet" href="/admin_css/dangNhap.css">
 </head>
 
 <body>
     <main class="wraapper">
-        <form action="">
+        <form action="/admin/perform-admin-login" method="post">
             <h1>Đăng nhập</h1>
             <div class="input-box">
-                <input type="text" placeholder="Tên đăng nhập" required>
+                <input type="text" placeholder="Tên đăng nhập" name="username" required>
                 <i class='bx bx-user-square'></i>
             </div>
             <div class="input-box">
-                <input type="password" id="password" placeholder="Mật khẩu" required>
+                <input type="password" id="password" placeholder="Mật khẩu" name="password" required>
                 <i class='bx bx-show' id="eyeIcon"></i>
             </div>
             <div class="remember-forgot">
-                <label><input type="checkbox"> Remember me</label>
+                <label><input type="checkbox" name="remember-me"> Remember me</label>
                 <a href="#">Forgot password</a>
+            </div>
+            <div th:if="${param.error}" class="error-message"
+                style="display:block; color:red; text-align:center; margin-bottom:10px;">
+                Sai tài khoản hoặc mật khẩu!
             </div>
             <button type="submit" class="btn">Login</button>
         </form>
     </main>
-    <th:block th:fragment="scripts">
-        <script>
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
+    <script>
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
 
-            if (passwordInput && eyeIcon) {
-                eyeIcon.addEventListener('click', function () {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    eyeIcon.className = type === 'password' ? 'bx bx-show' : 'bx bx-hide';
-                });
-            }
-        </script>
-    </th:block>
+        if (passwordInput && eyeIcon) {
+            eyeIcon.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                eyeIcon.className = type === 'password' ? 'bx bx-show' : 'bx bx-hide';
+            });
+        }
+    </script>
 </body>
 
 </html>

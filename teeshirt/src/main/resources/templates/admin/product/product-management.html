@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+    th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 
 <head>
     <meta charset="UTF-8">
@@ -10,53 +10,43 @@
         <!-- If there are page specific styles, add them here -->
     </th:block>
 </head>
+
 <body>
-    <main class="product-manage-page p-4">
+    <main class="product-manage-page w-100 p-4">
         <div class="page-header">
             <h3 class="page-title mb-4">Quản lý sản phẩm</h3>
-            <span class="me-3">Tất cả (1)</span>
-            <a href="/add-product"  class="btn btn-success">Thêm sản phẩm</a>
+            <span class="me-3">Tất cả: <span th:text="${#lists.size(products)}"></span></span>
+            <a href="/admin/product/add-product" class="btn btn-success">Thêm sản phẩm</a>
         </div>
         <div class="page-content mt-4">
-            <div class="row">
+            <form method="get" th:action="@{/admin/product}" class="row mb-3">
                 <div class="filter col-8 d-flex align-items-center gap-3">
-                    <select name="select-category" id="select-category" class="form-select">
+                    <select name="categoryId" class="form-select">
                         <option value="">Chọn danh mục</option>
-                        <option value="ao-thun">Áo thun (10)</option>
-                        <option value="ao-thun-co-tron">--Áo thun cổ tròn (5)</option>
-                        <option value="ao-thun-dai-tay">--Áo thun dài tay (5)</option>
-                        <option value="ao-so-mi">Áo sơ mi (1)</option>
-                        <option value="ao-ba-lo">Áo ba lỗ (4)</option>
-                        <option value="ao-hoodie">Áo hoodie (5)</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.name}"
+                            th:selected="${cat.categoryId == selectedCategory}"></option>
                     </select>
-                    <select name="select-product-type" id="select-product-type" class="form-select">
-                        <option value="">Lọc theo loại sản phẩm</option>
-                        <option value="basic-product">Sản phẩm đơn giản</option>
-                        <option value="product-have-variants">Sản phẩm có biến thể</option>
-                    </select>
-                    <select name="select-stuck-status" id="select-stuck-status" class="form-select">
+                    <select name="status" class="form-select">
                         <option value="">Lọc theo trạng thái kho</option>
-                        <option value="in-stock">Còn hàng</option>
-                        <option value="out-of-stock">Hết hàng</option>
-                        <option value="low-stock">Hàng sắp hết</option>
+                        <option value="in-stock" th:selected="${selectedStatus == 'in-stock'}">Đang bán</option>
+                        <option value="out-of-stock" th:selected="${selectedStatus == 'out-of-stock'}">Ngừng bán
+                        </option>
                     </select>
-                    <select name="select-sort" id="select-sort" class="form-select">
+                    <select name="sort" class="form-select">
                         <option value="">Sắp xếp</option>
-                        <option value="name-asc">Tên A-Z</option>
-                        <option value="name-desc">Tên Z-A</option>
-                        <option value="price-asc">Giá tăng dần</option>
-                        <option value="price-desc">Giá giảm dần</option>
-                        <option value="date-asc">Ngày tạo cũ nhất</option>
-                        <option value="date-desc">Ngày tạo mới nhất</option>
+                        <option value="name-asc" th:selected="${selectedSort == 'name-asc'}">Tên A-Z</option>
+                        <option value="name-desc" th:selected="${selectedSort == 'name-desc'}">Tên Z-A</option>
+                        <option value="price-asc" th:selected="${selectedSort == 'price-asc'}">Giá tăng dần</option>
+                        <option value="price-desc" th:selected="${selectedSort == 'price-desc'}">Giá giảm dần</option>
+                        <option value="date-asc" th:selected="${selectedSort == 'date-asc'}">Ngày tạo cũ nhất</option>
+                        <option value="date-desc" th:selected="${selectedSort == 'date-desc'}">Ngày tạo mới nhất
+                        </option>
                     </select>
-                    <button type="button" class="btn btn-outline-primary text-dark" id="btn-filter">Lọc</button>
+                    <input type="text" name="keyword" class="form-control" placeholder="Tìm kiếm sản phẩm..."
+                        th:value="${keyword}">
+                    <button type="submit" class="btn btn-outline-primary text-dark">Lọc</button>
                 </div>
-                <div class="search col-2 ms-auto d-flex align-items-center gap-3">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." id="search-product">
-                    <button type="button" class="btn btn-primary" id="btn-search"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
-                </div>
-            </div>
+            </form>
             <table class="table">
                 <thead>
                     <tr>
@@ -64,16 +54,40 @@
                         <th scope="col">Ảnh</th>
                         <th scope="col">Tên sản phẩm</th>
                         <th scope="col">Giá</th>
-                        <th scope="col">Danh mục</th>
                         <th scope="col">Trạng thái kho</th>
                         <th scope="col">Ngày tạo</th>
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="product-list">
-                    <!-- Dữ liệu sản phẩm sẽ được thêm vào đây bằng JavaScript -->
+                    <h2 class="text-center" th:if="${message}"></h2>
+                    <tr th:each="product, index : ${products}">
+                        <td th:text="${index.index + 1}"></td>
+                        <td><img th:if="${product.images?.size() > 0}" th:src="${product.images[0].imageUrl ?: ''}"
+                                th:alt="${product.name}" style="max-width: 70px;">
+                        </td>
+                        <td th:text="${product.name}"></td>
+                        <td th:text="${product.basePrice}"></td>
+                        <td th:text="${product.status ? 'Còn bán' : 'Ngừng bán'}"></td>
+                        <td th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td>
+                            <a th:href="@{|/admin/product/detail/${product.productId}|}" class="btn btn-sm btn-primary"
+                                title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                            <button class="btn btn-sm btn-danger btn-delete" th:attr="data-id=${product.productId}"
+                                title="Xóa"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
+            <nav class="Page navigation mt-4 w-100 d-flex justify-content-center">
+                <ul class="pagination">
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/product(page=${i}, categoryId=${selectedCategory}, status=${selectedStatus}, sort=${selectedSort}, keyword=${keyword})}"
+                            th:text="${i+1}"></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </main>
     <th:block th:fragment="scripts">

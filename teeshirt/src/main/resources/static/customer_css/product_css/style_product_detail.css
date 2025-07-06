@@ -59,7 +59,22 @@
   margin-bottom: 30px;
   color: #666;
 }
+/* Giá hiện tại (giá mới/discount) - thẻ ins */
+.current-price {
+  font-size: 1.8rem;
+  font-weight: bolder;
+  margin: 0;
+  color: #ff6b35; /* Màu cam */
+  text-decoration: none; /* Bỏ gạch chân mặc định của thẻ ins */
+}
 
+/* Giá gốc (giá cũ) - thẻ del */
+.original-price {
+  font-size: 1.4rem;
+  color: #999;
+  font-weight: normal;
+  /* text-decoration: line-through được kế thừa từ thẻ del */
+}
 /*
   Tùy chọn màu sắc và kích thước sản phẩm
 */

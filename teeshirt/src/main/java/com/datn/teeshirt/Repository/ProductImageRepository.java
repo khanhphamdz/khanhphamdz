@@ -11,4 +11,5 @@ import com.datn.teeshirt.Entity.ProductImage;
 public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
     List<ProductImage> findByProduct_ProductId(Long productId);
     List<ProductImage> findByVariant_VariantId(Long variantId);
+    List<ProductImage> findByProduct_ProductIdAndImageType(Long productId, String imageType);
 } 

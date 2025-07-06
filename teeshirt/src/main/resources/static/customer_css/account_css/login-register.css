@@ -201,4 +201,42 @@
     .social-btn {
         width: 100%;
     }
+
+    .login-register-wrap {
+        margin: 0 5px;
+    }
+
+    .login-form {
+        padding: 0;
+    }
+}
+
+/* Error message styling */
+.error-message {
+    color: #db4437;
+    background: #ffeaea;
+    border: 1px solid #db4437;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Login button custom style */
+.login-btn {
+    background: #717fe0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background: #555;
 }

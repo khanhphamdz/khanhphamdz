@@ -6,494 +6,189 @@
     <meta charset="UTF-8">
     <title>Sản Phẩm | Tee Shirt Vibe</title>
     <th:block th:fragment="styles">
-       <link rel="stylesheet" href="/customer_css/product_css/style_product_list.css">
+        <link rel="stylesheet" href="/customer_css/product_css/style_product_list.css">
+        <link rel="stylesheet" href="/customer_css/product_css/style_product_detail.css">
     </th:block>
 </head>
 
 <body>
     <main class="container mt-4" style="padding-top: 100px;">
-        <nav aria-label="breadcrumb" style="margin-top: 10px; margin-bottom: 30px;">
+        <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Library</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Data</li>
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Sản phẩm</li>
             </ol>
         </nav>
         <div class="row">
-            <!-- Cột Filter -->
+            <!-- Filter -->
             <div class="col-md-2">
                 <h4>Bộ lọc</h4>
-                <div class="accordion p-2" id="accordionPanelsStayOpenExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-                            <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne"
-                                aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
-                                Nhóm sản phẩm
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse"
-                            aria-labelledby="panelsStayOpen-headingOne">
-                            <div class="accordion-body p-0 pt-3 pb-3">
-                                <div class="list-category">
-                                    <div class="category-item">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="defaultCheck1">
-                                        <label class="form-check-label" for="defaultCheck1">
-                                            Áo thun
-                                        </label>
+                <!-- Form ẩn để JavaScript hoạt động -->
+                <form id="filterForm" style="display: contents;">
+                    <div class="accordion p-2">
+                        <!-- Danh mục -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-category">
+                                    Nhóm sản phẩm
+                                </button>
+                            </h2>
+                            <div id="collapse-category" class="accordion-collapse collapse">
+                                <div class="accordion-body p-0 pt-3 pb-3">
+                                    <div class="list-category">
+                                        <div th:each="category : ${categories}" class="category-item">
+                                            <input class="form-check-input me-2" type="checkbox"
+                                                th:value="${category.categoryId}"
+                                                th:id="|category-${category.categoryId}|"
+                                                th:checked="${currentCategoryId != null && currentCategoryId == category.categoryId}"
+                                                name="categoryId">
+                                            <label class="form-check-label" th:for="|category-${category.categoryId}|"
+                                                th:text="${category.name}">Tên danh mục</label>
+                                        </div>
                                     </div>
-                                    <div class="category-item">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="defaultCheck2">
-                                        <label class="form-check-label" for="defaultCheck3">
-                                            Áo thun
-                                        </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Size -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-size">
+                                    Kích cỡ
+                                </button>
+                            </h2>
+                            <div id="collapse-size" class="accordion-collapse collapse">
+                                <div class="accordion-body p-0 pt-3 pb-3">
+                                    <div class="list-size">
+                                        <th:block th:each="size : ${sizes}">
+                                            <input type="checkbox" th:id="|size-${size.sizeId}|"
+                                                th:value="${size.sizeId}"
+                                                th:checked="${currentSizeId != null && currentSizeId == size.sizeId}"
+                                                class="size-option-prl" name="sizeId">
+                                            <label th:for="|size-${size.sizeId}|" class="size-label"
+                                                th:text="${size.name}">Size</label>
+                                        </th:block>
                                     </div>
-                                    <div class="category-item">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="defaultCheck3">
-                                        <label class="form-check-label" for="defaultCheck3">
-                                            Áo thun
-                                        </label>
-                                    </div>
-                                    <div class="category-item">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="defaultCheck4">
-                                        <label class="form-check-label" for="defaultCheck4">
-                                            Áo thun
-                                        </label>
-                                    </div>
-                                    <div class="category-item">
-                                        <input class="form-check-input me-2" type="checkbox" value=""
-                                            id="defaultCheck5">
-                                        <label class="form-check-label" for="defaultCheck5">
-                                            Áo thun
-                                        </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Màu -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-color">
+                                    Màu sắc
+                                </button>
+                            </h2>
+                            <div id="collapse-color" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="color-grid">
+                                        <th:block th:each="color : ${colors}">
+                                            <input class="color-checkbox" type="checkbox" th:value="${color.colorId}"
+                                                th:checked="${currentColorId != null && currentColorId == color.colorId}"
+                                                th:style="|background: ${color.hexCode};|" name="colorId"
+                                                th:title="${color.name}">
+                                        </th:block>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-                            <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo"
-                                aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                                Kích cỡ
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse"
-                            aria-labelledby="panelsStayOpen-headingTwo">
-                            <div class="accordion-body p-0 pt-3 pb-3">
-                                <div class="list-size">
-                                    <!-- Các size -->
-                                    <input type="checkbox" id="size-xs" class="size-option-prl" />
-                                    <label for="size-xs" class="size-label">XS</label>
-
-                                    <input type="checkbox" id="size-s" class="size-option-prl" />
-                                    <label for="size-s" class="size-label">S</label>
-
-                                    <input type="checkbox" id="size-m" class="size-option-prl" />
-                                    <label for="size-m" class="size-label">M</label>
-
-                                    <input type="checkbox" id="size-l" class="size-option-prl" />
-                                    <label for="size-l" class="size-label">L</label>
-                                </div>
-                            </div>
+                </form>
+            </div>
+            <!-- Danh sách sản phẩm -->
+            <div class="col-md-10" id="product-list-container">
+                <div th:fragment="product-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Danh sách sản phẩm</h4>
+                        <div class="sort-options">
+                            <label for="sortSelect" class="me-2">Sắp xếp theo:</label>
+                            <select id="sortSelect" class="form-select" style="width: auto; display: inline-block;">
+                                <option value="default">Mặc định</option>
+                                <option value="price-asc">Giá: Thấp đến Cao</option>
+                                <option value="price-desc">Giá: Cao đến Thấp</option>
+                                <option value="name-asc">Tên: A-Z</option>
+                                <option value="name-desc">Tên: Z-A</option>
+                                <option value="newest">Mới nhất</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
-                            <button class="accordion-button p-0 pt-3 pb-3 collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree"
-                                aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                                Màu sắc
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse"
-                            aria-labelledby="panelsStayOpen-headingThree">
-                            <div class="accordion-body">
-                                <div class="color-grid">
-                                    <input class="color-checkbox" type="checkbox" value="phoi-mau"
-                                        style="background: linear-gradient(226.4deg, rgba(255, 26, 1, 1) 28.9%, rgba(254, 155, 1, 1) 33%, rgba(255, 241, 0, 1) 48.6%, rgba(34, 218, 1, 1) 65.3%, rgba(0, 141, 254, 1) 80.6%, rgba(113, 63, 254, 1) 100.1%) !important;" />
-                                    <input class="color-checkbox" type="checkbox" value="den"
-                                        style="background: #000;" />
-                                    <input class="color-checkbox" type="checkbox" value="xam"
-                                        style="background: #888;" />
-                                    <input class="color-checkbox" type="checkbox" value="trang"
-                                        style="background: #fff; border: 1px solid #ccc;" />
-                                    <input class="color-checkbox" type="checkbox" value="be"
-                                        style="background: #f5f5dc;" />
-                                    <input class="color-checkbox" type="checkbox" value="xanh-lam"
-                                        style="background: #1e50a2;" />
-                                    <input class="color-checkbox" type="checkbox" value="xanh-la"
-                                        style="background: #3cb043;" />
-                                    <input class="color-checkbox" type="checkbox" value="xanh-ngoc"
-                                        style="background: #30cfcf;" />
-                                    <input class="color-checkbox" type="checkbox" value="do"
-                                        style="background: #d62828;" />
-                                    <input class="color-checkbox" type="checkbox" value="cam"
-                                        style="background: #f77f00;" />
-                                    <input class="color-checkbox" type="checkbox" value="vang"
-                                        style="background: #ffee00;" />
-                                    <input class="color-checkbox" type="checkbox" value="tim"
-                                        style="background: #c084fc;" />
-                                    <input class="color-checkbox" type="checkbox" value="nau"
-                                        style="background: #8b4513;" />
-                                    <input class="color-checkbox" type="checkbox" value="hong"
-                                        style="background: #ff85b3;" />
-                                    <input class="color-checkbox" type="checkbox" value="xanh-dam"
-                                        style="background: #06283D;" />
-                                    <input class="color-checkbox" type="checkbox" value="den-xam"
-                                        style="background: #444;" />
+
+                    <div class="row mt-2 row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+                        <div th:each="product : ${products.content}" class="product col">
+                            <div class="product-pic">
+                                <img th:src="${product.images != null and !product.images.empty ? product.images[0].imageUrl : ''}"
+                                    th:alt="${product.name}" alt="IMG-PRODUCT">
+                                <a th:href="@{|/product/detail/${product.productId}|}" class="product-btn">Quick
+                                    View</a>
+                            </div>
+                            <div class="product-txt">
+                                <div class="product-txt-child1 flex-col-l">
+                                    <a th:href="@{|/product/detail/${product.productId}|}"
+                                        class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
+                                        th:text="${product.name}">Tên sản phẩm</a>
+                                    <span class="stext-105 cl3"
+                                        th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá
+                                        sản phẩm</span>
+                                </div>
+                                <div class="product-txt-child2">
+                                    <a href="#" class="btn-addwish-b2">
+                                        <img class="icon-heart1"
+                                            src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
+                                            alt="ICON">
+                                        <img class="icon-heart2"
+                                            src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
+                                            alt="ICON">
+                                    </a>
                                 </div>
                             </div>
                         </div>
+
+                        <div th:if="${products.content.empty}" class="col-12 text-center">
+                            <p class="text-muted">Không có sản phẩm nào được tìm thấy.</p>
+                        </div>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <div th:if="${products.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                        <nav>
+                            <ul class="pagination">
+                                <li th:class="${products.first} ? 'page-item disabled' : 'page-item'">
+                                    <a class="page-link"
+                                        th:href="@{/product(page=${products.number - 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:unless="${products.first}">
+                                        <span>&laquo;</span>
+                                    </a>
+                                    <span class="page-link" th:if="${products.first}">&laquo;</span>
+                                </li>
+
+                                <li th:each="pageNum : ${#numbers.sequence(0, products.totalPages - 1)}"
+                                    th:class="${pageNum == products.number} ? 'page-item active' : 'page-item'">
+                                    <a class="page-link"
+                                        th:href="@{/product(page=${pageNum}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:text="${pageNum + 1}">1</a>
+                                </li>
+
+                                <li th:class="${products.last} ? 'page-item disabled' : 'page-item'">
+                                    <a class="page-link"
+                                        th:href="@{/product(page=${products.number + 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:unless="${products.last}">
+                                        <span>&raquo;</span>
+                                    </a>
+                                    <span class="page-link" th:if="${products.last}">&raquo;</span>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
-            <!-- Cột Danh sách sản phẩm -->
-            <div class="col-md-10">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4>Danh sách sản phẩm</h4>
-                    <div class="sort-options">
-                        <label for="sortSelect" class="me-2">Sắp xếp theo:</label>
-                        <select id="sortSelect" class="form-select" style="width: auto; display: inline-block;">
-                            <option value="default">Mặc định</option>
-                            <option value="price-asc">Giá: Thấp đến Cao</option>
-                            <option value="price-desc">Giá: Cao đến Thấp</option>
-                            <option value="name-asc">Tên: A-Z</option>
-                            <option value="name-desc">Tên: Z-A</option>
-                            <option value="newest">Mới nhất</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mt-2 row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="/detail" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="/product/detail/1" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                                        alt="ICON">
-                                    <img class="icon-heart2"
-                                        src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                                        alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <th:block th:fragment="scripts">
-            <script>
-                const checkboxes = document.querySelectorAll('.form-check-input');
-                checkboxes.forEach(checkbox => {
-                    console.log(checkbox);
-
-                    checkbox.addEventListener('change', () => {
-                        if (checkbox.checked) {
-                            checkboxes.forEach(orther => {
-                                if (orther !== checkbox) {
-                                    orther.checked = false;
-                                }
-                            });
-                        }
-                    });
-                });
-                const color_checkboxes = document.querySelectorAll('.color-checkbox');
-                color_checkboxes.forEach(checkbox => {
-                    console.log(checkbox);
-
-                    checkbox.addEventListener('change', () => {
-                        if (checkbox.checked) {
-                            color_checkboxes.forEach(orther => {
-                                if (orther !== checkbox) {
-                                    orther.checked = false;
-                                }
-                            });
-                        }
-                    });
-                });
-            </script>
-        </th:block>
     </main>
+    <th:block th:fragment="scripts">
+        <script src="/customer_js/product_js/product-list.js"></script>
+    </th:block>
 </body>
 
 </html>

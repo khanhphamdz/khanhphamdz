@@ -1,199 +1,413 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
-
+<html lang="en"
+      th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý thuộc tính sản phẩm</title>
     <th:block th:fragment="styles">
-                <style>
-            .btn-add-color {
-                background: linear-gradient(90deg, #147dee 50%, #901de8 100%);
-                color: #fff;
-                font-weight: 600;
-                border-radius: 10px;
-                padding: 0.55rem 1.5rem;
-                box-shadow: 0 2px 8px 0 rgba(255, 152, 0, 0.13);
-                border: none;
-                transition: background 0.18s, box-shadow 0.18s;
-            }
-
-            .table-attribute th,
-            .table-attribute td {
-                vertical-align: middle;
-                text-align: left;
-                padding-left: 18px;
-            }
-
-            .table-attribute th.action-col,
-            .table-attribute td.action-col {
-                text-align: center;
-                padding-left: 0;
-            }
-
-            .table-attribute a {
-                color: #1976d2;
-                text-decoration: none;
-                font-size: 15px;
-                font-weight: 500;
-                text-transform: none;
-                letter-spacing: 0.2px;
-            }
-
-            .table-attribute a:hover {
-                color: #5e12d8;
-            }
-
-            .card-body {
-                padding: 1rem 1.25rem;
-            }
-        </style>
+        <link rel="stylesheet" href="/admin_css/attribute-management.css" />
     </th:block>
 </head>
-
 <body>
-    <main class="d-flex flex-column p-3 w-100">
-        <h3 class="fw-bold text-start mb-3">Các thuộc tính</h3>
-        <!-- Card trên: Form thêm thuộc tính mới -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="fw-bold mb-3">Thêm thuộc tính mới</h5>
-                <form>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Tên</label>
-                                <input type="text" class="form-control" placeholder="Tên thuộc tính"
-                                    style="width: 90%;">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3 h-100 d-flex flex-column">
-                                <label class="form-label">Mô tả</label>
-                                <textarea class="form-control " style="height: 123px;"
-                                    placeholder="Nhập mô tả cho thuộc tính này"></textarea>
-                            </div>
+<main class="container py-4" th:fragment="main">
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="attributeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" th:classappend="${active} == 'size' ? ' active' : ''" id="size-tab" data-bs-toggle="tab" data-bs-target="#size" type="button" role="tab">
+                Quản lý Kích cỡ
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" th:classappend="${active} == 'color' ? ' active' : ''" id="color-tab" data-bs-toggle="tab" data-bs-target="#color" type="button" role="tab">
+                Quản lý Màu sắc
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" th:classappend="${active} == 'material' ? ' active' : ''" id="material-tab" data-bs-toggle="tab" data-bs-target="#material" type="button" role="tab">
+                Quản lý Chất liệu
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="attributeTabContent">
+        <!-- SIZE TAB -->
+        <div class="tab-pane fade" th:classappend="${active} == 'size' ? 'show active' : ''" id="size" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Quản lý kích cỡ</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSizeModal">Thêm kích cỡ</button>
+            </div>
+
+            <!-- Search Form -->
+            <form th:action="@{/admin/product/attribute/size}" method="get" class="mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search" th:value="${search}" placeholder="Tìm kiếm theo tên...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Size Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Tên kích cỡ</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="size, iter : ${sizes?.content}" th:if="${sizes != null}">
+                            <td th:text="${iter.index + 1 + (sizes.number * sizes.size)}"></td>
+                            <td th:text="${size.name}"></td>
+                            <td th:text="${#temporals.format(size.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" 
+                                        th:attr="data-id=${size.sizeId},data-name=${size.name}" 
+                                        onclick="showEditSizeModal(this)">Sửa</button>
+                                <button class="btn btn-sm btn-danger" 
+                                        th:attr="data-id=${size.sizeId}" 
+                                        onclick="deleteSize(this)">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${sizes == null || sizes.content.empty}">
+                            <td colspan="4" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${sizes != null && sizes.totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${sizes.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/size(search=${search}, page=${sizes.number - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, sizes.totalPages - 1)}"
+                        th:classappend="${pageNum == sizes.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/size(search=${search}, page=${pageNum})}" th:text="${pageNum + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${sizes.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/size(search=${search}, page=${sizes.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- COLOR TAB -->
+        <div class="tab-pane fade" th:classappend="${active} == 'color' ? 'show active' : ''" id="color" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Quản lý màu sắc</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addColorModal">Thêm màu sắc</button>
+            </div>
+
+            <!-- Search Form -->
+            <form th:action="@{/admin/product/attribute/color}" method="get" class="mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search" th:value="${search}" placeholder="Tìm kiếm theo tên...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Color Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Tên màu sắc</th>
+                            <th>Mã màu</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="color, iter : ${colors?.content}" th:if="${colors != null}">
+                            <td th:text="${iter.index + 1 + (colors.number * colors.size)}"></td>
+                            <td th:text="${color.name}"></td>
+                            <td>
+                                <span th:style="'display:inline-block;width:24px;height:24px;background:' + ${color.hexCode} + ';border-radius:4px;border:1px solid #ccc;'"></span>
+                                <span th:text="${color.hexCode}" class="ms-2"></span>
+                            </td>
+                            <td th:text="${#temporals.format(color.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" 
+                                        th:attr="data-id=${color.colorId},data-name=${color.name},data-hex=${color.hexCode}" 
+                                        onclick="showEditColorModal(this)">Sửa</button>
+                                <button class="btn btn-sm btn-danger" 
+                                        th:attr="data-id=${color.colorId}" 
+                                        onclick="deleteColor(this)">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${colors == null || colors.content.empty}">
+                            <td colspan="5" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${colors != null && colors.totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${colors.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/color(search=${search}, page=${colors.number - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, colors.totalPages - 1)}"
+                        th:classappend="${pageNum == colors.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/color(search=${search}, page=${pageNum})}" th:text="${pageNum + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${colors.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/color(search=${search}, page=${colors.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- MATERIAL TAB -->
+        <div class="tab-pane fade" th:classappend="${active} == 'material' ? 'show active' : ''" id="material" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Quản lý chất liệu</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Thêm chất liệu</button>
+            </div>
+
+            <!-- Search Form -->
+            <form th:action="@{/admin/product/attribute/material}" method="get" class="mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search" th:value="${search}" placeholder="Tìm kiếm theo tên...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Material Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Tên chất liệu</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="material, iter : ${materials?.content}" th:if="${materials != null}">
+                            <td th:text="${iter.index + 1 + (materials.number * materials.size)}"></td>
+                            <td th:text="${material.name}"></td>
+                            <td th:text="${#temporals.format(material.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" 
+                                        th:attr="data-id=${material.materialId},data-name=${material.name}" 
+                                        onclick="showEditMaterialModal(this)">Sửa</button>
+                                <button class="btn btn-sm btn-danger" 
+                                        th:attr="data-id=${material.materialId}" 
+                                        onclick="deleteMaterial(this)">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${materials == null || materials.content.empty}">
+                            <td colspan="4" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${materials != null && materials.totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${materials.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/material(search=${search}, page=${materials.number - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, materials.totalPages - 1)}"
+                        th:classappend="${pageNum == materials.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/material(search=${search}, page=${pageNum})}" th:text="${pageNum + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${materials.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/attribute/material(search=${search}, page=${materials.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ========== MODALS ========== -->
+
+    <!-- Modal Thêm Kích Cỡ -->
+    <div class="modal fade" id="addSizeModal" tabindex="-1" aria-labelledby="addSizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addSizeForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSizeModalLabel">Thêm kích cỡ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên kích cỡ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="addSizeName" maxlength="10" required />
+                            <div class="invalid-feedback" id="addSizeNameError"></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-add-color">Thêm thuộc tính</button>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- Card dưới: Bảng danh sách thuộc tính -->
-        <div class="card flex-grow-1 d-flex flex-column">
-            <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
-                style="margin-top: 8px;">
-                <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách thuộc tính</h5>
-            </div>
-            <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
-                <div class="flex-grow-1 overflow-auto">
-                    <table class="table table-hover table-attribute align-middle mb-0">
-                        <thead class="bg-primary bg-gradient text-white">
-                            <tr>
-                                <th>Tên</th>
-                                <th>Giá trị thuộc tính</th>
-                                <th>Mô tả</th>
-                                <th class="action-col">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Kích cỡ</td>
-                                <td>L, S, XL, XXL</td>
-                                <td>kích cỡ sản phẩm</td>
-                                <td class="action-col">
-                                    <button class="btn btn-sm btn-warning me-1" title="Sửa" data-bs-toggle="modal"
-                                        data-bs-target="#edit-attribute-modal"><i
-                                            class="fa-solid fa-pen-to-square"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Xoá"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Màu sắc</td>
-                                <td>Đen, Trắng, Xanh</td>
-                                <td>Màu sắc của sản phẩm</td>
-                                <td class="action-col">
-                                    <button class="btn btn-sm btn-warning me-1" title="Sửa" data-bs-toggle="modal"
-                                        data-bs-target="#edit-attribute-modal"><i
-                                            class="fa-solid fa-pen-to-square"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Xoá"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Chất liệu</td>
-                                <td>cotton, cotton cao cấp</td>
-                                <td>Chất liệu</td>
-                                <td class="action-col">
-                                    <button class="btn btn-sm btn-warning me-1" title="Sửa" data-bs-toggle="modal"
-                                        data-bs-target="#edit-attribute-modal"><i
-                                            class="fa-solid fa-pen-to-square"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Xoá"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <!-- Modal chỉnh sửa thuộc tính -->
-        <div class="modal fade" id="edit-attribute-modal" tabindex="-1" aria-labelledby="editAttributeModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
+    </div>
+
+    <!-- Modal Sửa Kích Cỡ -->
+    <div class="modal fade" id="editSizeModal" tabindex="-1" aria-labelledby="editSizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editSizeForm">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editAttributeModalLabel">Sửa thuộc tính</h5>
+                        <h5 class="modal-title" id="editSizeModalLabel">Sửa kích cỡ</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label fw-bold">Tên</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="edit-attribute-name"
-                                        placeholder="Tên thuộc tính">
-                                </div>
-                            </div>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label fw-bold">Giá trị thuộc tính</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="edit-attribute-type"
-                                        placeholder="Giá trị thuộc tính (vd: L, S, XL)">
-                                </div>
-                            </div>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label fw-bold">Mô tả</label>
-                                <div class="col-sm-8">
-                                    <textarea class="form-control" id="edit-attribute-description" rows="3"
-                                        placeholder="Nhập mô tả cho thuộc tính này"></textarea>
-                                </div>
-                            </div>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label fw-bold">Ngày tạo</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="edit-attribute-created-date"
-                                        value="07/06/2025" disabled>
-                                </div>
-                            </div>
-                        </form>
+                        <input type="hidden" name="sizeId" id="editSizeId" />
+                        <div class="mb-3">
+                            <label class="form-label">Tên kích cỡ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="editSizeName" maxlength="10" required />
+                            <div class="invalid-feedback" id="editSizeNameError"></div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Cập nhật</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-    </main>
-    <th:block th:fragment="scripts">
+    </div>
 
-  </th:block>
+    <!-- Modal Thêm Màu Sắc -->
+    <div class="modal fade" id="addColorModal" tabindex="-1" aria-labelledby="addColorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addColorForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addColorModalLabel">Thêm màu sắc</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên màu sắc <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="addColorName" maxlength="50" required />
+                            <div class="invalid-feedback" id="addColorNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mã màu <span class="text-danger">*</span></label>
+                            <input type="color" class="form-control form-control-color" name="hexCode" id="addColorHex" value="#000000" required />
+                            <div class="invalid-feedback" id="addColorHexError"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Màu Sắc -->
+    <div class="modal fade" id="editColorModal" tabindex="-1" aria-labelledby="editColorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editColorForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editColorModalLabel">Sửa màu sắc</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="colorId" id="editColorId" />
+                        <div class="mb-3">
+                            <label class="form-label">Tên màu sắc <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="editColorName" maxlength="50" required />
+                            <div class="invalid-feedback" id="editColorNameError"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mã màu <span class="text-danger">*</span></label>
+                            <input type="color" class="form-control form-control-color" name="hexCode" id="editColorHex" required />
+                            <div class="invalid-feedback" id="editColorHexError"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Chất Liệu -->
+    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addMaterialForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMaterialModalLabel">Thêm chất liệu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên chất liệu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="addMaterialName" maxlength="50" required />
+                            <div class="invalid-feedback" id="addMaterialNameError"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Chất Liệu -->
+    <div class="modal fade" id="editMaterialModal" tabindex="-1" aria-labelledby="editMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editMaterialForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editMaterialModalLabel">Sửa chất liệu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="materialId" id="editMaterialId" />
+                        <div class="mb-3">
+                            <label class="form-label">Tên chất liệu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="editMaterialName" maxlength="50" required />
+                            <div class="invalid-feedback" id="editMaterialNameError"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:fragment="scripts">
+    <script src="/admin_js/attribute-management.js"></script>
+</th:block>
 </body>
-
-</html>
+</html> 

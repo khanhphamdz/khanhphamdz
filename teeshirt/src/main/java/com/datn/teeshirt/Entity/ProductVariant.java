@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
@@ -41,6 +40,9 @@ public class ProductVariant {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
     @Column(name = "sku", length = 50, unique = true)
     private String sku;
 
@@ -75,10 +77,6 @@ public class ProductVariant {
     @JoinColumn(name = "size_id", nullable = false)
     private Size size;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "material_id", nullable = false)
-    private Material material;
-
     @OneToMany(mappedBy = "variant")
     private List<ProductImage> images;
 
@@ -90,7 +88,4 @@ public class ProductVariant {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @SoftDelete
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-} 
+}

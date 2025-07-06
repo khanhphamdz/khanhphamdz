@@ -1,715 +1,1452 @@
-function getProductIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('id');
-}
-tinymce.init({
-    selector: '#product-description-editor',
-    height: 300,
-    plugins: [
-        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
-    ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [
-        { value: 'First.Name', title: 'First Name' },
-        { value: 'Email', title: 'Email' },
-    ],
-    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-});
-tinymce.init({
-    selector: '#product-short-description-editor',
-    height: 300,
-    plugins: [
-        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
-    ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [
-        { value: 'First.Name', title: 'First Name' },
-        { value: 'Email', title: 'Email' },
-    ],
-    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-});
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM Content Loaded - Product Detail Page');
 
-let currentProduct = null;
-
-function setDescriptionContent(content) {
-    const editor = tinymce.get('product-description-editor');
-    if (editor) {
-        editor.setContent(content || '');
-    } else {
-        setTimeout(() => setDescriptionContent(content), 100);
-    }
-}
-function setShortDescriptionContent(content) {
-    const editor = tinymce.get('product-short-description-editor');
-    if (editor) {
-        editor.setContent(content || '');
-    } else {
-        setTimeout(() => setShortDescriptionContent(content), 100);
-    }
-}
-
-// Load chi tiết sản phẩm
-async function loadProductDetail() {
-    const id = getProductIdFromUrl();
-    if (!id) {
-        alert('Không tìm thấy sản phẩm!');
-        return;
-    }
-    const res = await fetch(`/api/product/${id}`);
-    if (!res.ok) {
-        alert('Không tìm thấy sản phẩm!');
-        return;
-    }
-    const product = await res.json();
-    currentProduct = product;
-    console.log('Current Product:', product);
-
-    document.getElementById('product-name').value = product.name || '';
-    setDescriptionContent(product.description);
-    setShortDescriptionContent(product.shortDescription);
-    // TODO: trạng thái, nổi bật nếu có
-    renderImages(product.images || []);
-}
-
-// Hiển thị danh sách ảnh
-function renderImages(images) {
-    const container = document.getElementById('image-preview-list');
-    if (!container) return;
-    container.innerHTML = '';
-    images.forEach(img => {
-        const div = document.createElement('div');
-        div.className = 'image-preview d-inline-block position-relative';
-        div.innerHTML = `<img src="${img.imageUrl}" alt="Ảnh sản phẩm"><button class="btn btn-sm btn-danger position-absolute top-0 end-0 btn-remove-image" data-id="${img.imageId}"><i class="fas fa-times"></i></button>`;
-        container.appendChild(div);
-    });
-    // Gán sự kiện xóa ảnh (nếu muốn)
-}
-
-// Upload ảnh mới lên Cloudinary
-async function uploadImage(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await fetch('/api/product/upload-image', {
-        method: 'POST',
-        body: formData
-    });
-    if (!res.ok) {
-        alert('Upload ảnh thất bại!');
-        return null;
-    }
-    return await res.text(); // trả về url ảnh
-}
-
-// Sự kiện chọn file ảnh
-function setupImageUpload() {
-    const input = document.getElementById('product-image-upload');
-    if (!input) return;
-    input.addEventListener('change', async function () {
-        const file = this.files[0];
-        if (!file) return;
-        const url = await uploadImage(file);
-        if (url) {
-            // Thêm ảnh vào danh sách tạm thời
-            if (!currentProduct.images) currentProduct.images = [];
-            currentProduct.images.push({ imageUrl: url });
-            renderImages(currentProduct.images);
-        }
-    });
-}
-
-// Sự kiện cập nhật sản phẩm
-async function updateProduct() {
-    const id = getProductIdFromUrl();
-    if (!id) return;
-    const name = document.getElementById('product-name').value;
-    let description = '';
-    let shortDescription = '';
-    if (window.tinymce) {
-        description = tinymce.get('product-description-editor').getContent();
-        shortDescription = tinymce.get('product-short-description-editor').getContent();
-    } else {
-        description = document.getElementById('product-description-editor').value;
-        shortDescription = document.getElementById('product-short-description-editor').value;
-    }
-    // TODO: trạng thái, nổi bật nếu có
-    const images = (currentProduct.images || []).map(img => ({ imageUrl: img.imageUrl }));
-    const body = {
-        name,
-        description,
-        shortDescription,
-        images
-        // TODO: các trường khác
-    };
-    const res = await fetch(`/api/product/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    });
-    if (res.ok) {
-        alert('Cập nhật thành công!');
-        loadProductDetail();
-    } else {
-        alert('Cập nhật thất bại!');
-    }
-}
-
-// Load danh mục (Category)
-async function loadCategories(selectedCategoryIds = []) {
-    const res = await fetch('/api/product/categories');
-    const categories = await res.json();
-    const container = document.querySelector('.category-tree');
-    if (!container) return;
-    function renderTree(categories, level = 0) {
-        return categories.map(cat => {
-            const checked = selectedCategoryIds.includes(cat.categoryId) ? 'checked' : '';
-            let html = `
-                <div class="form-check" style="margin-left:${level * 20}px">
-                    <input class="form-check-input category-checkbox" type="checkbox" value="${cat.categoryId}" id="category-${cat.categoryId}" ${checked}>
-                    <label class="form-check-label" for="category-${cat.categoryId}">${cat.name}</label>
-                </div>
-            `;
-            if (cat.children && cat.children.length > 0) {
-                html += renderTree(cat.children, level + 1);
-            }
-            return html;
-        }).join('');
-    }
-    container.innerHTML = renderTree(categories);
-}
-
-// Load thuộc tính (Attribute) và giá trị thuộc tính (AttributeTerm) - render theo layout accordion-item
-async function loadAttributes() {
-    const container = document.querySelector('.list-attribute');
-    if (!container) return;
-    const productAttrs = (currentProduct && currentProduct.attributes) ? currentProduct.attributes : [];
-    container.innerHTML = productAttrs.map(attr => {
-        const attrTerms = attr.attributeValue || [];
-        // Ghép các giá trị thành chuỗi, mỗi giá trị 1 dòng
-        const termsText = attrTerms.map(term => term.term).join('\n');
-        return `
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <div class="accordion-button d-flex align-items-center justify-content-between collapsed ps-0"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapse-${attr.productAttributeId}"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapse-${attr.productAttributeId}"
-                        style="cursor: pointer;">
-                        <div class="d-flex align-items-center justify-content-between w-100 me-3">
-                            <span class="text-dark fw-bold">${attr.attributeName}</span>
-                            <button type="button" class="border-0 bg-transparent text-danger btn-remove-attribute" data-attribute-id="${attr.productAttributeId}">Xóa</button>
-                        </div>
-                    </div>
-                </h2>
-                <div id="panelsStayOpen-collapse-${attr.productAttributeId}"
-                    class="accordion-collapse collapse"
-                    aria-labelledby="panelsStayOpen-heading-${attr.productAttributeId}">
-                    <div class="accordion-body p-0 mt-4 mb-1">
-                        <div class="d-flex">
-                            <span class="w-25">Tên: <strong>${attr.attributeName}</strong></span>
-                            <div class="w-75">
-                                <div class="form-group">
-                                    <label class="form-label">Giá trị:</label>
-                                    <textarea class="form-control" readonly rows="${Math.max(attrTerms.length, 1)}">${termsText}</textarea>
-                                </div>
-                                <div class="button-group mt-2">
-                                    <button type="button" class="btn btn-outline-primary btn-select-all-terms" data-attribute-id="${attr.productAttributeId}">Chọn tất cả</button>
-                                    <button type="button" class="btn btn-outline-primary btn-deselect-all-terms" data-attribute-id="${attr.productAttributeId}">Không chọn</button>
-                                    <button type="button" class="btn btn-outline-primary float-end btn-add-term" data-bs-toggle="modal" data-bs-target="#add-attribute-term-modal" data-attribute-id="${attr.productAttributeId}">Thêm giá trị</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// Load danh sách biến thể
-async function loadVariants() {
-    const productId = getProductIdFromUrl();
-    if (!productId) return;
-
-    try {
-        const res = await fetch(`/api/product/${productId}/variants`);
-        const variants = await res.json();
-        console.log('Variants loaded:', variants);
-
-        const container = document.getElementById('variantsList');
-        if (!container) return;
-
-        container.innerHTML = variants.map(variant => `
-            <tr>
-                <td>
-                    <div class="form-check">
-                        <input class="form-check-input variant-checkbox" type="checkbox" value="${variant.variantId}">
-                    </div>
-                </td>
-                <td>
-                    ${variant.attributes?.map(attr => `${attr.attributeName}: ${attr.attributeValue}`).join('<br>') || 'N/A'}
-                </td>
-                <td>${formatPrice(variant.price)}</td>
-                <td>${variant.quantityInStock}</td>
-                <td>
-                    <img src="${variant.imageUrl || '/images/no-image.png'}" alt="Variant image" style="width: 50px; height: 50px; object-fit: cover;">
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-primary" onclick="openVariantDetailModal(${variant.variantId})">
-                        <i class="fas fa-edit"></i> Sửa
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteVariant(${variant.variantId})">
-                        <i class="fas fa-trash"></i> Xóa
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-
-    } catch (error) {
-        console.error('Error loading variants:', error);
-        alert('Có lỗi khi tải danh sách biến thể!');
-    }
-}
-
-// ================== QUẢN LÝ THUỘC TÍNH BIẾN THỂ ==================
-
-// Lưu cache tất cả thuộc tính và giá trị thuộc tính
-let allAttributes = [];
-let allAttributeTerms = {}; // {attributeId: [terms]}
-
-// Lấy tất cả thuộc tính
-async function fetchAllAttributes() {
-    if (allAttributes.length > 0) return allAttributes;
-    const res = await fetch('/api/product/attributes');
-    allAttributes = await res.json();
-    return allAttributes;
-}
-// Lấy tất cả giá trị của 1 thuộc tính
-async function fetchAttributeTerms(attributeId) {
-    if (allAttributeTerms[attributeId]) return allAttributeTerms[attributeId];
-    const res = await fetch(`/api/product/attribute-terms/by-attribute/${attributeId}`);
-    const terms = await res.json();
-    console.log(`Attribute Terms for ${attributeId}:`, terms);
-    allAttributeTerms[attributeId] = terms;
-    return terms;
-}
-
-// Hiển thị thuộc tính biến thể trong modal
-async function renderVariantAttributes(variantId) {
-    const container = document.getElementById('variant-attributes-list');
-    container.innerHTML = '<div class="text-secondary">Đang tải...</div>';
-    // Lấy thuộc tính hiện tại của biến thể
-    const res = await fetch(`/api/variant/${variantId}/attributes`);
-    const variantAttrs = await res.json();
-    // Lấy tất cả thuộc tính
-    const attributes = await fetchAllAttributes();
-    // Render từng dòng
-    container.innerHTML = '';
-    for (const va of variantAttrs) {
-        const attrId = va.attributeId;
-        const termId = va.termId;
-        const terms = await fetchAttributeTerms(attrId);
-        // Dòng thuộc tính
-        const row = document.createElement('div');
-        row.className = 'd-flex align-items-center mb-2 variant-attr-row';
-        row.dataset.variantAttributeId = va.variantAttributeId;
-        // Hiển thị tên thuộc tính (dạng chữ)
-        const labelAttr = document.createElement('span');
-        labelAttr.className = 'me-2 fw-bold';
-        labelAttr.style.minWidth = '120px';
-        labelAttr.textContent = va.attributeName;
-        // Select giá trị
-        const selectTerm = document.createElement('select');
-        selectTerm.className = 'form-select me-2';
-        selectTerm.style.maxWidth = '180px';
-        terms.forEach(term => {
-            const opt = document.createElement('option');
-            opt.value = term.termId;
-            opt.textContent = term.term;
-            if (term.termId === termId) opt.selected = true;
-            selectTerm.appendChild(opt);
-        });
-        // Sự kiện đổi giá trị
-        selectTerm.addEventListener('change', async function () {
-            const newTermId = this.value;
-            await fetch(`/api/variant/${variantId}/attributes/${va.variantAttributeId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ termId: newTermId })
-            });
-        });
-        // Nút xóa
-        const btnDelete = document.createElement('button');
-        btnDelete.className = 'btn btn-danger btn-sm';
-        btnDelete.innerHTML = '<i class="fas fa-trash"></i>';
-        btnDelete.addEventListener('click', async function () {
-            if (!confirm('Xóa thuộc tính này khỏi biến thể?')) return;
-            await fetch(`/api/variant/${variantId}/attributes/${va.variantAttributeId}`, { method: 'DELETE' });
-            renderVariantAttributes(variantId);
-        });
-        row.appendChild(labelAttr);
-        row.appendChild(selectTerm);
-        row.appendChild(btnDelete);
-        container.appendChild(row);
-    }
-}
-
-// Thêm dòng thuộc tính mới
-async function addVariantAttributeRow(variantId) {
-    const container = document.getElementById('variant-attributes-list');
-    // Lấy thuộc tính chưa có trong biến thể
-    const res = await fetch(`/api/variant/${variantId}/attributes`);
-    const variantAttrs = await res.json();
-    console.log('Current Variant Attributes:', variantAttrs);
-    const usedAttrIds = variantAttrs.map(va => va.attribute.attributeId);
-    const attributes = await fetchAllAttributes();
-    const availableAttrs = attributes.filter(attr => !usedAttrIds.includes(attr.attributeId));
-    if (availableAttrs.length === 0) {
-        alert('Đã thêm hết các thuộc tính!');
-        return;
-    }
-    // Dòng mới
-    const row = document.createElement('div');
-    row.className = 'd-flex align-items-center mb-2 variant-attr-row';
-    // Select thuộc tính
-    const selectAttr = document.createElement('select');
-    selectAttr.className = 'form-select me-2';
-    selectAttr.style.maxWidth = '180px';
-    availableAttrs.forEach(attr => {
-        const opt = document.createElement('option');
-        opt.value = attr.attributeId;
-        opt.textContent = attr.attributeName;
-        selectAttr.appendChild(opt);
-    });
-    // Select giá trị (ban đầu rỗng)
-    const selectTerm = document.createElement('select');
-    selectTerm.className = 'form-select me-2';
-    selectTerm.style.maxWidth = '180px';
-    // Khi chọn thuộc tính thì load giá trị
-    selectAttr.addEventListener('change', async function () {
-        const attrId = this.value;
-        const terms = await fetchAttributeTerms(attrId);
-        selectTerm.innerHTML = '';
-        terms.forEach(term => {
-            const opt = document.createElement('option');
-            opt.value = term.termId;
-            opt.textContent = term.term;
-            selectTerm.appendChild(opt);
-        });
-    });
-    // Gọi lần đầu
-    selectAttr.dispatchEvent(new Event('change'));
-    // Nút lưu
-    const btnSave = document.createElement('button');
-    btnSave.className = 'btn btn-success btn-sm';
-    btnSave.innerHTML = '<i class="fas fa-check"></i>';
-    btnSave.addEventListener('click', async function () {
-        const attrId = selectAttr.value;
-        const termId = selectTerm.value;
-        if (!attrId || !termId) return alert('Chọn đủ thuộc tính và giá trị!');
-        await fetch(`/api/variant/${variantId}/attributes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ attributeId: attrId, termId: termId })
-        });
-        renderVariantAttributes(variantId);
-    });
-    // Nút hủy
-    const btnCancel = document.createElement('button');
-    btnCancel.className = 'btn btn-secondary btn-sm ms-2';
-    btnCancel.innerHTML = '<i class="fas fa-times"></i>';
-    btnCancel.addEventListener('click', function () {
-        row.remove();
-    });
-    row.appendChild(selectAttr);
-    row.appendChild(selectTerm);
-    row.appendChild(btnSave);
-    row.appendChild(btnCancel);
-    container.appendChild(row);
-}
-
-// Gán sự kiện mở modal sửa biến thể
-function setupVariantModalEvents() {
-    const container = document.getElementById('variantsList');
-    if (!container) return;
-    container.addEventListener('click', async function (e) {
-        if (e.target.closest('.btn-edit-product')) {
-            const tr = e.target.closest('tr');
-            const tds = tr.querySelectorAll('td');
-            const variantId = tds[0].textContent.trim();
-            document.getElementById('edit-variant-id').value = variantId;
-            await renderVariantAttributes(variantId);
-            // Gán lại sự kiện cho nút thêm thuộc tính
-            const btnAdd = document.getElementById('btn-add-variant-attribute');
-            btnAdd.onclick = function () {
-                addVariantAttributeRow(variantId);
-            };
-        }
-    });
-}
-
-window.addEventListener('DOMContentLoaded', async () => {
     // Khởi tạo tooltip
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-    await loadProductDetail();
-    setupImageUpload();
-    // Lấy id sản phẩm từ URL
-    const productId = getProductIdFromUrl();
-    if (!productId) return;
-    // Lấy thông tin sản phẩm đã load
-    const product = currentProduct;
-    // Load danh mục
-    loadCategories((product.categories || []).map(c => c.categoryId));
-    // Load thuộc tính
-    loadAttributes();
-    // Load biến thể
-    loadVariants();
 
-    const btnUpdateProduct = document.getElementById('update-product-btn');
-    btnUpdateProduct.addEventListener('click', updateProduct);
-
-    setupVariantModalEvents();
-});
-
-// Sự kiện mở modal thêm giá trị thuộc tính (vanilla JS)
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('btn-add-term')) {
-        const attrId = e.target.getAttribute('data-attribute-id');
-        document.getElementById('modal-attribute-id').value = attrId;
-        document.getElementById('modal-attribute-term').value = '';
-    }
-});
-
-// Sự kiện thêm giá trị thuộc tính (vanilla JS)
-document.getElementById('btn-modal-add-attribute-term').addEventListener('click', async function () {
-    const attrId = document.getElementById('modal-attribute-id').value;
-    const term = document.getElementById('modal-attribute-term').value.trim();
-    if (!term) return alert('Nhập giá trị!');
-    const res = await fetch('/api/product/attribute-terms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attributeId: attrId, term })
+    // Khởi tạo xử lý ảnh biến thể (modal sửa)
+    initImageUploadForModal({
+        inputId: 'variantImageInput',
+        uploadAreaSelector: '#variantDetailModal .upload-area',
+        newImagesListId: 'newImagesList',
+        newImagesContainerId: 'newImagesContainer',
+        filesKey: 'newVariantFiles'
     });
-    if (res.ok) {
-        alert('Thêm thành công!');
-        // Reload lại thuộc tính (hoặc chỉ giá trị thuộc tính đó)
-        loadAttributes();
+    // Khởi tạo xử lý ảnh biến thể (modal thêm mới)
+    initImageUploadForModal({
+        inputId: 'variantImageInput2',
+        uploadAreaSelector: '#addVariantModal .upload-area',
+        newImagesListId: 'newImagesList2',
+        newImagesContainerId: 'newImagesContainer2',
+        filesKey: 'newVariantFiles2'
+    });
+
+    // Khởi tạo xử lý ảnh sản phẩm
+    initProductImageHandling();
+
+    // Hiển thị ảnh sản phẩm hiện tại
+    displayCurrentProductImages();
+
+    // Khởi tạo xử lý category tree
+    initCategoryTree();
+
+    if (document.getElementById('variantColor'))
+        document.getElementById('variantColor').addEventListener('change', onVariantSelectChange);
+    if (document.getElementById('variantSize'))
+        document.getElementById('variantSize').addEventListener('change', onVariantSelectChange);
+});
+
+/**
+ * Khởi tạo xử lý ảnh cho modal biến thể (dùng chung cho cả 2 modal)
+ * @param {string} inputId - id input file
+ * @param {string} uploadAreaSelector - selector vùng upload
+ * @param {string} newImagesListId - id list ảnh mới
+ * @param {string} newImagesContainerId - id container ảnh mới
+ * @param {string} filesKey - key lưu files vào window
+ */
+function initImageUploadForModal({
+    inputId,
+    uploadAreaSelector,
+    newImagesListId,
+    newImagesContainerId,
+    filesKey
+}) {
+    const uploadArea = document.querySelector(uploadAreaSelector);
+    const fileInput = document.getElementById(inputId);
+    const newImagesList = document.getElementById(newImagesListId);
+    const newImagesContainer = document.getElementById(newImagesContainerId);
+    if (!uploadArea || !fileInput) return;
+    window[filesKey] = [];
+    // Xóa event cũ nếu có
+    uploadArea.replaceWith(uploadArea.cloneNode(true));
+    fileInput.replaceWith(fileInput.cloneNode(true));
+    // Lấy lại element sau khi clone
+    const uploadAreaNew = document.querySelector(uploadAreaSelector);
+    const fileInputNew = document.getElementById(inputId);
+    // Drag & Drop events
+    uploadAreaNew.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadAreaNew.classList.add('dragover');
+    });
+    uploadAreaNew.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        uploadAreaNew.classList.remove('dragover');
+    });
+    uploadAreaNew.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadAreaNew.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        handleImageFilesGeneric(files, newImagesListId, newImagesContainerId, filesKey);
+    });
+    uploadAreaNew.addEventListener('click', function () {
+        fileInputNew.click();
+    });
+    fileInputNew.addEventListener('change', function (e) {
+        handleImageFilesGeneric(e.target.files, newImagesListId, newImagesContainerId, filesKey);
+    });
+}
+
+/**
+ * Xử lý files ảnh cho modal biến thể (dùng chung)
+ */
+function handleImageFilesGeneric(files, newImagesListId, newImagesContainerId, filesKey) {
+    const newImagesList = document.getElementById(newImagesListId);
+    const newImagesContainer = document.getElementById(newImagesContainerId);
+    Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`File ${file.name} quá lớn. Vui lòng chọn file nhỏ hơn 5MB.`);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const fileIndex = window[filesKey].length;
+                window[filesKey].push(file);
+                const imageItem = createImageItemGeneric(e.target.result, file.name, fileIndex, 'new', null, newImagesListId, filesKey);
+                newImagesList.appendChild(imageItem);
+                newImagesContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+/**
+ * Tạo element ảnh cho modal biến thể (dùng chung)
+ */
+function createImageItemGeneric(src, name, fileIndex = null, type = 'existing', imageId = null, newImagesListId, filesKey) {
+    const imageItem = document.createElement('div');
+    imageItem.className = 'image-item';
+    imageItem.dataset.type = type;
+    if (fileIndex !== null) imageItem.dataset.fileIndex = fileIndex;
+    if (imageId) imageItem.dataset.imageId = imageId;
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = name;
+    img.title = name;
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '×';
+    deleteBtn.title = 'Xóa ảnh';
+    deleteBtn.onclick = function () {
+        deleteImageItemGeneric(imageItem, newImagesListId, filesKey);
+    };
+    const imageInfo = document.createElement('div');
+    imageInfo.className = 'image-info';
+    imageInfo.textContent = name.length > 10 ? name.substring(0, 10) + '...' : name;
+    imageItem.appendChild(img);
+    imageItem.appendChild(deleteBtn);
+    imageItem.appendChild(imageInfo);
+    img.addEventListener('click', function () {
+        showImagePreview(src, name);
+    });
+    return imageItem;
+}
+
+/**
+ * Xóa ảnh cho modal biến thể (dùng chung)
+ */
+function deleteImageItemGeneric(imageItem, newImagesListId, filesKey) {
+    const type = imageItem.dataset.type;
+    const imageId = imageItem.dataset.imageId;
+    const fileIndex = imageItem.dataset.fileIndex;
+    if (type === 'existing' && imageId) {
+        if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+            deleteExistingImage(imageId, imageItem);
+        }
     } else {
-        alert('Thêm thất bại!');
-    }
-});
-
-// Hàm mở modal chỉnh sửa biến thể
-function openVariantDetailModal(variantId) {
-    // Reset form
-    document.getElementById('variantDetailForm').reset();
-    document.getElementById('variantImageList').innerHTML = '';
-    document.getElementById('variantAttributes').innerHTML = '';
-
-    // Load thông tin biến thể
-    fetch(`/api/product-variant/${variantId}`)
-        .then(res => res.json())
-        .then(variant => {
-            document.getElementById('variantId').value = variant.variantId;
-            document.getElementById('variantSku').value = variant.sku || '';
-            document.getElementById('variantBarcode').value = variant.barcode || '';
-            document.getElementById('variantPrice').value = variant.price || 0;
-            document.getElementById('variantDiscountPrice').value = variant.discountPrice || 0;
-            document.getElementById('variantDiscountStart').value = variant.discountPriceStartAt ? variant.discountPriceStartAt.substring(0, 16) : '';
-            document.getElementById('variantDiscountEnd').value = variant.discountPriceEndAt ? variant.discountPriceEndAt.substring(0, 16) : '';
-            document.getElementById('variantQuantity').value = variant.quantityInStock || 0;
-            document.getElementById('variantIsActive').value = variant.isActive ? "true" : "false";
-
-            // Load ảnh biến thể
-            loadVariantImages(variantId);
-            // Load thuộc tính biến thể
-            loadVariantAttributes(variantId);
-
-            // Hiển thị modal bằng Bootstrap 5
-            const modal = new bootstrap.Modal(document.getElementById('variantDetailModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi khi tải thông tin biến thể!');
-        });
-}
-
-// Hàm load ảnh biến thể
-function loadVariantImages(variantId) {
-    const container = document.getElementById('variantImageList');
-    container.innerHTML = ''; // Clear existing images
-
-    // TODO: Gọi API lấy danh sách ảnh của biến thể
-    // Ví dụ hiển thị ảnh:
-    /*
-    images.forEach(img => {
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'position-relative m-2';
-        imgWrapper.innerHTML = `
-            <img src="${img.imageUrl}" alt="Variant image" style="width: 100px; height: 100px; object-fit: cover;">
-            <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 0; right: 0;"
-                    onclick="deleteVariantImage(${img.imageId})">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        container.appendChild(imgWrapper);
-    });
-    */
-}
-
-// Hàm load thuộc tính biến thể
-function loadVariantAttributes(variantId) {
-    fetch(`/api/variant/${variantId}/attributes`)
-        .then(res => res.json())
-        .then(attributes => {
-            const container = document.getElementById('variantAttributes');
-            container.innerHTML = ''; // Clear existing attributes
-
-            attributes.forEach(attr => {
-                const attrDiv = document.createElement('div');
-                attrDiv.className = 'mb-2';
-                attrDiv.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>${attr.attributeName}:</strong>
-                        <span>${attr.termName}</span>
-                        <button type="button" class="btn btn-sm btn-outline-primary"
-                                onclick="editVariantAttribute(${attr.variantAttributeId})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(attrDiv);
+        if (fileIndex !== null && window[filesKey][fileIndex]) {
+            window[filesKey].splice(fileIndex, 1);
+            document.querySelectorAll(`#${newImagesListId} .image-item[data-type="new"]`).forEach((item, index) => {
+                if (item !== imageItem) {
+                    item.dataset.fileIndex = index;
+                }
             });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi khi tải thuộc tính biến thể!');
-        });
+        }
+        imageItem.remove();
+        const newImagesList = document.getElementById(newImagesListId);
+        if (newImagesList.children.length === 0) {
+            document.getElementById(newImagesListId.replace('List', 'Container')).style.display = 'none';
+        }
+    }
 }
 
-// Hàm lưu biến thể
-document.getElementById('saveVariantBtn')?.addEventListener('click', function () {
-    const id = document.getElementById('variantId').value;
-    const data = {
-        sku: document.getElementById('variantSku').value,
-        barcode: document.getElementById('variantBarcode').value,
-        price: parseFloat(document.getElementById('variantPrice').value),
-        discountPrice: parseFloat(document.getElementById('variantDiscountPrice').value) || null,
-        discountPriceStartAt: document.getElementById('variantDiscountStart').value || null,
-        discountPriceEndAt: document.getElementById('variantDiscountEnd').value || null,
-        quantityInStock: parseInt(document.getElementById('variantQuantity').value),
-        isActive: document.getElementById('variantIsActive').value === "true"
+// Hiển thị ảnh lớn
+function showImagePreview(src, name) {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${name}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="${src}" class="image-preview" alt="${name}">
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.body.removeChild(modal);
+    });
+}
+
+// Khởi tạo xử lý ảnh sản phẩm
+function initProductImageHandling() {
+    const uploadArea = document.querySelector('.product-upload-area');
+    const fileInput = document.getElementById('productImageInput');
+    const newImagesList = document.getElementById('newProductImagesList');
+    const newImagesContainer = document.getElementById('newProductImagesContainer');
+
+    // Debug: Kiểm tra xem có tìm thấy element không
+    console.log('Upload area found:', uploadArea);
+    console.log('File input found:', fileInput);
+    console.log('New images list found:', newImagesList);
+    console.log('New images container found:', newImagesContainer);
+
+    if (!uploadArea || !fileInput) {
+        console.error('Không tìm thấy upload area hoặc file input');
+        return;
+    }
+
+    // Lưu trữ files toàn cục cho sản phẩm
+    window.newProductFiles = [];
+
+    // Drag & Drop events
+    uploadArea.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+        console.log('Drag over event triggered');
+    });
+
+    uploadArea.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        console.log('Drag leave event triggered');
+    });
+
+    uploadArea.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        console.log('Drop event triggered with files:', files);
+        handleProductImageFiles(files);
+    });
+
+    // Click to upload
+    uploadArea.addEventListener('click', function () {
+        console.log('Upload area clicked');
+        fileInput.click();
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function (e) {
+        console.log('File input change event triggered:', e.target.files);
+        handleProductImageFiles(e.target.files);
+    });
+}
+
+// Xử lý files ảnh sản phẩm được chọn
+function handleProductImageFiles(files) {
+    console.log('handleProductImageFiles called with:', files);
+
+    const newImagesList = document.getElementById('newProductImagesList');
+    const newImagesContainer = document.getElementById('newProductImagesContainer');
+
+    console.log('New images list element:', newImagesList);
+    console.log('New images container element:', newImagesContainer);
+
+    if (!newImagesList || !newImagesContainer) {
+        console.error('Không tìm thấy container elements');
+        return;
+    }
+
+    // Chỉ xử lý file đầu tiên (1 ảnh thumbnail)
+    const file = files[0];
+    if (file) {
+        console.log('Processing file:', file.name, file.type, file.size);
+
+        if (file.type.startsWith('image/')) {
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                alert(`File ${file.name} quá lớn. Vui lòng chọn file nhỏ hơn 5MB.`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                console.log('File read successfully:', file.name);
+
+                // Xóa ảnh cũ nếu có
+                newImagesList.innerHTML = '';
+
+                // Lưu file mới
+                window.newProductFiles = [file];
+
+                const imageItem = createProductImageItem(e.target.result, file.name, 0, 'new');
+                newImagesList.appendChild(imageItem);
+                newImagesContainer.style.display = 'block';
+                console.log('Image item created and added to DOM');
+            };
+            reader.onerror = function (e) {
+                console.error('Error reading file:', file.name, e);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.log('File is not an image:', file.name, file.type);
+            alert('Vui lòng chọn file ảnh hợp lệ');
+        }
+    }
+}
+
+// Tạo element ảnh sản phẩm
+function createProductImageItem(src, name, fileIndex = null, type = 'existing', imageId = null, isMain = false) {
+    const imageItem = document.createElement('div');
+    imageItem.className = 'product-image-item';
+    imageItem.dataset.type = type;
+    if (fileIndex !== null) {
+        imageItem.dataset.fileIndex = fileIndex;
+    }
+    if (imageId) imageItem.dataset.imageId = imageId;
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = name;
+    img.title = name;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '×';
+    deleteBtn.title = 'Xóa ảnh';
+    deleteBtn.onclick = function () {
+        deleteProductImageItem(imageItem);
     };
 
-    // Upload ảnh mới nếu có
-    const fileInput = document.getElementById('variantImage');
-    if (fileInput.files.length > 0) {
-        const formData = new FormData();
-        for (let i = 0; i < fileInput.files.length; i++) {
-            formData.append('files', fileInput.files[i]);
-        }
+    const imageInfo = document.createElement('div');
+    imageInfo.className = 'image-info';
+    imageInfo.textContent = name.length > 12 ? name.substring(0, 12) + '...' : name;
 
-        fetch('/api/product/upload-image', {
+    imageItem.appendChild(img);
+    imageItem.appendChild(deleteBtn);
+    imageItem.appendChild(imageInfo);
+
+    // Thêm badge cho ảnh chính
+    if (isMain) {
+        const mainBadge = document.createElement('div');
+        mainBadge.className = 'main-image-badge';
+        mainBadge.textContent = 'Chính';
+        imageItem.appendChild(mainBadge);
+    }
+
+    // Click để xem ảnh lớn
+    img.addEventListener('click', function () {
+        showImagePreview(src, name);
+    });
+
+    return imageItem;
+}
+
+// Xóa ảnh sản phẩm
+function deleteProductImageItem(imageItem) {
+    const type = imageItem.dataset.type;
+    const imageId = imageItem.dataset.imageId;
+    const fileIndex = imageItem.dataset.fileIndex;
+
+    if (type === 'existing' && imageId) {
+        // Xóa ảnh hiện có từ server
+        if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+            deleteExistingProductImage(imageId, imageItem);
+        }
+    } else {
+        // Xóa ảnh mới upload
+        if (fileIndex !== null && window.newProductFiles[fileIndex]) {
+            window.newProductFiles.splice(fileIndex, 1);
+            // Cập nhật lại index cho các file còn lại
+            document.querySelectorAll('.product-image-item[data-type="new"]').forEach((item, index) => {
+                if (item !== imageItem) {
+                    item.dataset.fileIndex = index;
+                }
+            });
+        }
+        imageItem.remove();
+
+        // Ẩn container nếu không còn ảnh mới
+        const newImagesList = document.getElementById('newProductImagesList');
+        if (newImagesList.children.length === 0) {
+            document.getElementById('newProductImagesContainer').style.display = 'none';
+        }
+        updateNewImageCount();
+    }
+}
+
+// Xóa ảnh sản phẩm hiện có từ server
+function deleteExistingProductImage(imageId, imageItem) {
+    fetch(`/api/product/product/image/${imageId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                imageItem.remove();
+                // Ẩn container nếu không còn ảnh
+                const productImageList = document.getElementById('productImageList');
+                if (productImageList.children.length === 0) {
+                    productImageList.innerHTML = '<p class="text-muted">Chưa có ảnh nào</p>';
+                }
+                updateCurrentImageCount();
+            } else {
+                alert('Lỗi khi xóa ảnh: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting product image:', error);
+            alert('Lỗi khi xóa ảnh sản phẩm');
+        });
+}
+
+// Hiển thị ảnh sản phẩm hiện tại
+function displayCurrentProductImages() {
+    const productId = document.querySelector('input[name="productId"]').value;
+    const imagesDiv = document.getElementById('productImageList');
+
+    // Gọi API để lấy ảnh sản phẩm
+    fetch(`/api/product/${productId}/images`)
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'ok' && response.data && response.data.length > 0) {
+                imagesDiv.innerHTML = '';
+                // Chỉ hiển thị ảnh đầu tiên (thumbnail)
+                const img = response.data[0];
+                const imageItem = createProductImageItem(
+                    img.imageUrl,
+                    `Ảnh thumbnail`,
+                    null,
+                    'existing',
+                    img.imageId,
+                    true // Đây là ảnh chính
+                );
+                imagesDiv.appendChild(imageItem);
+            } else {
+                imagesDiv.innerHTML = '<p class="text-muted">Chưa có ảnh thumbnail</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching product images:', error);
+            imagesDiv.innerHTML = '<p class="text-muted">Chưa có ảnh thumbnail</p>';
+        });
+}
+
+// Reset nút cập nhật
+function resetUpdateButton(button, originalText) {
+    button.innerHTML = originalText;
+    button.disabled = false;
+}
+
+// Sự kiện click nút sửa biến thể
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll(".btn-edit-variant").forEach(button => {
+        button.addEventListener("click", function () {
+            const variantId = this.dataset.variantId;
+            const productId = this.dataset.productId;
+
+            // Reset form và ảnh
+            resetVariantFormGeneric('variant');
+
+            // Gọi API để lấy thông tin biến thể
+            fetch(`/api/product/variant/${variantId}`)
+                .then(response => response.json())
+                .then(json => {
+                    if (json.status === 'ok' && json.data && json.data.variant) {
+                        const v = json.data.variant;
+                        // Fill các trường cơ bản
+                        document.getElementById('variantId').value = v.variantId || '';
+                        document.getElementById('variantName').value = v.name || '';
+                        document.getElementById('variantSku').value = v.sku || '';
+                        document.getElementById('variantBarcode').value = v.barcode || '';
+                        document.getElementById('variantPrice').value = v.price || '';
+                        document.getElementById('variantDiscountPrice').value = v.discountPrice || '';
+                        document.getElementById('variantDiscountStart').value = v.discountPriceStartAt ? v.discountPriceStartAt.substring(0, 16) : '';
+                        document.getElementById('variantDiscountEnd').value = v.discountPriceEndAt ? v.discountPriceEndAt.substring(0, 16) : '';
+                        document.getElementById('variantQuantity').value = v.quantityInStock || '';
+                        document.getElementById('variantIsActive').value = v.isActive ? 'true' : 'false';
+
+                        // Fill thuộc tính màu, size, chất liệu
+                        if (document.getElementById('variantColor'))
+                            document.getElementById('variantColor').value = v.colorName || '';
+                        if (document.getElementById('variantSize'))
+                            document.getElementById('variantSize').value = v.sizeName || '';
+
+                        // Hiển thị ảnh biến thể hiện tại
+                        displayExistingImages(json.data.images);
+                    } else {
+                        alert(json.message || 'Không lấy được dữ liệu biến thể!');
+                    }
+                })
+                .catch(error => console.error('Error fetching variant:', error));
+        });
+    });
+});
+
+// Reset form biến thể
+function resetVariantFormGeneric(prefix) {
+    document.getElementById(prefix + 'Name').value = '';
+    document.getElementById(prefix + 'Sku').value = '';
+    document.getElementById(prefix + 'Barcode').value = '';
+    document.getElementById(prefix + 'Price').value = '';
+    document.getElementById(prefix + 'DiscountPrice').value = '';
+    document.getElementById(prefix + 'DiscountStart').value = '';
+    document.getElementById(prefix + 'DiscountEnd').value = '';
+    document.getElementById(prefix + 'Quantity').value = '';
+    document.getElementById(prefix + 'IsActive').value = 'true';
+    if (document.getElementById(prefix + 'ImageInput')) document.getElementById(prefix + 'ImageInput').value = '';
+    if (document.getElementById('variantImageList' + (prefix === 'variant' ? '' : '2'))) document.getElementById('variantImageList' + (prefix === 'variant' ? '' : '2')).innerHTML = '';
+    if (document.getElementById('newImagesList' + (prefix === 'variant' ? '' : '2'))) document.getElementById('newImagesList' + (prefix === 'variant' ? '' : '2')).innerHTML = '';
+    if (document.getElementById('newImagesContainer' + (prefix === 'variant' ? '' : '2'))) document.getElementById('newImagesContainer' + (prefix === 'variant' ? '' : '2')).style.display = 'none';
+    window['newVariantFiles' + (prefix === 'variant' ? '' : '2')] = [];
+}
+
+// Hiển thị ảnh hiện có
+function displayExistingImages(images) {
+    const imagesDiv = document.getElementById('variantImageList');
+    imagesDiv.innerHTML = '';
+
+    if (images && images.length > 0) {
+        images.forEach(img => {
+            const imageItem = createImageItemGeneric(
+                img.imageUrl,
+                `Ảnh ${img.imageId}`,
+                null,
+                'existing',
+                img.imageId,
+                'variantImageList',
+                'newVariantFiles'
+            );
+            imagesDiv.appendChild(imageItem);
+        });
+    } else {
+        imagesDiv.innerHTML = '<p class="text-muted">Chưa có ảnh nào</p>';
+    }
+}
+
+// Xử lý nút Lưu biến thể
+document.addEventListener('DOMContentLoaded', function () {
+    const saveVariantBtn = document.getElementById('saveVariantBtn');
+    if (saveVariantBtn) {
+        saveVariantBtn.addEventListener('click', function () {
+            saveVariantData();
+        });
+    }
+});
+
+// Lưu dữ liệu biến thể
+function saveVariantData() {
+    const variantId = document.getElementById('variantId').value;
+    const variantData = {
+        variantId: variantId,
+        name: document.getElementById('variantName').value,
+        sku: document.getElementById('variantSku').value,
+        barcode: document.getElementById('variantBarcode').value,
+        price: document.getElementById('variantPrice').value,
+        discountPrice: document.getElementById('variantDiscountPrice').value || null,
+        discountPriceStartAt: document.getElementById('variantDiscountStart').value || null,
+        discountPriceEndAt: document.getElementById('variantDiscountEnd').value || null,
+        quantityInStock: document.getElementById('variantQuantity').value,
+        isActive: document.getElementById('variantIsActive').value === 'true'
+    };
+
+    // Hiển thị loading
+    const saveBtn = document.getElementById('saveVariantBtn');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu...';
+    saveBtn.disabled = true;
+
+    // Cập nhật thông tin biến thể
+    fetch(`/api/product/variant/${variantId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(variantData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // Upload ảnh mới nếu có
+                uploadNewImages(variantId);
+            } else {
+                alert('Lỗi khi cập nhật biến thể: ' + data.message);
+                resetSaveButton(saveBtn, originalText);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating variant:', error);
+            alert('Lỗi khi cập nhật biến thể');
+            resetSaveButton(saveBtn, originalText);
+        });
+}
+
+// Upload ảnh mới
+function uploadNewImages(variantId) {
+    const newImagesList = document.getElementById('newImagesList');
+    const imageItems = newImagesList.querySelectorAll('.image-item[data-type="new"]');
+
+    if (imageItems.length === 0) {
+        // Không có ảnh mới, đóng modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('variantDetailModal'));
+        modal.hide();
+        location.reload(); // Reload để cập nhật danh sách
+        return;
+    }
+
+    // Kiểm tra xem có file nào không
+    const validFiles = [];
+    imageItems.forEach((item) => {
+        const fileIndex = item.dataset.fileIndex;
+        if (fileIndex !== null && window.newVariantFiles[fileIndex]) {
+            validFiles.push(window.newVariantFiles[fileIndex]);
+        }
+    });
+
+    if (validFiles.length === 0) {
+        alert('Không có file ảnh hợp lệ để upload!');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('variantId', variantId);
+
+    // Thêm tất cả ảnh mới vào FormData
+    validFiles.forEach((file) => {
+        formData.append('images', file);
+    });
+
+    fetch('/api/product/variant/images', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                alert('Cập nhật biến thể thành công!');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('variantDetailModal'));
+                modal.hide();
+                location.reload(); // Reload để cập nhật danh sách
+            } else {
+                alert('Lỗi khi upload ảnh: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading images:', error);
+            alert('Lỗi khi upload ảnh');
+        })
+        .finally(() => {
+            resetSaveButton(document.getElementById('saveVariantBtn'), '<i class="fas fa-save me-2"></i>Lưu');
+        });
+}
+
+// Reset nút lưu
+function resetSaveButton(button, originalText) {
+    button.innerHTML = originalText;
+    button.disabled = false;
+}
+
+// Xử lý nút cập nhật sản phẩm
+document.addEventListener('DOMContentLoaded', function () {
+    const updateBtn = document.getElementById('update-product-btn');
+    if (updateBtn) {
+        updateBtn.addEventListener('click', function () {
+            // Cập nhật nội dung từ TinyMCE vào textarea trước khi submit
+            if (typeof tinymce !== 'undefined') {
+                if (tinymce.get('product-description-editor')) {
+                    tinymce.get('product-description-editor').save();
+                }
+                if (tinymce.get('product-short-description-editor')) {
+                    tinymce.get('product-short-description-editor').save();
+                }
+            }
+
+            // Upload ảnh sản phẩm mới trước khi submit form
+            uploadNewProductImages();
+        });
+    }
+
+    // Xử lý nút áp dụng hàng loạt
+    const applyBulkActionBtn = document.getElementById('apply-bulk-action');
+    if (applyBulkActionBtn) {
+        applyBulkActionBtn.addEventListener('click', function () {
+            applyBulkAction();
+        });
+    }
+
+    // Xử lý checkbox biến thể
+    const variantCheckboxes = document.querySelectorAll('.variant-checkbox');
+    variantCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    // Xử lý select all checkbox
+    const selectAllCheckbox = document.getElementById('select-all-variants');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('.variant-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
+        });
+    }
+});
+
+// Upload ảnh sản phẩm mới
+function uploadNewProductImages() {
+    const newImagesList = document.getElementById('newProductImagesList');
+    const imageItems = newImagesList.querySelectorAll('.product-image-item[data-type="new"]');
+
+    if (imageItems.length === 0) {
+        // Không có ảnh mới, submit form bình thường
+        document.getElementById('product-form').submit();
+        return;
+    }
+
+    const productId = document.querySelector('input[name="productId"]').value;
+    const formData = new FormData();
+    formData.append('productId', productId);
+
+    // Thêm ảnh mới vào FormData (chỉ 1 ảnh)
+    if (window.newProductFiles && window.newProductFiles.length > 0) {
+        formData.append('images', window.newProductFiles[0]);
+    }
+
+    // Hiển thị loading
+    const updateBtn = document.getElementById('update-product-btn');
+    const originalText = updateBtn.innerHTML;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
+    updateBtn.disabled = true;
+
+    fetch(`/api/product/${productId}/images`, {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // Upload thành công, submit form
+                document.getElementById('product-form').submit();
+            } else {
+                alert('Lỗi khi upload ảnh: ' + data.message);
+                resetUpdateButton(updateBtn, originalText);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading product images:', error);
+            alert('Lỗi khi upload ảnh sản phẩm');
+            resetUpdateButton(updateBtn, originalText);
+        });
+}
+
+// Tạo biến thể tự động
+function generateVariants() {
+    const productId = document.querySelector('input[name="productId"]').value;
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo...';
+    btn.disabled = true;
+
+    fetch(`/api/product/${productId}/generate-variants`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                if (!data.data || data.data.length === 0) {
+                    alert('Tất cả combination đã tồn tại, không có biến thể mới nào được tạo!');
+                } else {
+                    alert('Tạo biến thể thành công!');
+                    location.reload();
+                }
+            } else {
+                alert('Lỗi khi tạo biến thể: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error generating variants:', error);
+            alert('Lỗi khi tạo biến thể');
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+}
+
+// Áp dụng hàng loạt
+function applyBulkAction() {
+    const selectedVariants = document.querySelectorAll('.variant-checkbox:checked');
+    const action = document.getElementById('bulk-action-select').value;
+
+    if (selectedVariants.length === 0) {
+        alert('Vui lòng chọn ít nhất một biến thể!');
+        return;
+    }
+
+    if (!action) {
+        alert('Vui lòng chọn hành động!');
+        return;
+    }
+
+    const variantIds = Array.from(selectedVariants).map(checkbox => checkbox.value);
+
+    switch (action) {
+        case 'price':
+            showBulkPriceModal(variantIds);
+            break;
+        case 'stock':
+            showBulkStockModal(variantIds);
+            break;
+        case 'delete':
+            confirmBulkDelete(variantIds);
+            break;
+        default:
+            alert('Hành động không hợp lệ!');
+    }
+}
+
+// Hiển thị modal chỉnh sửa giá hàng loạt
+function showBulkPriceModal(variantIds) {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa giá hàng loạt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Giá mới</label>
+                        <input type="number" class="form-control" id="bulk-price" min="0" step="1000" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick='applyBulkPrice(${JSON.stringify(variantIds)})'>Áp dụng</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.body.removeChild(modal);
+    });
+}
+
+// Áp dụng chỉnh sửa giá hàng loạt
+function applyBulkPrice(variantIds) {
+    const price = document.getElementById('bulk-price').value;
+    console.log('Showing bulk stock modal for variant IDs:', variantIds);
+    console.log('Showing bulk stock modal for variant IDs:', JSON.stringify(variantIds));
+    if (!price) {
+        alert('Vui lòng nhập giá!');
+        return;
+    }
+
+    const data = {
+        variantIds: variantIds,
+        price: price,
+    };
+
+    fetch('/api/product/variants/bulk-price', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'ok') {
+                alert('Cập nhật giá thành công!');
+                location.reload();
+            } else {
+                alert('Lỗi khi cập nhật giá: ' + result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating bulk price:', error);
+            alert('Lỗi khi cập nhật giá');
+        });
+}
+
+// Hiển thị modal chỉnh sửa số lượng hàng loạt
+function showBulkStockModal(variantIds) {
+    const modal = document.createElement('div');
+    console.log('Showing bulk stock modal for variant IDs:', variantIds);
+    console.log('Showing bulk stock modal for variant IDs:', JSON.stringify(variantIds));
+
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa số lượng hàng loạt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng mới</label>
+                        <input type="number" class="form-control" placeholder="Nhập số lượng mới" id="bulk-stock" min="0" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick='applyBulkStock(${JSON.stringify(variantIds)})'>Áp dụng</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.body.removeChild(modal);
+    });
+}
+
+// Áp dụng chỉnh sửa số lượng hàng loạt
+function applyBulkStock(variantIds) {
+    const stock = document.getElementById('bulk-stock').value;
+
+    if (!stock) {
+        alert('Vui lòng nhập số lượng!');
+        return;
+    }
+
+    const data = {
+        variantIds: variantIds,
+        stock: stock,
+    };
+
+    fetch('/api/product/variants/bulk-stock', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'ok') {
+                alert('Cập nhật số lượng thành công!');
+                location.reload();
+            } else {
+                alert('Lỗi khi cập nhật số lượng: ' + result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating bulk stock:', error);
+            alert('Lỗi khi cập nhật số lượng');
+        });
+}
+
+// Xác nhận xóa hàng loạt
+function confirmBulkDelete(variantIds) {
+    if (confirm(`Bạn có chắc muốn xóa ${variantIds.length} biến thể đã chọn?`)) {
+        fetch('/api/product/variants/bulk-delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ variantIds: variantIds })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'ok') {
+                    alert('Xóa biến thể thành công!');
+                    location.reload();
+                } else {
+                    alert('Lỗi khi xóa biến thể: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting variants:', error);
+                alert('Lỗi khi xóa biến thể');
+            });
+    }
+}
+
+// Lưu biến thể (function placeholder)
+function saveVariants() {
+    alert('Chức năng lưu biến thể đã được xử lý tự động khi cập nhật từng biến thể!');
+}
+
+// Lưu thuộc tính (function placeholder)
+function saveAttributes() {
+    alert('Chức năng lưu thuộc tính sẽ được phát triển sau!');
+}
+
+// Xóa biến thể đơn lẻ
+function deleteVariant(variantId) {
+    if (confirm('Bạn có chắc muốn xóa biến thể này?')) {
+        fetch(`/api/product/variant/${variantId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'ok') {
+                    alert('Xóa biến thể thành công!');
+                    location.reload();
+                } else {
+                    alert('Lỗi khi xóa biến thể: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting variant:', error);
+                alert('Lỗi khi xóa biến thể');
+            });
+    }
+}
+
+// Cập nhật số lượng biến thể đã chọn
+function updateSelectedCount() {
+    const selectedVariants = document.querySelectorAll('.variant-checkbox:checked');
+    const count = selectedVariants.length;
+
+    // Cập nhật text của nút áp dụng
+    const applyBtn = document.getElementById('apply-bulk-action');
+    if (applyBtn) {
+        if (count > 0) {
+            applyBtn.textContent = `Áp dụng (${count} biến thể)`;
+            applyBtn.disabled = false;
+        } else {
+            applyBtn.textContent = 'Áp dụng';
+            applyBtn.disabled = true;
+        }
+    }
+}
+
+// Kiểm tra trùng combination khi chọn màu/size
+function onVariantSelectChange() {
+    const colorId = document.getElementById('variantColor').value;
+    const sizeId = document.getElementById('variantSize').value;
+    const errorDiv = document.getElementById('variant-error');
+    const saveBtn = document.getElementById('saveVariantBtn');
+
+    if (colorId && sizeId) {
+        const exists = existingVariants.some(v => v.colorId == colorId && v.sizeId == sizeId);
+        if (exists) {
+            errorDiv.textContent = 'Đã tồn tại biến thể với màu sắc và kích cỡ này!';
+            saveBtn.disabled = true;
+        } else {
+            errorDiv.textContent = '';
+            saveBtn.disabled = false;
+        }
+    } else {
+        errorDiv.textContent = '';
+        saveBtn.disabled = true;
+    }
+}
+
+// Khởi tạo xử lý category tree
+function initCategoryTree() {
+    // Đếm số lượng categories đã chọn
+    updateCategoryCount();
+
+    // Thêm event listener cho tất cả checkboxes
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            updateCategoryCount();
+            handleCategoryToggle(this);
+        });
+    });
+
+    // Hiển thị các danh mục con nếu có category được chọn
+    showSelectedCategoryChildren();
+}
+
+// Cập nhật số lượng categories đã chọn
+function updateCategoryCount() {
+    const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+    const countElement = document.getElementById('category-count');
+    if (countElement) {
+        countElement.textContent = checkedBoxes.length;
+    }
+}
+
+// Xử lý toggle category
+function handleCategoryToggle(checkbox) {
+    const categoryId = checkbox.value;
+    const childrenContainer = document.getElementById('children-' + categoryId);
+
+    if (childrenContainer) {
+        if (checkbox.checked) {
+            childrenContainer.style.display = 'block';
+        } else {
+            childrenContainer.style.display = 'none';
+            // Bỏ chọn tất cả category con
+            const childCheckboxes = childrenContainer.querySelectorAll('.category-checkbox');
+            childCheckboxes.forEach(child => {
+                child.checked = false;
+            });
+        }
+    }
+}
+
+// Hiển thị các danh mục con nếu có category được chọn
+function showSelectedCategoryChildren() {
+    const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+    checkedBoxes.forEach(checkbox => {
+        const categoryId = checkbox.value;
+        const childrenContainer = document.getElementById('children-' + categoryId);
+        if (childrenContainer) {
+            childrenContainer.style.display = 'block';
+        }
+    });
+}
+
+// Function để toggle hiển thị danh mục con (được gọi từ HTML)
+function toggleChildren(element, childrenId) {
+    const childrenElement = document.getElementById(childrenId);
+    const icon = element.querySelector('i');
+
+    if (childrenElement.style.display === 'none') {
+        childrenElement.style.display = 'block';
+        element.classList.remove('collapsed');
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        childrenElement.style.display = 'none';
+        element.classList.add('collapsed');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-right');
+    }
+}
+
+let existingVariants = [];
+function getExistingVariants() {
+    const productId = document.querySelector('input[name="productId"]').value;
+    fetch(`http://localhost:8080/api/product/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            existingVariants = data.variants || [];
+            console.log(existingVariants);
+
+        })
+        .catch(error => {
+            console.error('Error fetching existing variants:', error);
+        });
+}
+getExistingVariants()
+let allAttributes = {};
+
+function getAllAttributes() {
+    fetch('http://localhost:8080/api/attribute/get-all-attribute')
+        .then(response => response.json())
+        .then(data => {
+            allAttributes = data.data || {};
+            console.log(allAttributes);
+
+        })
+        .catch(error => {
+            console.error('Error fetching all attributes:', error);
+        });
+}
+getAllAttributes();
+function getMissingVariants(allColors, allSizes, existingVariants) {
+    const missing = [];
+    allColors.forEach(color => {
+        allSizes.forEach(size => {
+            const exists = existingVariants.some(v => v.colorId === color.colorId && v.sizeId === size.sizeId);
+            if (!exists) {
+                missing.push({ color, size });
+            }
+            console.log('missing ', missing);
+
+        });
+    });
+    return missing;
+}
+
+// Khi nhấn nút Thêm biến thể
+const btnAddVariant = document.getElementById('btn-add-variant');
+if (btnAddVariant) {
+    btnAddVariant.addEventListener('click', function () {
+        const missing = getMissingVariants(allAttributes.listColor, allAttributes.listSize, existingVariants);
+        if (missing.length === 0) {
+            alert('Đã tạo tất cả biến thể!');
+            return;
+        }
+        console.log(missing);
+
+        initSelectBoxes(missing);
+        const modal = new bootstrap.Modal(document.getElementById('addVariantModal'));
+        modal.show();
+    });
+}
+function initSelectBoxes(missingVariantsData) {
+    missingVariants = missingVariantsData;
+
+    populateColorSelect(missingVariants);
+    populateSizeSelect(missingVariants); // Gọi lúc chưa chọn gì
+
+    // Gán sự kiện cho colorSelect
+    document.getElementById('colorSelect').addEventListener('change', () => {
+        const selectedColorId = document.getElementById('colorSelect').value;
+        if (selectedColorId) {
+            // Lọc size theo color
+            const filtered = missingVariants.filter(v => v.color.colorId == selectedColorId);
+            populateSizeSelect(filtered);
+        } else {
+            // Hiển thị toàn bộ kích cỡ
+            populateSizeSelect(missingVariants);
+        }
+    });
+
+    // Gán lại listener size nếu bạn cần làm gì đó khi chọn size (tuỳ ý)
+}
+
+function populateColorSelect(variants) {
+    const colorSelect = document.getElementById('colorSelect');
+    colorSelect.innerHTML = `<option value="">Chọn màu</option>`;
+
+    const uniqueColors = new Map();
+    variants.forEach(v => {
+        uniqueColors.set(v.color.colorId, v.color.name);
+    });
+
+    uniqueColors.forEach((name, id) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = name;
+        colorSelect.appendChild(option);
+    });
+}
+
+function populateSizeSelect(variants) {
+    const sizeSelect = document.getElementById('sizeSelect');
+    sizeSelect.innerHTML = `<option value="">Chọn kích cỡ</option>`;
+
+    const uniqueSizes = new Map();
+    variants.forEach(v => {
+        uniqueSizes.set(v.size.sizeId, v.size.name);
+    });
+
+    uniqueSizes.forEach((name, id) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = name;
+        sizeSelect.appendChild(option);
+    });
+}
+
+// Xử lý submit form thêm biến thể
+const addVariantForm = document.getElementById('addVariantForm');
+if (addVariantForm) {
+    addVariantForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const rows = document.querySelectorAll('#missingVariantsList .variant-row');
+        const formDataList = [];
+        let valid = true;
+        rows.forEach(row => {
+            const colorId = row.querySelector('input[name="colorId"]').value;
+            const sizeId = row.querySelector('input[name="sizeId"]').value;
+            const price = row.querySelector('input[name="price"]').value;
+            const quantity = row.querySelector('input[name="quantity"]').value;
+            const imageInput = row.querySelector('input[name="image"]');
+            const imageFile = imageInput.files[0];
+            if (!price || !quantity || !imageFile) {
+                valid = false;
+            }
+            const formData = new FormData();
+            formData.append('colorId', colorId);
+            formData.append('sizeId', sizeId);
+            formData.append('price', price);
+            formData.append('quantityInStock', quantity);
+            formData.append('images', imageFile);
+            formDataList.push(formData);
+        });
+        if (!valid) {
+            alert('Vui lòng nhập đủ thông tin và chọn ảnh cho tất cả biến thể!');
+            return;
+        }
+        submitNewVariants(formDataList);
+    });
+}
+
+// Gửi từng biến thể mới lên backend
+function submitNewVariants(formDataList) {
+    const productId = window.productId;
+    let successCount = 0;
+    let failCount = 0;
+    function sendNext(index) {
+        if (index >= formDataList.length) {
+            alert(`Đã thêm ${successCount} biến thể thành công, ${failCount} thất bại.`);
+            location.reload();
+            return;
+        }
+        const formData = formDataList[index];
+        fetch(`/api/product/${productId}/add-variant`, {
             method: 'POST',
             body: formData
         })
             .then(res => res.json())
-            .then(urls => {
-                // TODO: Lưu URLs vào biến thể
-                saveVariantData(id, data);
+            .then(data => {
+                if (data.status === 'ok') {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+                sendNext(index + 1);
             })
-            .catch(error => {
-                console.error('Error uploading images:', error);
-                alert('Có lỗi khi tải ảnh lên!');
+            .catch(() => {
+                failCount++;
+                sendNext(index + 1);
             });
+    }
+    sendNext(0);
+}
+
+// Lấy danh sách SKU hiện có để kiểm tra trùng
+function getAllVariantSKUs() {
+    // Giả sử biến existingVariants đã có trên trang (từ Thymeleaf hoặc fetch API)
+    if (window.existingVariants && Array.isArray(window.existingVariants)) {
+        return window.existingVariants.map(v => v.sku ? v.sku.toLowerCase() : '').filter(Boolean);
+    }
+    // Nếu chưa có, trả về mảng rỗng
+    return [];
+}
+
+// Xử lý nút Thêm biến thể mới
+document.querySelector('#addVariantBtn').addEventListener('click', async function () {
+    // Lấy dữ liệu từ form
+    const productId = document.querySelector('input[name="productId"]').value;
+    const name = document.getElementById('variantName2').value.trim();
+    const sku = document.getElementById('variantSku2').value.trim();
+    const barcode = document.getElementById('variantBarcode2').value.trim();
+    const colorId = document.getElementById('colorSelect').value;
+    const sizeId = document.getElementById('sizeSelect').value;
+    const price = document.getElementById('variantPrice2').value;
+    const discountPrice = document.getElementById('variantDiscountPrice2').value;
+    const discountStart = document.getElementById('variantDiscountStart2').value;
+    const discountEnd = document.getElementById('variantDiscountEnd2').value;
+    const quantity = document.getElementById('variantQuantity2').value;
+    const isActive = document.getElementById('variantIsActive2').value;
+    const files = window.newVariantFiles2 || [];
+    const errorDiv = document.querySelector('#addVariantModal #variant-error');
+    if (errorDiv) errorDiv.textContent = '';
+
+    // Validate
+    let error = '';
+    if (!name || !sku || !colorId || !sizeId || !price || !quantity || files.length === 0) {
+        error = 'Vui lòng nhập đầy đủ thông tin và chọn ít nhất 1 ảnh!';
+    } else if (isNaN(price) || Number(price) <= 0) {
+        error = 'Giá phải là số lớn hơn 0!';
+    } else if (discountPrice && (isNaN(discountPrice) || Number(discountPrice) < 0)) {
+        error = 'Giá khuyến mãi phải là số không âm!';
+    } else if (isNaN(quantity) || Number(quantity) < 0) {
+        error = 'Tồn kho phải là số không âm!';
+    } else if (files.length > 5) {
+        error = 'Chỉ được chọn tối đa 5 ảnh!';
     } else {
-        saveVariantData(id, data);
-    }
-});
-
-function saveVariantData(id, data) {
-    fetch(`/api/product-variant/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then(res => {
-            if (res.ok) {
-                alert('Cập nhật thành công!');
-                const modal = bootstrap.Modal.getInstance(document.getElementById('variantDetailModal'));
-                modal.hide();
-                // Reload lại danh sách biến thể
-                loadVariants();
-            } else {
-                alert('Có lỗi khi cập nhật!');
+        // Kiểm tra định dạng ảnh
+        for (let file of files) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                error = 'Chỉ chấp nhận ảnh JPG, PNG, GIF!';
+                break;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi khi cập nhật biến thể!');
-        });
-}
-
-// Hàm xóa biến thể
-document.getElementById('deleteVariantBtn')?.addEventListener('click', function () {
-    const id = document.getElementById('variantId').value;
-    if (confirm('Bạn chắc chắn muốn xóa biến thể này?')) {
-        deleteVariant(id);
+        }
     }
-});
+    // Kiểm tra trùng SKU
+    const allSKUs = getAllVariantSKUs();
+    if (allSKUs.includes(sku.toLowerCase())) {
+        error = 'SKU đã tồn tại, vui lòng nhập SKU khác!';
+    }
+    if (error) {
+        console.log(error);
 
-function deleteVariant(id) {
-    fetch(`/api/product-variant/${id}`, {
-        method: 'DELETE'
-    })
-        .then(res => {
-            if (res.ok) {
-                alert('Đã xóa biến thể!');
-                const modal = bootstrap.Modal.getInstance(document.getElementById('variantDetailModal'));
-                if (modal) modal.hide();
-                // Reload lại danh sách biến thể
-                loadVariants();
+        if (errorDiv) errorDiv.textContent = error;
+        else alert(error);
+        return;
+    }
+
+    // Chuẩn bị dữ liệu gửi đi
+    const formData = new FormData();
+    formData.append('productId', productId);
+    formData.append('name', name);
+    formData.append('sku', sku);
+    formData.append('barcode', barcode);
+    formData.append('colorId', colorId);
+    formData.append('sizeId', sizeId);
+    formData.append('price', price);
+    formData.append('discountPrice', discountPrice);
+    formData.append('discountStart', discountStart);
+    formData.append('discountEnd', discountEnd);
+    formData.append('quantityInStock', quantity);
+    formData.append('isActive', isActive);
+
+    // Hiển thị loading
+    const updateBtn = document.getElementById('addVariantBtn');
+    const originalText = updateBtn.innerHTML;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
+    updateBtn.disabled = true;
+    // Gửi lên backend
+    try {
+        const res = await fetch('/api/product/variant/add', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.status === "ok" && data.data && data.data.variantId) {
+            if (files.length > 0) {
+                const imgForm = new FormData();
+                imgForm.append('variantId', data.data.variantId);
+                files.forEach(file => imgForm.append('images', file));
+
+                const res2 = await fetch('/api/product/variant/images', {
+                    method: 'POST',
+                    body: imgForm
+                });
+                const imgData = await res2.json();
+
+                if (imgData.status === 'ok') {
+                    alert('Thêm biến thể thành công!');
+                    location.reload();
+                } else {
+                    alert('Thêm ảnh thất bại!');
+                    resetSaveButton(updateBtn, originalText);
+                }
             } else {
-                alert('Không thể xóa biến thể!');
+                alert('Thêm biến thể thành công!');
+                location.reload();
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi khi xóa biến thể!');
-        });
-}
-
-// Hàm chỉnh sửa thuộc tính biến thể
-function editVariantAttribute(variantAttributeId) {
-    // TODO: Implement modal chỉnh sửa thuộc tính
-    alert('Chức năng đang được phát triển!');
-}
-
-// Hàm xóa ảnh biến thể
-function deleteVariantImage(imageId) {
-    if (confirm('Bạn chắc chắn muốn xóa ảnh này?')) {
-        // TODO: Implement API xóa ảnh
-        alert('Chức năng đang được phát triển!');
+        }
+    } catch (error) {
+        if (errorDiv) errorDiv.textContent = error.message;
+        else alert('Có lỗi xảy ra khi thêm biến thể!');
+        resetSaveButton(updateBtn, originalText);
+    } finally {
+        resetSaveButton(updateBtn, '<i class="fas fa-save me-2"></i>Lưu');
     }
-}
-
-// Format giá tiền
-function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(price);
-}
-
-// Khởi tạo khi trang load
-document.addEventListener('DOMContentLoaded', function () {
-    loadVariants();
 });

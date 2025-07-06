@@ -1,10 +1,9 @@
-package com.datn.teeshirt.Controller;
+package com.datn.teeshirt.Controller.Client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.datn.teeshirt.Service.ProductService;
 
@@ -15,16 +14,10 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
+        model.addAttribute("listLatestProducts", productService.getLatestProducts(8));
+        model.addAttribute("listDiscountProducts", productService.getDiscountedProducts(8));
+        model.addAttribute("listFeaturedProducts", productService.getLatestProducts(8)); // tạm thời dùng latest
         return "customer/index";
-    }
-
-    @GetMapping("/product/detail/{id}")
-    public String product(@PathVariable Long id, Model model) {
-        return "customer/product/product-detail";
-    }   
-    @GetMapping("/product/list-products")
-    public String product() {
-        return "customer/product/product-list";
     }
 
     @GetMapping("/about")
@@ -35,5 +28,10 @@ public class HomeController {
     @GetMapping("/contact")
     public String contact() {
         return "customer/contact";
+    }
+
+    @GetMapping("/shopping-cart")
+    public String cart() {
+        return "customer/account/shopping-cart";
     }
 }

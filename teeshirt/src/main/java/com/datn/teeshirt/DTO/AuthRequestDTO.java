@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-
-
 @Data
 public class AuthRequestDTO {
     private String name; // Không bắt buộc khi đăng nhập, chỉ validate ở phía frontend khi đăng ký
@@ -19,5 +17,4 @@ public class AuthRequestDTO {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    private String confirmPassword;
 }

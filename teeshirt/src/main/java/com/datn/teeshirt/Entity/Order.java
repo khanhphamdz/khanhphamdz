@@ -67,20 +67,20 @@ public class Order {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @OneToMany(mappedBy="order", fetch = FetchType.LAZY)
-    private List<OrderStatus> status;
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
 
     @Column(name = "note", length = 500)
     private String note;
+
+    @OneToMany(mappedBy="order", fetch = FetchType.LAZY)
+    private List<OrderStatus> orderStatuses;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private ShippingAddress shippingAddress;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderStatus> orderStatuses;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;

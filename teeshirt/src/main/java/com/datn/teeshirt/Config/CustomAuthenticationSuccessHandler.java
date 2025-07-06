@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,10 +26,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 redirectUrl = "/";
                 break;
             } else if (role.equals("ROLE_ADMIN")) {
-                redirectUrl = "/admin/dashboard";
+                redirectUrl = "/admin";
                 break;
             } else if (role.equals("ROLE_STAFF")) {
-                redirectUrl = "/admin/dashboard";
+                redirectUrl = "/admin/product";
                 break;
             }
         }

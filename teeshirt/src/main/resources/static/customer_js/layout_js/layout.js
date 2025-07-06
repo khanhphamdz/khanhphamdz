@@ -30,6 +30,9 @@ const initApp = () => {
 
     const inputSearch = document.getElementById("filter");
     inputSearch.addEventListener("input", debouce(getData, 1500));
+
+    const btnShowCartItem = document.getElementById('btn-show-cart-item');
+    btnShowCartItem.addEventListener('click', getCartItemFormUser);
 }
 async function getData() {
     const products = document.querySelector('.product-search-list')
@@ -43,20 +46,18 @@ async function getData() {
 
     const results = await res.json();
     console.log(results);
+    // Clear products
+    products.innerHTML = '';
+    const listProduct = results.data || [];
 
-    if (results.status === true) {
-        // Clear products
-        products.innerHTML = '';
-        const listProduct = results.listProduct;
-
-        if (listProduct.length > 0) {
+    if (listProduct.length > 0) {
+        const div = document.createElement('div');
+        div.setAttribute('class', 'product-search-item');
+        listItems.push(div);
+        listProduct.forEach((product) => {
             const div = document.createElement('div');
             div.setAttribute('class', 'product-search-item');
-            listItems.push(div);
-            listProduct.forEach((product) => {
-                const div = document.createElement('div');
-                div.setAttribute('class', 'product-search-item');
-                div.innerHTML = `
+            div.innerHTML = `
                     <a href="/product/detail/${product.productId}">
                         <img src="${product.images && product.images.length > 0 ? product.images[0].imageUrl : 'https://res.cloudinary.com/...'}" alt="">
                     </a>
@@ -67,13 +68,12 @@ async function getData() {
                         <span>${product.description ? product.description.slice(0, 30) : 'Không có mô tả'}</span>
                     </div>
                 `;
-                products.appendChild(div);
-            });
-        } else {
-            products.innerHTML = `
+            products.appendChild(div);
+        });
+    } else {
+        products.innerHTML = `
             <h6 class="text-danger">Không tìm thấy sản phẩm liên quan</h6>
             `;
-        }
     }
 }
 document.addEventListener("DOMContentLoaded", initApp)
@@ -92,4 +92,69 @@ const debouce = (fn, delay) => {
         }, delay)
     }
 
+}
+async function getCartItemFormUser() {
+    const res = await fetch('/api/cart', {method : 'GET'})
+    const data = await res.json()
+
+    if (data.status === 'ok') {
+        console.log( 'data',data.data);
+        renderCartOffcanvas(data.data);
+    }
+}
+// Render danh sách sản phẩm trong offcanvas
+function renderCartOffcanvas(cart) {
+    const body = document.getElementById('cart-offcanvas-body');
+    if (!body) return;
+    if (!cart.length) {
+        body.innerHTML = '<div class="text-center text-muted">Giỏ hàng trống</div>';
+        return;
+    }
+    console.log('cart:', cart);
+    
+    let html = '<ul class="list-group mb-3">';
+    cart.forEach(item => {
+        html += `
+        <li class="list-group-item d-flex align-items-center">
+            <img src="${item.img || '/images/product-03.jpg'}" style="width:50px;height:50px;object-fit:cover;" class="me-2 rounded">
+            <div class="flex-grow-1">
+                <div><strong>${item.name || ''}</strong></div>
+                <div class="small text-muted">Màu: ${item.color || ''} | Size: ${item.size || ''}</div>
+                <div>SL: ${item.quantity} x <span class="text-danger">${item.price}₫</span></div>
+            </div>
+            <button class="btn btn-sm btn-danger ms-2" onclick='removeCartItem(${item.variantId})'>&times;</button>
+        </li>
+        `;
+    });
+    html += '</ul>';
+    // Tổng tiền
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    html += `<div class="fw-bold text-end">Tổng: <span class="text-danger">${total.toLocaleString()}₫</span></div>`;
+    body.innerHTML = html;
+}
+// Xóa sản phẩm khỏi giỏ hàng
+ async function removeCartItem(variantId) {
+    const res = await fetch(`/api/cart/remove/${variantId}`, {method: 'DELETE'})
+    const data = await res.json()
+    console.log(data);
+    
+    if (data.status === 'ok') {
+        console.log('xóa thành công biến thể ', variantId);
+        getCartItemFormUser();
+    }
+}
+// Lấy tổng số lượng sản phẩm trong giỏ hàng
+function getCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+// Cập nhật badge số lượng trên icon giỏ hàng
+function updateCartBadge() {
+    const count = getCartCount();
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
 }

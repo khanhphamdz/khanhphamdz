@@ -54,18 +54,17 @@
                         <div class="product col">
                             <div class="product-pic hov-img0">
                                 <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
-                                <a href="#" class="product-btn">
-                                    Quick View
-                                </a>
+                                <a href="#" class="product-btn">Quick View</a>
                             </div>
                             <div class="product-txt">
                                 <div class="product-txt-child1 flex-col-l">
-                                    <a th:href="@{|/product/detail/${product.productId}}|"
-                                        class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6" th:text="${product.name}">
-                                        Esprit Ruffle Shirt
-                                    </a>
-                                    <span class="stext-105 cl3">
-                                        $16.64
+                                    <a th:href="@{|/product/detail/${product.productId}|}"
+                                       class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6" th:text="${product.name}"></a>
+                                    <span class="stext-105 cl3" th:if="${product.variants != null and #lists.size(product.variants) > 0}">
+                                        <span th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    </span>
+                                    <span class="stext-105 cl3" th:if="${product.variants == null or #lists.size(product.variants) == 0}">
+                                        Liên hệ
                                     </span>
                                 </div>
                                 <div class="product-txt-child2">
@@ -80,241 +79,71 @@
                 </div>
             </section>
             <section class="hot-product">
-                <h2 class="text-left hot-product-header">Sản phẩm hot</h2>
+                <h2 class="text-left hot-product-header">Sản phẩm nổi bật</h2>
                 <div class="row row-cols-4 g-5">
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-                                alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
+                    <th:block th:each="product : ${listFeaturedProducts}">
+                        <!-- Sản phẩm -->
+                        <div class="product col">
+                            <div class="product-pic hov-img0">
+                                <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
+                                <a href="#" class="product-btn">Quick View</a>
                             </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
+                            <div class="product-txt">
+                                <div class="product-txt-child1 flex-col-l">
+                                    <a th:href="@{|/product/detail/${product.productId}|}"
+                                       class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6" th:text="${product.name}"></a>
+                                    <span class="stext-105 cl3" th:if="${product.variants != null and #lists.size(product.variants) > 0}">
+                                        <span th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    </span>
+                                    <span class="stext-105 cl3" th:if="${product.variants == null or #lists.size(product.variants) == 0}">
+                                        Liên hệ
+                                    </span>
+                                </div>
+                                <div class="product-txt-child2">
+                                    <a href="#" class="btn-addwish-b2">
+                                        <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </th:block>
                 </div>
             </section>
             <section class="discount-product">
                 <h2 class="text-left discount-product-header">Sản phẩm khuyến mãi</h2>
                 <div class="row row-cols-4 g-5">
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
+                    <th:block th:each="product : ${listDiscountProducts}">
+                        <!-- Sản phẩm -->
+                        <div class="product col">
+                            <div class="product-pic hov-img0">
+                                <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
+                                <a href="#" class="product-btn">Quick View</a>
                             </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
+                            <div class="product-txt">
+                                <div class="product-txt-child1 flex-col-l">
+                                    <a th:href="@{|/product/detail/${product.productId}|}"
+                                       class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6" th:text="${product.name}"></a>
+                                    <span class="stext-105 cl3" th:if="${product.variants != null and #lists.size(product.variants) > 0 and product.variants[0].discountPrice != null}">
+                                        <span th:text="${#numbers.formatDecimal(product.variants[0].discountPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                        <del th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></del>
+                                    </span>
+                                    <span class="stext-105 cl3" th:if="${product.variants != null and #lists.size(product.variants) > 0 and product.variants[0].discountPrice == null}">
+                                        <span th:text="${#numbers.formatDecimal(product.variants[0].price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    </span>
+                                    <span class="stext-105 cl3" th:if="${product.variants == null or #lists.size(product.variants) == 0}">
+                                        Liên hệ
+                                    </span>
+                                </div>
+                                <div class="product-txt-child2">
+                                    <a href="#" class="btn-addwish-b2">
+                                        <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Sản phẩm -->
-                    <div class="product col">
-                        <div class="product-pic hov-img0">
-                            <img src="images/product-03.jpg" alt="IMG-PRODUCT">
-                            <a href="#" class="product-btn">
-                                Quick View
-                            </a>
-                        </div>
-                        <div class="product-txt">
-                            <div class="product-txt-child1 flex-col-l">
-                                <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                    Esprit Ruffle Shirt
-                                </a>
-                                <span class="stext-105 cl3">
-                                    $16.64
-                                </span>
-                            </div>
-                            <div class="product-txt-child2">
-                                <a href="#" class="btn-addwish-b2">
-                                    <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                    <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    </th:block>
                 </div>
             </section>
             <section class="special" style="margin-top: 70px;">

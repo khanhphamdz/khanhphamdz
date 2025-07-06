@@ -1,488 +1,347 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+<html lang="en" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tee Shirt Vibe - Quản lý nhân viên</title>
-    <th:block th:fragment="styles">
-        <!-- Flatpickr CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    </th:block>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="employee-management.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <!-- Main Content -->
     <main class="d-flex flex-column p-3 w-100">
-        <div class="page-header mb-4">
-            <div class="header-title d-flex align-items-center justify-content-center">
-            <div class="header-title d-flex align-items-center justify-content-start">
-                <div>
-                    <h3 class="p-0 m-0">Quản lý nhân viên</h3>
-                </div>
-            </div>
+        <div class="container mt-4">
+        <!-- Thông báo thành công/lỗi -->
+        <div th:if="${param.success}" class="alert alert-success" role="alert">
+            <span th:text="${param.success}"></span>
         </div>
-        <div class="page-header mb-4">
-            <div class="header-title d-flex align-items-center justify-content-center">
-                <!-- <i class="fa-solid fa-rotate-left fs-3 me-2"></i> -->
-                <div>
-                    <h3 class="p-0 m-0">Quản lý nhân viên</h3>
-                </div>
-            </div>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            <span th:text="${param.error}"></span>
         </div>
-        <!-- Card bộ lọc tìm kiếm -->
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Bộ lọc -->
         <div class="card mb-4">
+            <div class="card-header">
+                <h4>Quản lý nhân viên</h4>
+            </div>
             <div class="card-body">
-                <form class="row g-4 align-items-end justify-content-center">
-                    <div class="col-md-4 d-flex flex-column gap-3 ps-md-5">
-                        <div class="d-flex align-items-center">
-                            <label for="filterName" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
-                                <i class="fa-solid me-2"></i>Tìm kiếm:
-                            </label>
-                            <input type="text" class="form-control rounded-pill px-3 text-center w-100 ms-2" id="filterName"
-                                   placeholder="Tìm kiếm tên, SĐT, email..." style="max-width: 200px;">
-                            <input type="text" class="form-control rounded-pill px-3 text-center w-100 ms-2" id="filterName"
-                                   placeholder="Tìm kiếm tên, SĐT, email..." style="max-width: 200px;">
-                        </div>
-                        <div class="d-flex align-items-center mt-2">
-                            <label for="filterStatus" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
-                                <i class="fa-solid me-2"></i>Trạng thái:
-                            </label>
-                            <select class="form-select rounded-pill px-3 text-center ms-1" id="filterStatus" style="max-width: 200px;">
-                                <option value="">Tất cả</option>
-                                <option value="active">Hoạt động</option>
-                                <option value="inactive">Nghỉ việc</option>
-                            </select>
-                        </div>
+                <form th:action="@{/admin/employees}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="searchTerm" class="form-label">Tìm kiếm:</label>
+                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tên, số điện thoại, CCCD">
                     </div>
-                    <div class="col-md-8 d-flex flex-column gap-3 justify-content-center">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
-                            <label for="filterBirthdayFrom" class="form-label fw-semibold mb-0 me-2" style="min-width:90px;">
-                                <i class="fa-solid fa-calendar me-2"></i>Ngày sinh:
-                            </label>
-                            <input type="date" class="form-control rounded-pill text-center" id="filterBirthdayFrom"
-                                   placeholder="Chọn ngày" style="max-width: 160px;">
-                            <input type="date" class="form-control rounded-pill text-center" id="filterBirthdayFrom"
-                                   placeholder="Chọn ngày" style="max-width: 160px;">
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-                            <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold">Tìm kiếm</button>
-                            <button type="button" class="btn btn-danger px-4 rounded-pill fw-bold">Làm mới bộ lọc</button>
-                        </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Trạng thái:</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">Tất cả</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Nghỉ việc</option>
+                            <option value="terminated">Chấm dứt</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="birthdayRange" class="form-label">Ngày sinh:</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                        <input type="date" class="form-control mt-2" id="endDate" name="endDate">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+                        <a th:href="@{/admin/employees}" class="btn btn-secondary">Làm mới</a>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- Thông tin bảng nhân viên -->
-        <div class="card flexaccordions flex-grow-1 d-flex flex-column">
-        <div class="card flexaccordions flex-grow-1 d-flex flex-column">
-            <div class="card-header border-0 pb-0 bg-white d-flex align-items-center justify-content-between pt-2"
-                 style="margin-top: 8px;">
-                 style="margin-top: 8px;">
-                <h5 class="fw-bold mb-0"><i class="fa-solid fa-table-list me-2"></i>Danh sách nhân viên</h5>
-                <button type="button" class="btn btn-primary rounded-pill fw-bold px-3 py-1" style="font-size: 1rem;"
-                        data-bs-toggle="modal" data-bs-target="#employeeModal">
-                        data-bs-toggle="modal" data-bs-target="#employeeModal">
-                    <i class="fa-solid fa-plus me-2"></i>Thêm nhân viên
-                </button>
+
+        <!-- Danh sách nhân viên -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>Danh sách nhân viên (<span th:text="${x}"></span>)</h4>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themNhanVienModal">Thêm nhân viên</button>
             </div>
-            <div class="card-body flex-grow-1 d-flex flex-column p-3 pb-0">
-                <div class="flex-grow-1 overflow-auto">
-                    <table class="table table-hover align-middle text-center mb-0">
-                        <thead class="bg-primary bg-gradient text-white">
-                            <tr>
-                                <th class="text-center">Mã nhân viên</th>
-                                <th class="text-center">Tên nhân viên</th>
-                                <th class="text-center">Số điện thoại</th>
-                                <th class="text-center">CCCD</th>
-                                <th class="text-center">Ngày sinh</th>
-                                <th class="text-center">Giới tính</th>
-                                <th class="text-center">Phân quyền</th>
-                                <th class="text-center">Phân quyền</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employeeTable">
-                            <tr>
-                                <td class="text-center">NV001</td>
-                                <td>Nguyễn Văn A</td>
-                                <td>0901234567</td>
-                                <td>012345678901</td>
-                                <td>01/01/1990</td>
-                                <td>Nam</td>
-                                <td>Admin</td>
-                                <td>Admin</td>
-                                <td>Hoạt động</td>
-                                <td style="min-width:120px;">
-                                    <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#deleteEmployeeModal">
-                                            data-bs-target="#deleteEmployeeModal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">NV002</td>
-                                <td>luc minh c</td>
-                                <td>45678907</td>
-                                <td>0123567891</td>
-                                <td>01/01/1990</td>
-                                <td>Nam</td>
-                                <td>Nhân viên</td>
-                                <td>Nhân viên</td>
-                                <td>Hoạt động</td>
-                                <td style="min-width:120px;">
-                                    <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#deleteEmployeeModal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">NV003</td>
-                                <td>Trần Thị B</td>
-                                <td>0987654321</td>
-                                <td>098765432109</td>
-                                <td>02/02/1995</td>
-                                <td>Nữ</td>
-                                <td>Nhân viên</td>
-                                <td>Nghỉ việc</td>
-                                <td style="min-width:120px;">
-                                    <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                        <i class="fas fa-eye"></i>
-                                    <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#deleteEmployeeModal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">NV003</td>
-                                <td>Trần Thị B</td>
-                                <td>0987654321</td>
-                                <td>098765432109</td>
-                                <td>02/02/1995</td>
-                                <td>Nữ</td>
-                                <td>Nhân viên</td>
-                                <td>Nghỉ việc</td>
-                                <td style="min-width:120px;">
-                                    <button class="btn btn-info btn-action btn btn-sm" title="Xem chi tiết"
-                                            data-bs-toggle="modal" data-bs-target="#viewEditEmployeeModal">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-action" data-bs-toggle="modal"
-                                            data-bs-target="#deleteEmployeeModal">
-                                            data-bs-target="#deleteEmployeeModal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Pagination -->
-                <nav class="mt-4 mb-2">
-                    <ul class="pagination justify-content-center mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mã nhân viên</th>
+                            <th>Tên nhân viên</th>
+                            <th>Số điện thoại</th>
+                            <th>CCCD</th>
+                            <th>Ngày sinh</th>
+                            <th>Giới tính</th>
+                            <th>Phân quyền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="employee : ${employees}">
+                            <td th:text="${employee.employeeId}"></td>
+                            <td th:text="${employee.fullName}"></td>
+                            <td th:text="${employee.phoneNumber}"></td>
+                            <td th:text="${employee.citizenId}"></td>
+                            <td th:text="${employee.birthday}"></td>
+                            <td th:text="${employee.gender} ? 'Nam' : 'Nữ'"></td>
+                            <td th:text="${employee.role} ? 'Quản lý' : 'Nhân viên'"></td>
+                            <td th:text="${employee.status == 'active' ? 'Hoạt động' : employee.status == 'inactive' ? 'Nghỉ việc' : 'Chấm dứt'}"></td>
+                            <td>
+                                <a th:href="@{/admin/employees/sua/{id}(id=${employee.employeeId})}" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#suaNhanVienModal" th:attr="data-id=${employee.employeeId},data-name=${employee.fullName},data-phone=${employee.phoneNumber},data-email=${employee.email},data-password=${employee.password},data-birthday=${employee.birthday},data-citizenId=${employee.citizenId},data-gender=${employee.gender},data-role=${employee.role},data-status=${employee.status},data-hireDate=${employee.hireDate},data-address=${employee.address}" onclick="populateSuaForm(this)">Sửa</a>
+                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#xoaNhanVienModal" th:attr="data-id=${employee.employeeId},data-name=${employee.fullName}">Xóa</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Phân trang -->
+                <nav aria-label="Phân trang">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
                         <li class="page-item"><a class="page-link" href="#">2</a></li>
                         <li class="page-item"><a class="page-link" href="#">Sau</a></li>
                     </ul>
                 </nav>
             </div>
         </div>
-        <!-- Modal Thêm nhân viên -->
-        <!-- Modal Thêm nhân viên -->
-        <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel"
-             aria-hidden="true">
-             aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-4 p-2 p-md-4">
-                    <div class="modal-header border-0 pb-0">
-                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="employeeModalLabel"
-                            style="font-size:2.2rem;">Cập nhật thông tin nhân viên</h2>
-                        <button type="button" class="btn-close position-absolute end-0 me-3 mt-3"
-                                data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
-                                data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
+
+        <!-- Modal Thêm Nhân viên -->
+        <div class="modal fade" id="themNhanVienModal" tabindex="-1" aria-labelledby="themNhanVienModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" style="max-width:900px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="themNhanVienModalLabel">Thêm nhân viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="employeeForm">
-                        <div class="modal-body pt-2">
+                    <form th:action="@{/admin/employees/them}" th:object="${employeeDTO}" method="post">
+                        <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và
-                                    tên</label>
-                                <input type="text" class="form-control rounded-pill" id="employeeName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện
-                                    thoại</label>
-                                <input type="tel" class="form-control rounded-pill" id="employeePhone"
-                                       pattern="[0-9]{10}" required>
-                                       pattern="[0-9]{10}" required>
+                                <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
+                                <span th:errors="*{fullName}" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i
-                                        class="fa-solid fa-envelope me-2"></i>Email</label>
-                                <input type="email" class="form-control rounded-pill" id="employeeEmail" required>
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="employeePassword" required>
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
+                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
+                                <span th:errors="*{phoneNumber}" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
-                                <select class="form-select rounded-pill" id="employeeRole" required>
-                                    <option value="Quản lý">Quản lý</option>
-                                    <option value="Nhân viên">Nhân viên</option>
-                                </select>
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="employeePassword" required>
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <span th:errors="*{email}" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
-                                <select class="form-select rounded-pill" id="employeeRole" required>
-                                    <option value="Quản lý">Quản lý</option>
-                                    <option value="Nhân viên">Nhân viên</option>
-                                </select>
+                                <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                <span th:errors="*{password}" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
-                                    sinh</label>
-                                <input type="date" class="form-control rounded-pill" id="employeeBirthday"
-                                       placeholder="Chọn ngày sinh" required>
-                                <input type="date" class="form-control rounded-pill" id="employeeBirthday"
-                                       placeholder="Chọn ngày sinh" required>
+                                <label for="birthday" class="form-label">Ngày sinh</label>
+                                <input type="date" class="form-control" id="birthday" th:field="*{birthday}">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới
-                                    tính</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employeeGender"
-                                               id="genderMale" value="Nam" required>
-                                               id="genderMale" value="Nam" required>
-                                        <label class="form-check-label" for="genderMale">Nam</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employeeGender"
-                                               id="genderFemale" value="Nữ" required>
-                                               id="genderFemale" value="Nữ" required>
-                                        <label class="form-check-label" for="genderFemale">Nữ</label>
-                                    </div>
+                                <label for="address" class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" th:field="*{address}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hireDate" class="form-label">Ngày tuyển dụng</label>
+                                <input type="date" class="form-control" id="hireDate" th:field="*{hireDate}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="citizenId" class="form-label">Căn cước công dân (CCCD)</label>
+                                <input type="text" class="form-control" id="citizenId" th:field="*{citizenId}">
+                                <span th:errors="*{citizenId}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="male" value="true" th:field="*{gender}" required>
+                                    <label class="form-check-label" for="male">Nam</label>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước
-                                    công dân (CCCD)</label>
-                                <input type="text" class="form-control rounded-pill" id="employeeCCCD"
-                                       pattern="[0-9]{12}" required>
-                                       pattern="[0-9]{12}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng
-                                    thái</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employeeStatus"
-                                               id="statusActive" value="active" required>
-                                        <label class="form-check-label" for="statusActive">Hoạt động</label>
-                                               id="statusActive" value="active" required>
-                                        <label class="form-check-label" for="statusActive">Hoạt động</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employeeStatus"
-                                               id="statusInactive" value="inactive" required>
-                                        <label class="form-check-label" for="statusInactive">Nghỉ việc</label>
-                                               id="statusInactive" value="inactive" required>
-                                        <label class="form-check-label" for="statusInactive">Nghỉ việc</label>
-                                    </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="female" value="false" th:field="*{gender}">
+                                    <label class="form-check-label" for="female">Nữ</label>
                                 </div>
+                                <span th:errors="*{gender}" class="text-danger"></span>
                             </div>
-                            <input type="hidden" id="employeeId">
+                            <div class="mb-3">
+                                <label class="form-label">Phân quyền <span class="text-danger">*</span></label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="role" id="manager" value="true" th:field="*{role}" required>
+                                    <label class="form-check-label" for="manager">Quản lý</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="role" id="employee" value="false" th:field="*{role}">
+                                    <label class="form-check-label" for="employee">Nhân viên</label>
+                                </div>
+                                <span th:errors="*{role}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select class="form-select" id="status" th:field="*{status}" required>
+                                    <option value="active">Hoạt động</option>
+                                    <option value="inactive">Nghỉ việc</option>
+                                    <option value="terminated">Chấm dứt</option>
+                                </select>
+                                <span th:errors="*{status}" class="text-danger"></span>
+                            </div>
                         </div>
-                        <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
-                            <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100"
-                                    style="max-width:400px;">CẬP NHẬT <i class="fa-solid fa-arrow-right ms-2"></i></button>
-                                    style="max-width:400px;">CẬP NHẬT <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <!-- Modal Xem và Sửa nhân viên -->
-        <div class="modal fade" id="viewEditEmployeeModal" tabindex="-1" aria-labelledby="viewEditEmployeeModalLabel" aria-hidden="true">
-        <!-- Modal Xem và Sửa nhân viên -->
-        <div class="modal fade" id="viewEditEmployeeModal" tabindex="-1" aria-labelledby="viewEditEmployeeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-4 p-2 p-md-4">
-                    <div class="modal-header border-0 pb-0">
-                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="viewEditEmployeeModalLabel" style="font-size:2.2rem;">
-                            Xem và chỉnh sửa nhân viên
-                        </h2>
-                        <h2 class="modal-title w-100 text-center fw-bold mb-0" id="viewEditEmployeeModalLabel" style="font-size:2.2rem;">
-                            Xem và chỉnh sửa nhân viên
-                        </h2>
-                        <button type="button" class="btn-close position-absolute end-0 me-3 mt-3"
-                                data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
-                                data-bs-dismiss="modal" aria-label="Đóng" style="font-size:1.5rem;"></button>
-                    </div>
-                    <form id="viewEditEmployeeForm">
-                    <form id="viewEditEmployeeForm">
-                        <div class="modal-body pt-2">
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Mã nhân viên</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeId" readonly value="NV001">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeName" required value="Nguyễn Văn A">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
-                                <input type="tel" class="form-control rounded-pill" id="editEmployeePhone" pattern="[0-9]{10}" required value="0901234567">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Mã nhân viên</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeId" readonly value="NV001">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeName" required value="Nguyễn Văn A">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
-                                <input type="tel" class="form-control rounded-pill" id="editEmployeePhone" pattern="[0-9]{10}" required value="0901234567">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
-                                <input type="email" class="form-control rounded-pill" id="editEmployeeEmail" required value="nguyenvana@example.com">
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="editEmployeePassword" value="12345678">
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
-                                <input type="email" class="form-control rounded-pill" id="editEmployeeEmail" required value="nguyenvana@example.com">
-                            </div>
-                            <div class="mb-3 position-relative">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-lock me-2"></i>Mật khẩu</label>
-                                <input type="password" class="form-control rounded-pill" id="editEmployeePassword" value="12345678">
-                                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y me-3 mt-3 cursor-pointer toggle-password" style="font-size:1rem;"></i>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
-                                <select class="form-select rounded-pill" id="editEmployeeRole" required>
-                                    <option value="Quản lý">Quản lý</option>
-                                    <option value="Nhân viên" selected>Nhân viên</option>
-                                </select>
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-user-shield me-2"></i>Phân quyền</label>
-                                <select class="form-select rounded-pill" id="editEmployeeRole" required>
-                                    <option value="Quản lý">Quản lý</option>
-                                    <option value="Nhân viên" selected>Nhân viên</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeBirthday"
-                                       placeholder="Chọn ngày sinh" required value="01/01/1990">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày sinh</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeBirthday"
-                                       placeholder="Chọn ngày sinh" required value="01/01/1990">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới tính</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="editEmployeeGender"
-                                               id="editGenderMale" value="Nam" required checked>
-                                               id="editGenderMale" value="Nam" required checked>
-                                        <label class="form-check-label" for="editGenderMale">Nam</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="editEmployeeGender"
-                                               id="editGenderFemale" value="Nữ" required>
-                                               id="editGenderFemale" value="Nữ" required>
-                                        <label class="form-check-label" for="editGenderFemale">Nữ</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-id-card me-2"></i>Căn cước công dân (CCCD)</label>
-                                <input type="text" class="form-control rounded-pill" id="editEmployeeCCCD"
-                                       pattern="[0-9]{12}" required value="012345678901">
-                                       pattern="[0-9]{12}" required value="012345678901">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng thái</label>
-                                <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-2"></i>Trạng thái</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="editEmployeeStatus"
-                                               id="editStatusActive" value="active" required checked>
-                                        <label class="form-check-label" for="editStatusActive">Hoạt động</label>
-                                               id="editStatusActive" value="active" required checked>
-                                        <label class="form-check-label" for="editStatusActive">Hoạt động</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="editEmployeeStatus"
-                                               id="editStatusInactive" value="inactive" required>
-                                        <label class="form-check-label" for="editStatusInactive">Nghỉ việc</label>
-                                               id="editStatusInactive" value="inactive" required>
-                                        <label class="form-check-label" for="editStatusInactive">Nghỉ việc</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center gap-3">
-                            <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100" style="max-width:400px;">
-                                LƯU THAY ĐỔI ! <i class="fa-solid fa-arrow-right ms-2"></i>
-                            </button>
-                        <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center gap-3">
-                            <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100" style="max-width:400px;">
-                                LƯU THAY ĐỔI ! <i class="fa-solid fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Modal Xóa nhân viên -->
-        <div class="modal fade" id="deleteEmployeeModal" tabindex="-1" aria-labelledby="deleteEmployeeModalLabel"
-             aria-hidden="true">
-             aria-hidden="true">
+
+        <!-- Modal Sửa Nhân viên -->
+        <div class="modal fade" id="suaNhanVienModal" tabindex="-1" aria-labelledby="suaNhanVienModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteEmployeeModalLabel">Xóa nhân viên</h5>
+                        <h5 class="modal-title" id="suaNhanVienModalLabel">Sửa nhân viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/admin/employees/sua/{id}(id=${employeeDTO.employeeId})}" th:object="${employeeDTO}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" th:field="*{employeeId}">
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
+                                <span th:errors="*{fullName}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
+                                <span th:errors="*{phoneNumber}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                <span th:errors="*{email}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                <span th:errors="*{password}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="birthday" class="form-label">Ngày sinh</label>
+                                <input type="date" class="form-control" id="birthday" th:field="*{birthday}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="citizenId" class="form-label">Căn cước công dân (CCCD)</label>
+                                <input type="text" class="form-control" id="citizenId" th:field="*{citizenId}">
+                                <span th:errors="*{citizenId}" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Giới tính</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="maleEdit" value="true" th:field="*{gender}">
+                                    <label class="form-check-label" for="maleEdit">Nam</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="femaleEdit" value="false" th:field="*{gender}">
+                                    <label class="form-check-label" for="femaleEdit">Nữ</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phân quyền</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="role" id="managerEdit" value="true" th:field="*{role}">
+                                    <label class="form-check-label" for="managerEdit">Quản lý</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="role" id="employeeEdit" value="false" th:field="*{role}">
+                                    <label class="form-check-label" for="employeeEdit">Nhân viên</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái</label>
+                                <select class="form-select" id="status" th:field="*{status}">
+                                    <option value="active">Hoạt động</option>
+                                    <option value="inactive">Nghỉ việc</option>
+                                    <option value="terminated">Chấm dứt</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Xóa Nhân viên -->
+        <div class="modal fade" id="xoaNhanVienModal" tabindex="-1" aria-labelledby="xoaNhanVienModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="xoaNhanVienModalLabel">Xóa nhân viên</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Bạn có chắc chắn muốn chuyển trạng thái nhân viên <span id="deleteEmployeeName">Nguyễn Văn A</span> thành
-                            "Nghỉ việc"?</p>
+                        <p>Bạn có chắc chắn muốn chuyển trạng thái nhân viên <span id="xoaNhanVienTen"></span> thành "Nghỉ việc"?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-danger">Xác nhận</button>
+                        <form id="xoaNhanVienForm" th:action="@{/admin/employees/xoa/{id}(id=0)}" method="post">
+                            <button type="submit" class="btn btn-danger">Xác nhận</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Điền thông tin vào modal xóa
+            document.querySelectorAll('[data-bs-target="#xoaNhanVienModal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const id = this.getAttribute('data-id');
+                    document.getElementById('xoaNhanVienTen').textContent = name;
+                    const form = document.getElementById('xoaNhanVienForm');
+                    form.action = `/admin/employees/xoa/${id}`;
+                });
+            });
+
+            // Điền thông tin vào form sửa
+            function populateSuaForm(button) {
+                const id = button.getAttribute('data-id');
+                const fullName = button.getAttribute('data-name');
+                const phoneNumber = button.getAttribute('data-phone') || '';
+                const email = button.getAttribute('data-email');
+                const password = button.getAttribute('data-password');
+                const birthday = button.getAttribute('data-birthday') || '';
+                const address = button.getAttribute('data-address') || '';
+                const hireDate = button.getAttribute('data-hireDate') || '';
+                const citizenId = button.getAttribute('data-citizenId') || '';
+                const gender = button.getAttribute('data-gender') === 'true';
+                const role = button.getAttribute('data-role') === 'true';
+                const status = button.getAttribute('data-status');
+
+                document.querySelector('#suaNhanVienModal input[name="employeeId"]').value = id;
+                document.querySelector('#suaNhanVienModal input[name="fullName"]').value = fullName;
+                document.querySelector('#suaNhanVienModal input[name="phoneNumber"]').value = phoneNumber;
+                document.querySelector('#suaNhanVienModal input[name="email"]').value = email;
+                document.querySelector('#suaNhanVienModal input[name="password"]').value = password;
+                document.querySelector('#suaNhanVienModal input[name="birthday"]').value = birthday;
+                document.querySelector('#suaNhanVienModal input[name="address"]').value = address;
+                document.querySelector('#suaNhanVienModal input[name="hireDate"]').value = hireDate;
+                document.querySelector('#suaNhanVienModal input[name="citizenId"]').value = citizenId;
+                document.querySelector(`#suaNhanVienModal input[name="gender"][value="${gender}"]`).checked = true;
+                document.querySelector(`#suaNhanVienModal input[name="role"][value="${role}"]`).checked = true;
+                document.querySelector('#suaNhanVienModal select[name="status"]').value = status;
+            }
+        </script>
     </main>
-    <!-- Bootstrap JS and Popper.js (required for modal functionality) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
 </body>
 </html>
