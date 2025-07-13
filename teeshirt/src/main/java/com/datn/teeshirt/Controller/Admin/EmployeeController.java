@@ -1,109 +1,103 @@
 package com.datn.teeshirt.Controller.Admin;
 
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.datn.teeshirt.Controller.ResponseObject;
 import com.datn.teeshirt.DTO.EmployeeDTO;
 import com.datn.teeshirt.Service.EmployeeService;
 
-import java.util.List;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Controller
-@RequestMapping("/admin/employees")
+
+@RestController
+@RequestMapping("/api/employees")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    // Hiển thị danh sách nhân viên
+    // Lấy danh sách nhân viên (phân trang, tìm kiếm)
     @GetMapping
-    public String danhSachNhanVien(Model model) {
-        List<EmployeeDTO> nhanViens = employeeService.getAllEmployees();
-        model.addAttribute("employees", nhanViens);
-        model.addAttribute("x", nhanViens.size());
-        model.addAttribute("employeeDTO", new EmployeeDTO());
-        return "admin/account/employee-management.html";
+    public ResponseEntity<Page<EmployeeDTO>> getEmployees(
+        @RequestParam(required = false) String searchTerm,
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<EmployeeDTO> result = employeeService.searchEmployees(searchTerm, status, startDate, endDate, PageRequest.of(page, size));
+        return ResponseEntity.ok(result);
     }
 
-    // Hiển thị form thêm nhân viên
-    @GetMapping("/them")
-    public String hienThiFormThemNhanVien(Model model) {
-        model.addAttribute("employeeDTO", new EmployeeDTO());
-        model.addAttribute("employees", employeeService.getAllEmployees());
-        model.addAttribute("x", employeeService.getAllEmployees().size());
-        return "admin/account/employee-management.html";
+    // Lấy chi tiết nhân viên
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable Long id) {
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
-    // Thêm nhân viên mới
-    @PostMapping("/them")
-    public String themNhanVien(@Valid @ModelAttribute("employeeDTO") EmployeeDTO employeeDTO,
-            BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("employees", employeeService.getAllEmployees());
-            model.addAttribute("x", employeeService.getAllEmployees().size());
-            model.addAttribute("error", "Vui lòng kiểm tra lại các trường dữ liệu");
-            return "admin/account/employee-management.html";
+    // Lấy thông tin nhân viên hiện tại
+    @GetMapping("/me")
+    public ResponseEntity<EmployeeDTO> getCurrentEmployee() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            currentEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
+        if (currentEmail == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        EmployeeDTO dto = employeeService.findByEmail(currentEmail)
+                .map(EmployeeDTO::fromEntity)
+                .orElse(null);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
+
+    // Thêm nhân viên
+    @PostMapping
+    public ResponseEntity<ResponseObject> addEmployee(@RequestBody @Valid EmployeeDTO employeeDTO, BindingResult result) {
+        
+        
         try {
             employeeService.createEmployee(employeeDTO);
-            return "redirect:/admin/employees?success=Thêm nhân viên thành công";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("employees", employeeService.getAllEmployees());
-            model.addAttribute("x", employeeService.getAllEmployees().size());
-            return "admin/account/employee-management.html";
+            return ResponseEntity.ok(new ResponseObject("ok", "Thêm nhân viên thành công", employeeDTO));
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            model.addAttribute("employees", employeeService.getAllEmployees());
-            model.addAttribute("x", employeeService.getAllEmployees().size());
-            return "admin/account/employee-management.html";
+            return ResponseEntity.ok(new ResponseObject("error", "Lỗi khi thêm nhân viên", e.getMessage()));
         }
     }
 
-    // Hiển thị form sửa nhân viên
-    @GetMapping("/sua/{id}")
-    public String hienThiFormSuaNhanVien(@PathVariable Long id, Model model) {
-        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
-        model.addAttribute("employeeDTO", employeeDTO);
-        model.addAttribute("employees", employeeService.getAllEmployees());
-        model.addAttribute("x", employeeService.getAllEmployees().size());
-        return "admin/account/employee-management.html";
+    // Sửa nhân viên
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDTO employeeDTO) {
+        return ResponseEntity.ok(employeeService.updateEmployee(id, employeeDTO));
     }
 
-    // Cập nhật thông tin nhân viên
-    @PostMapping("/sua/{id}")
-    public String suaNhanVien(@PathVariable Long id,
-            @Valid @ModelAttribute("employeeDTO") EmployeeDTO employeeDTO,
-            BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("employees", employeeService.getAllEmployees());
-            model.addAttribute("x", employeeService.getAllEmployees().size());
-            model.addAttribute("error", "Vui lòng kiểm tra lại các trường dữ liệu");
-            return "admin/account/employee-management.html";
-        }
-        try {
-            employeeService.updateEmployee(id, employeeDTO);
-            return "redirect:/admin/employees?success=Cập nhật nhân viên thành công";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("employees", employeeService.getAllEmployees());
-            model.addAttribute("x", employeeService.getAllEmployees().size());
-            return "admin/account/employee-management.html";
-        }
-    }
-
-    // Xóa nhân viên (xóa mềm)
-    @PostMapping("/xoa/{id}")
-    public String xoaNhanVien(@PathVariable Long id) {
-        try {
-            employeeService.setEmployeeInactive(id);
-            return "redirect:/admin/employees?success=Chuyển trạng thái nhân viên thành nghỉ việc";
-        } catch (RuntimeException e) {
-            return "redirect:/admin/employees?error=Không tìm thấy nhân viên";
-        }
+    // Xóa mềm nhân viên
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        employeeService.setEmployeeInactive(id);
+        return ResponseEntity.noContent().build();
     }
 }

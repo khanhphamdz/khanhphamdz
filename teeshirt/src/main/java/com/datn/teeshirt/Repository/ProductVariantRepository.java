@@ -1,6 +1,7 @@
 package com.datn.teeshirt.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     boolean existsByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(Long productId, Long colorId, Long sizeId);
 
     boolean existsByBarcode(String barcode);
+
+    Optional<ProductVariant> findByBarcode(String barcode);
 }

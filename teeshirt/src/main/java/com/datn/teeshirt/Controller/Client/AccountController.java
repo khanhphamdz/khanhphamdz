@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,9 +31,11 @@ import com.datn.teeshirt.DTO.CustomerAddressDTO;
 import com.datn.teeshirt.DTO.CustomerDTO;
 import com.datn.teeshirt.Entity.Customer;
 import com.datn.teeshirt.Entity.CustomerAddress;
+import com.datn.teeshirt.Entity.WishlistItem;
 import com.datn.teeshirt.Security.CustomUserDetailsService;
 import com.datn.teeshirt.Service.CustomerAddressService;
 import com.datn.teeshirt.Service.CustomerService;
+import com.datn.teeshirt.Service.WishlistService;
 
 @Controller
 @RequestMapping("/account")
@@ -46,6 +49,9 @@ public class AccountController {
 
     @Autowired
     private CustomerAddressService customerAddressService;
+
+    @Autowired
+    private WishlistService wishlistService;
 
     @GetMapping
     public String accountPage(Model model) {
@@ -142,14 +148,16 @@ public class AccountController {
     // API: Thêm địa chỉ mới (dùng DTO)
     @PostMapping("/address/add-dto")
     @ResponseBody
-    public ResponseEntity<?> addAddressDTO(@RequestBody CustomerAddressDTO dto) {
-        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
-        if (currentCustomer == null) {
-            return ResponseEntity.badRequest().body("Không tìm thấy thông tin khách hàng");
-        }
-        CustomerAddress address = customerAddressService.toEntity(dto, currentCustomer);
-        customerAddressService.save(address);
-        return ResponseEntity.ok("Thêm địa chỉ thành công");
+    public ResponseEntity<ResponseObject> addAddressDTO(@ModelAttribute CustomerAddressDTO dto) {
+        try {
+            Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+            CustomerAddress address = customerAddressService.toEntity(dto, currentCustomer);
+            customerAddressService.save(address);
+            return ResponseEntity.ok(new ResponseObject("ok", "Thêm địa chỉ thành công", null));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseObject("false", "Lỗi", e.getMessage()));
+        } 
+        
     }
 
     // API: Sửa địa chỉ (dùng DTO)
@@ -199,4 +207,12 @@ public class AccountController {
     public String forgotPasswordPage() {
         return "customer/account/forgot-password";
     }
+    @GetMapping("/wishlist")
+    public String WishlistPage(Model model) {
+        Customer customer = customUserDetailsService.getCustomerInfo();
+        List<WishlistItem> wishlistItems = wishlistService.getWishlistItems(customer);
+        model.addAttribute("wishlistItems", wishlistItems != null ? wishlistItems : List.of());
+        return "customer/account/wishlist";
+    }
+    
 }

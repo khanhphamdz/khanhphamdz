@@ -1,6 +1,8 @@
 package com.datn.teeshirt.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,10 @@ import com.datn.teeshirt.Repository.CustomerRepository;
 public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
+
+    public List<CustomerDTO> findAll() {
+        return customerRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
     public Optional<Customer> findByEmail(String email) {
         return customerRepository.findByEmail(email);
@@ -34,6 +40,29 @@ public class CustomerService {
 
     public void delete(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    // Tìm kiếm khách hàng theo tên hoặc SĐT
+    public List<CustomerDTO> searchCustomers(String query) {
+        List<Customer> customers = customerRepository.findAll();
+        return customers.stream()
+            .filter(c -> c.getName().toLowerCase().contains(query.toLowerCase()))
+            .map(this::toDTO) // Changed to toDTO as per original file
+            .collect(Collectors.toList());
+    }
+
+    // Tạo khách hàng mới
+    public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        Customer customer = new Customer();
+        customer.setName(customerDTO.getName());
+        customer.setEmail(customerDTO.getEmail());
+        //customer.setPhoneNumber(customerDTO.getPhoneNumber());
+        customer.setAvatarUrl(customerDTO.getAvatarUrl());
+        customer.setPassword(customerDTO.getPassword()); // Nên mã hóa nếu là đăng ký thực tế
+        customer.setCreatedAt(java.time.LocalDateTime.now());
+        customer.setUpdatedAt(java.time.LocalDateTime.now());
+        Customer saved = customerRepository.save(customer);
+        return toDTO(saved); // Changed to toDTO as per original file
     }
 
     // Chuyển từ Entity sang DTO

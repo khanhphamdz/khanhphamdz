@@ -1,0 +1,146 @@
+.product-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+.cart-table th,
+.cart-table td {
+    vertical-align: middle;
+}
+
+.cart-table .btn-sm {
+    padding: 2px 8px;
+}
+
+.delivery-form {
+    display: none;
+}
+
+#customToast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    min-width: 240px;
+    max-width: 340px;
+}
+
+/* Điều chỉnh kích thước ảnh sản phẩm cho vừa vặn card */
+.card-img-top {
+    height: 110px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+    background: #f8f9fa;
+}
+
+/* Style cho modal hóa đơn */
+.invoice-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #000;
+}
+
+.invoice-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.invoice-info {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.invoice-info h6 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.invoice-info p {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.invoice-table {
+    margin-bottom: 1rem;
+}
+
+.invoice-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.invoice-table td,
+.invoice-table th {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.invoice-total {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.invoice-total p {
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.invoice-total .total-amount {
+    font-weight: 700;
+}
+
+.invoice-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #000;
+}
+
+.invoice-footer p {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.invoice-footer .thank-you {
+    font-weight: 600;
+}
+
+@media print {
+    .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .modal-content {
+        border: none;
+        box-shadow: none;
+    }
+
+    .modal-header,
+    .modal-footer {
+        display: none;
+    }
+
+    .modal-body {
+        padding: 0;
+    }
+
+    .invoice-header {
+        border-bottom: 2px solid #000;
+    }
+
+    .invoice-footer {
+        border-top: 1px solid #000;
+    }
+}

@@ -64,6 +64,11 @@ public class ProductService {
         return products.map(this::toProductDTO);
     }
 
+    public List<ProductDTO> findAll2() {
+        List<Product> list = productRepository.findAll();
+        return list.stream().map(this::toProductDTO).collect(Collectors.toList());
+    }
+
     // 1. Tìm kiếm sản phẩm
     public List<ProductDTO> searchProducts(String keyword) {
         List<ProductDTO> products = productRepository.search(keyword)
@@ -779,5 +784,28 @@ public class ProductService {
             System.err.println("Lỗi khi lấy sản phẩm liên quan: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    // Lấy sản phẩm theo barcode
+    public ProductDTO getProductByBarcode(String barcode) {
+        ProductVariant variant = productVariantRepository.findByBarcode(barcode).orElse(null);
+        if (variant == null) return null;
+        Product product = variant.getProduct();
+        return toProductDTO(product);
+    }
+
+    // Overload: Lấy danh sách sản phẩm cho counter-sale (không cần filter nâng cao)
+    public List<ProductDTO> getProducts(int page, int size, String keyword, Long categoryId) {
+        // Giả sử chỉ lọc theo keyword và categoryId, phân trang
+        // Có thể dùng repository custom hoặc filter lại từ danh sách
+        // Đây là ví dụ đơn giản, bạn nên tối ưu lại nếu cần
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+            .filter(p -> (keyword == null || p.getName().toLowerCase().contains(keyword.toLowerCase()))
+                && (categoryId == null || p.getProductCategories().stream().anyMatch(c -> c.getCategory().getCategoryId().equals(categoryId))))
+            .skip(page * size)
+            .limit(size)
+            .map(this::toProductDTO)
+            .collect(Collectors.toList());
     }
 }

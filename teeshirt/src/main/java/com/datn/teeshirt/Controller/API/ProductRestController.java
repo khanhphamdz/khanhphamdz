@@ -32,13 +32,15 @@ public class ProductRestController {
     ProductService productService;
 
     @GetMapping
-    public ResponseEntity<ResponseObject> getAllProducts(@RequestParam(value = "page", defaultValue = "0") int page) {
+    public ResponseEntity<ResponseObject> getPageProducts(@RequestParam(value = "page", defaultValue = "0") int page) {
         Page<ProductDTO> products = productService.findAll(page);
         if (products == null || products.isEmpty()) {
             return ResponseEntity.ok(new ResponseObject("false", "No products found", null));
         }
         return ResponseEntity.ok(new ResponseObject("ok", "No products found", products));
     }
+
+    
 
     @GetMapping("/search")
     public ResponseEntity<?> searchProducts(@RequestParam("keyword") String keyword) {

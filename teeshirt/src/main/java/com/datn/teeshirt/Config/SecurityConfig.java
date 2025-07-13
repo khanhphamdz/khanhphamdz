@@ -111,7 +111,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/product/**", "/about", "/contact", "/account/login",
                                 "/account/forgot-password")
                         .permitAll()
-                        .requestMatchers("/account/**", "/cart/**", "/shopping-cart/**  ").hasRole("CUSTOMER")
+                        .requestMatchers("/account/**", "/cart/**", "/shopping-cart/**", "/account/wishlist").hasRole("CUSTOMER")
                         .anyRequest().permitAll())
                 .formLogin(form -> form
                         .loginPage("/account/login")

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html
+  lang="vi"
+  th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:fragment="title">Wishlist</title>
+    <th:block th:fragment="styles">
+      <link rel="stylesheet" href="/customer_css/wishlist_css/wishlist.css" />
+      <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+      />
+      <style>
+        .wishlist-img {
+          width: 120px;
+          height: 120px;
+          object-fit: cover;
+          margin: 0 auto;
+          display: block;
+        }
+      </style>
+    </th:block>
+  </head>
+  <body>
+    <main th:fragment="main" class="container" style="padding-top: 100px">
+      <div id="alert-placeholder"></div>
+      <div
+        class="text-center mb-4"
+        style="font-weight: 600; color: #e25555; font-size: 2rem"
+      >
+        <span class="me-2">Sản phẩm yêu thích ♥️</span>
+      </div>
+      <div class="row g-4" id="wishlist-list">
+        <th:block th:if="${wishlistItems != null and !wishlistItems.isEmpty()}">
+          <th:block th:each="item : ${wishlistItems}">
+            <div th:if="${item.product != null}" class="col-md-4 col-sm-6">
+              <div class="card wishlist-card h-100 shadow-sm">
+                <img
+                  th:if="${item.product.images != null and !item.product.images.isEmpty()}"
+                  th:src="${item.product.images[0].imageUrl}"
+                  class="card-img-top wishlist-img"
+                  th:alt="${item.product.name}"
+                />
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title" th:text="${item.product.name}"></h5>
+                  <p
+                    class="card-text text-muted mb-3"
+                    th:text="${#numbers.formatDecimal(item.product.basePrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                  ></p>
+                  <div class="mt-auto d-flex gap-2">
+                    <a
+                      th:href="@{/product/detail/{id}(id=${item.product.productId})}"
+                      class="btn btn-outline-primary btn-sm flex-fill wishlist-btn"
+                      >Xem chi tiết</a
+                    >
+                    <button
+                      class="btn btn-success btn-sm flex-fill wishlist-btn btn-add-cart"
+                      th:if="${item.product.variants != null and !item.product.variants.isEmpty()}"
+                      th:attr="data-variant-id=${item.product.variants[0].variantId}"
+                    >
+                      Thêm vào giỏ
+                    </button>
+                    <button
+                      class="btn btn-outline-danger btn-sm flex-fill wishlist-btn btn-remove-wishlist"
+                      th:attr="data-product-id=${item.product.productId}"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </th:block>
+        </th:block>
+        <th:block th:if="${wishlistItems == null or wishlistItems.isEmpty()}">
+          <div class="text-center text-muted py-5">
+            <div>
+              Danh sách đang trống, tiếp tục tìm kiếm sản phẩm yêu thích của
+              bạn!!!
+            </div>
+            <a href="/product" class="btn btn-primary mt-3"
+              >Tìm kiếm sản phẩm</a
+            >
+          </div>
+        </th:block>
+      </div>
+    </main>
+    <th:block th:fragment="scripts">
+      <script>
+        // Hàm cập nhật badge cart
+        function updateCartBadge() {
+          fetch("/api/cart")
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "ok" && data.data) {
+                const count = data.data.length;
+                const badge = document.getElementById("cart-badge");
+                if (badge) badge.textContent = count > 0 ? count : "";
+              }
+            });
+        }
+        // Hàm cập nhật badge wishlist (tìm icon trái tim trong header)
+        function updateWishlistBadge() {
+          fetch("/account/wishlist/list")
+            .then((res) => res.json())
+            .then((data) => {
+              const count = data.length;
+              // Tìm icon trái tim trong header
+              const header = document.getElementById("main-header");
+              if (header) {
+                const heartIcon = header.querySelector(".fa-heart");
+                if (heartIcon) {
+                  const badge = heartIcon.parentElement.querySelector(".badge");
+                  if (badge) badge.textContent = count > 0 ? count : "";
+                }
+              }
+            });
+        }
+        // Hàm show toast
+        function showAlert(message, type = "success") {
+          let alert = document.createElement("div");
+          alert.className = `alert alert-${type} position-fixed top-0 end-0 m-3 fade show`;
+          alert.style.zIndex = 9999;
+          alert.innerHTML = message;
+          document.body.appendChild(alert);
+          setTimeout(() => {
+            alert.classList.remove("show");
+            setTimeout(() => alert.remove(), 300);
+          }, 1500);
+        }
+        // Hàm mở minicart
+        function openMiniCart() {
+          const offcanvas = document.getElementById("offcanvasCart");
+          if (offcanvas) {
+            const bsOffcanvas =
+              bootstrap.Offcanvas.getOrCreateInstance(offcanvas);
+            bsOffcanvas.show();
+          }
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          // Cập nhật badge wishlist khi vào trang
+          updateWishlistBadge();
+          // Thêm vào giỏ hàng
+          document.querySelectorAll(".btn-add-cart").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              const variantId = btn.getAttribute("data-variant-id");
+              if (!variantId) {
+                showAlert(
+                  "Sản phẩm này chưa có phiên bản để thêm vào giỏ hàng!",
+                  "danger"
+                );
+                return;
+              }
+              fetch("/api/cart/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ variantId: variantId, quantity: 1 }),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.status === "ok") {
+                    showAlert("Đã thêm vào giỏ hàng!");
+                    updateCartBadge();
+                  } else if (data.status === "error") {
+                    showAlert(
+                      data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng!",
+                      "danger"
+                    );
+                  } else {
+                    showAlert("Có lỗi xảy ra khi thêm vào giỏ hàng!", "danger");
+                  }
+                });
+            });
+          });
+          // Xóa khỏi wishlist (nếu có logic động)
+          document
+            .querySelectorAll(".btn-remove-wishlist")
+            .forEach(function (btn) {
+              btn.addEventListener("click", function () {
+                btn.closest(".col-md-4").remove();
+                updateWishlistBadge();
+                if (!document.querySelector(".col-md-4")) {
+                  document.getElementById("wishlist-list").innerHTML = `
+                  <div class="text-center text-muted py-5">
+                    <div>Danh sách đang trống, tiếp tục tìm kiếm sản phẩm yêu thích của bạn!!!</div>
+                    <a href="/product" class="btn btn-primary mt-3">Tìm kiếm sản phẩm</a>
+                  </div>
+                `;
+                }
+              });
+            });
+        });
+      </script>
+      <script src="/customer_js/account_js/wishlist.js"></script>
+    </th:block>
+  </body>
+</html>

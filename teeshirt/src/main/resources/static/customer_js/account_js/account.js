@@ -147,12 +147,14 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.status === 'ok') {
                 alert(data.message || successMessage);
                 localStorage.setItem('activeTab', 'address-book');
                 location.reload();
             } else {
                 alert('Lỗi: ' + (data.error || 'Có lỗi xảy ra'));
+                console.log(data.data);
+                
             }
         });
     }
@@ -163,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const formData = new FormData(this);
             
-            handleFormSubmission('/account/address/add', 'POST', formData, 'Thêm địa chỉ thành công!')
+            handleFormSubmission('/account/address/add-dto', 'POST', formData, 'Thêm địa chỉ thành công!')
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.');

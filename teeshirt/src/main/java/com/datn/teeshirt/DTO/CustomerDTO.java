@@ -19,7 +19,11 @@ public class CustomerDTO {
     private String password;
     private String email;
     private String avatarUrl;
+    private String phoneNumber;
     List<CustomerAddress> listCustomerAddresses;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }

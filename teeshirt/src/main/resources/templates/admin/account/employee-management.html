@@ -1,269 +1,119 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{/admin/layout/layout::view(~{::title}, ~{::main})}">
+<html lang="vi"
+    th:replace="~{/admin/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tee Shirt Vibe - Quản lý nhân viên</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="employee-management.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>Quản lý nhân viên</title>
+    <th:block th:fragment="styles">
+
+    </th:block>
 </head>
+
 <body>
-    <!-- Main Content -->
-    <main class="d-flex flex-column p-3 w-100">
-        <div class="container mt-4">
-        <!-- Thông báo thành công/lỗi -->
-        <div th:if="${param.success}" class="alert alert-success" role="alert">
-            <span th:text="${param.success}"></span>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            <span th:text="${param.error}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger" role="alert">
-            <span th:text="${error}"></span>
-        </div>
-
+    <main class="container py-4">
+        <h2 class="mb-4">Quản lý nhân viên</h2>
         <!-- Bộ lọc -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Quản lý nhân viên</h4>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/admin/employees}" method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="searchTerm" class="form-label">Tìm kiếm:</label>
-                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tên, số điện thoại, CCCD">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="status" class="form-label">Trạng thái:</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="">Tất cả</option>
-                            <option value="active">Hoạt động</option>
-                            <option value="inactive">Nghỉ việc</option>
-                            <option value="terminated">Chấm dứt</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="birthdayRange" class="form-label">Ngày sinh:</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate">
-                        <input type="date" class="form-control mt-2" id="endDate" name="endDate">
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
-                        <a th:href="@{/admin/employees}" class="btn btn-secondary">Làm mới</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Danh sách nhân viên -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>Danh sách nhân viên (<span th:text="${x}"></span>)</h4>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themNhanVienModal">Thêm nhân viên</button>
-            </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Mã nhân viên</th>
-                            <th>Tên nhân viên</th>
-                            <th>Số điện thoại</th>
-                            <th>CCCD</th>
-                            <th>Ngày sinh</th>
-                            <th>Giới tính</th>
-                            <th>Phân quyền</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="employee : ${employees}">
-                            <td th:text="${employee.employeeId}"></td>
-                            <td th:text="${employee.fullName}"></td>
-                            <td th:text="${employee.phoneNumber}"></td>
-                            <td th:text="${employee.citizenId}"></td>
-                            <td th:text="${employee.birthday}"></td>
-                            <td th:text="${employee.gender} ? 'Nam' : 'Nữ'"></td>
-                            <td th:text="${employee.role} ? 'Quản lý' : 'Nhân viên'"></td>
-                            <td th:text="${employee.status == 'active' ? 'Hoạt động' : employee.status == 'inactive' ? 'Nghỉ việc' : 'Chấm dứt'}"></td>
-                            <td>
-                                <a th:href="@{/admin/employees/sua/{id}(id=${employee.employeeId})}" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#suaNhanVienModal" th:attr="data-id=${employee.employeeId},data-name=${employee.fullName},data-phone=${employee.phoneNumber},data-email=${employee.email},data-password=${employee.password},data-birthday=${employee.birthday},data-citizenId=${employee.citizenId},data-gender=${employee.gender},data-role=${employee.role},data-status=${employee.status},data-hireDate=${employee.hireDate},data-address=${employee.address}" onclick="populateSuaForm(this)">Sửa</a>
-                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#xoaNhanVienModal" th:attr="data-id=${employee.employeeId},data-name=${employee.fullName}">Xóa</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Phân trang -->
-                <nav aria-label="Phân trang">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#">Trước</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <!-- Modal Thêm Nhân viên -->
-        <div class="modal fade" id="themNhanVienModal" tabindex="-1" aria-labelledby="themNhanVienModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" style="max-width:900px">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="themNhanVienModalLabel">Thêm nhân viên</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form th:action="@{/admin/employees/them}" th:object="${employeeDTO}" method="post">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
-                                <span th:errors="*{fullName}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
-                                <span th:errors="*{phoneNumber}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
-                                <span th:errors="*{email}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
-                                <span th:errors="*{password}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="birthday" class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control" id="birthday" th:field="*{birthday}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" id="address" th:field="*{address}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="hireDate" class="form-label">Ngày tuyển dụng</label>
-                                <input type="date" class="form-control" id="hireDate" th:field="*{hireDate}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="citizenId" class="form-label">Căn cước công dân (CCCD)</label>
-                                <input type="text" class="form-control" id="citizenId" th:field="*{citizenId}">
-                                <span th:errors="*{citizenId}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="male" value="true" th:field="*{gender}" required>
-                                    <label class="form-check-label" for="male">Nam</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="female" value="false" th:field="*{gender}">
-                                    <label class="form-check-label" for="female">Nữ</label>
-                                </div>
-                                <span th:errors="*{gender}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phân quyền <span class="text-danger">*</span></label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" id="manager" value="true" th:field="*{role}" required>
-                                    <label class="form-check-label" for="manager">Quản lý</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" id="employee" value="false" th:field="*{role}">
-                                    <label class="form-check-label" for="employee">Nhân viên</label>
-                                </div>
-                                <span th:errors="*{role}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
-                                <select class="form-select" id="status" th:field="*{status}" required>
-                                    <option value="active">Hoạt động</option>
-                                    <option value="inactive">Nghỉ việc</option>
-                                    <option value="terminated">Chấm dứt</option>
-                                </select>
-                                <span th:errors="*{status}" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
-                        </div>
-                    </form>
+        <form class="mb-3" id="filterForm" onsubmit="event.preventDefault(); fetchEmployees();">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="searchTerm" placeholder="Tìm kiếm tên, SĐT, CCCD">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Nghỉ việc</option>
+                        <option value="terminated">Chấm dứt</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="startDate">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="endDate">
+                </div>
+                <div class="col-md-3 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    <button type="button" class="btn btn-secondary ms-2" onclick="resetFilter()">Làm mới</button>
                 </div>
             </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#themNhanVienModal">Thêm nhân viên</button>
+            </div>
+        </form>
+        <!-- Bảng nhân viên -->
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã NV</th>
+                        <th>Họ tên</th>
+                        <th>SĐT</th>
+                        <th>CCCD</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Phân quyền</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    <!-- Render bằng JS -->
+                </tbody>
+            </table>
         </div>
 
-        <!-- Modal Sửa Nhân viên -->
-        <div class="modal fade" id="suaNhanVienModal" tabindex="-1" aria-labelledby="suaNhanVienModalLabel" aria-hidden="true">
+        <!-- Modal Thêm nhân viên -->
+        <div class="modal fade" id="themNhanVienModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="suaNhanVienModalLabel">Sửa nhân viên</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form th:action="@{/admin/employees/sua/{id}(id=${employeeDTO.employeeId})}" th:object="${employeeDTO}" method="post">
+                    <form id="addEmployeeForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Thêm nhân viên</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
                         <div class="modal-body">
-                            <input type="hidden" th:field="*{employeeId}">
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
-                                <span th:errors="*{fullName}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
-                                <span th:errors="*{phoneNumber}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
-                                <span th:errors="*{email}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Mật khẩu</label>
-                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
-                                <span th:errors="*{password}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label for="birthday" class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control" id="birthday" th:field="*{birthday}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="citizenId" class="form-label">Căn cước công dân (CCCD)</label>
-                                <input type="text" class="form-control" id="citizenId" th:field="*{citizenId}">
-                                <span th:errors="*{citizenId}" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Giới tính</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="maleEdit" value="true" th:field="*{gender}">
-                                    <label class="form-check-label" for="maleEdit">Nam</label>
+                            <div class="mb-2"><input type="text" class="form-control" name="fullName"
+                                    placeholder="Họ tên" required></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="phoneNumber"
+                                    placeholder="Số điện thoại"></div>
+                            <div class="mb-2"><input type="email" class="form-control" name="email" placeholder="Email"
+                                    required></div>
+                            <div class="mb-2"><input type="password" class="form-control" name="password"
+                                    placeholder="Mật khẩu" required></div>
+                            <div class="mb-2"><input type="date" class="form-control" name="birthday"
+                                    placeholder="Ngày sinh"></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="address"
+                                    placeholder="Địa chỉ"></div>
+                            <div class="mb-2"><input type="date" class="form-control" name="hireDate"
+                                    placeholder="Ngày tuyển dụng"></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="citizenId"
+                                    placeholder="CCCD"></div>
+                            <div class="mb-2">
+                                <label class="form-label">Giới tính:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" value="true" required>
+                                    Nam
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="femaleEdit" value="false" th:field="*{gender}">
-                                    <label class="form-check-label" for="femaleEdit">Nữ</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" value="false"> Nữ
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phân quyền</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" id="managerEdit" value="true" th:field="*{role}">
-                                    <label class="form-check-label" for="managerEdit">Quản lý</label>
+                            <div class="mb-2">
+                                <label class="form-label">Phân quyền:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="role" value="true" required> Quản
+                                    lý
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="role" id="employeeEdit" value="false" th:field="*{role}">
-                                    <label class="form-check-label" for="employeeEdit">Nhân viên</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="role" value="false"> Nhân viên
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="status" class="form-label">Trạng thái</label>
-                                <select class="form-select" id="status" th:field="*{status}">
+                            <div class="mb-2">
+                                <select class="form-select" name="status" required>
                                     <option value="active">Hoạt động</option>
                                     <option value="inactive">Nghỉ việc</option>
                                     <option value="terminated">Chấm dứt</option>
@@ -272,76 +122,275 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Xóa Nhân viên -->
-        <div class="modal fade" id="xoaNhanVienModal" tabindex="-1" aria-labelledby="xoaNhanVienModalLabel" aria-hidden="true">
+        <!-- Modal Sửa nhân viên -->
+        <div class="modal fade" id="suaNhanVienModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="xoaNhanVienModalLabel">Xóa nhân viên</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Bạn có chắc chắn muốn chuyển trạng thái nhân viên <span id="xoaNhanVienTen"></span> thành "Nghỉ việc"?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <form id="xoaNhanVienForm" th:action="@{/admin/employees/xoa/{id}(id=0)}" method="post">
+                    <form id="editEmployeeForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Sửa nhân viên</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="employeeId">
+                            <div class="mb-2"><input type="text" class="form-control" name="fullName"
+                                    placeholder="Họ tên" required></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="phoneNumber"
+                                    placeholder="Số điện thoại"></div>
+                            <div class="mb-2"><input type="email" class="form-control" name="email" placeholder="Email"
+                                    required></div>
+                            <div class="mb-2"><input type="password" class="form-control" name="password"
+                                    placeholder="Mật khẩu" required></div>
+                            <div class="mb-2"><input type="date" class="form-control" name="birthday"
+                                    placeholder="Ngày sinh"></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="address"
+                                    placeholder="Địa chỉ"></div>
+                            <div class="mb-2"><input type="date" class="form-control" name="hireDate"
+                                    placeholder="Ngày tuyển dụng"></div>
+                            <div class="mb-2"><input type="text" class="form-control" name="citizenId"
+                                    placeholder="CCCD"></div>
+                            <div class="mb-2">
+                                <label class="form-label">Giới tính:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" value="true" required>
+                                    Nam
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" value="false"> Nữ
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Phân quyền:</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="role" value="true" required> Quản
+                                    lý
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="role" value="false"> Nhân viên
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-select" name="status" required>
+                                    <option value="active">Hoạt động</option>
+                                    <option value="inactive">Nghỉ việc</option>
+                                    <option value="terminated">Chấm dứt</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Xóa nhân viên -->
+        <div class="modal fade" id="xoaNhanVienModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="xoaNhanVienForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Xác nhận xóa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc chắn muốn chuyển trạng thái nhân viên <span id="xoaNhanVienTen"></span> thành
+                                "Nghỉ việc"?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                             <button type="submit" class="btn btn-danger">Xác nhận</button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            // Điền thông tin vào modal xóa
-            document.querySelectorAll('[data-bs-target="#xoaNhanVienModal"]').forEach(button => {
-                button.addEventListener('click', function() {
-                    const name = this.getAttribute('data-name');
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('xoaNhanVienTen').textContent = name;
-                    const form = document.getElementById('xoaNhanVienForm');
-                    form.action = `/admin/employees/xoa/${id}`;
-                });
-            });
-
-            // Điền thông tin vào form sửa
-            function populateSuaForm(button) {
-                const id = button.getAttribute('data-id');
-                const fullName = button.getAttribute('data-name');
-                const phoneNumber = button.getAttribute('data-phone') || '';
-                const email = button.getAttribute('data-email');
-                const password = button.getAttribute('data-password');
-                const birthday = button.getAttribute('data-birthday') || '';
-                const address = button.getAttribute('data-address') || '';
-                const hireDate = button.getAttribute('data-hireDate') || '';
-                const citizenId = button.getAttribute('data-citizenId') || '';
-                const gender = button.getAttribute('data-gender') === 'true';
-                const role = button.getAttribute('data-role') === 'true';
-                const status = button.getAttribute('data-status');
-
-                document.querySelector('#suaNhanVienModal input[name="employeeId"]').value = id;
-                document.querySelector('#suaNhanVienModal input[name="fullName"]').value = fullName;
-                document.querySelector('#suaNhanVienModal input[name="phoneNumber"]').value = phoneNumber;
-                document.querySelector('#suaNhanVienModal input[name="email"]').value = email;
-                document.querySelector('#suaNhanVienModal input[name="password"]').value = password;
-                document.querySelector('#suaNhanVienModal input[name="birthday"]').value = birthday;
-                document.querySelector('#suaNhanVienModal input[name="address"]').value = address;
-                document.querySelector('#suaNhanVienModal input[name="hireDate"]').value = hireDate;
-                document.querySelector('#suaNhanVienModal input[name="citizenId"]').value = citizenId;
-                document.querySelector(`#suaNhanVienModal input[name="gender"][value="${gender}"]`).checked = true;
-                document.querySelector(`#suaNhanVienModal input[name="role"][value="${role}"]`).checked = true;
-                document.querySelector('#suaNhanVienModal select[name="status"]').value = status;
-            }
-        </script>
     </main>
-    
+    <th:block th:fragment="scripts">
+        <script>
+            // --- JS QUẢN LÝ NHÂN VIÊN BẰNG API ---
+            let currentDeleteId = null;
+
+            async function fetchEmployees() {
+                const searchTerm = document.getElementById('searchTerm').value;
+                const status = document.getElementById('status').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                let url = `/api/employees?page=0&size=100`;
+                if (searchTerm) url += `&searchTerm=${encodeURIComponent(searchTerm)}`;
+                if (status) url += `&status=${status}`;
+                if (startDate) url += `&startDate=${startDate}`;
+                if (endDate) url += `&endDate=${endDate}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                renderEmployeeTable(data.content);
+            }
+
+            function renderEmployeeTable(employees) {
+                const tbody = document.getElementById('employeeTableBody');
+                tbody.innerHTML = '';
+                employees.forEach(emp => {
+                    tbody.innerHTML += `
+                <tr>
+                    <td>${emp.employeeId}</td>
+                    <td>${emp.fullName}</td>
+                    <td>${emp.phoneNumber || ''}</td>
+                    <td>${emp.citizenId || ''}</td>
+                    <td>${emp.birthday || ''}</td>
+                    <td>${emp.gender ? 'Nam' : 'Nữ'}</td>
+                    <td>${emp.role ? 'Quản lý' : 'Nhân viên'}</td>
+                    <td>${emp.status === 'active' ? 'Hoạt động' : emp.status === 'inactive' ? 'Nghỉ việc' : 'Chấm dứt'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="openEditModal(${emp.employeeId})">Sửa</button>
+                        <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.employeeId}, '${emp.fullName}')">Xóa</button>
+                    </td>
+                </tr>`;
+                });
+            }
+
+            // Thêm nhân viên
+            async function addEmployeeHandler(e) {
+                e.preventDefault();
+                const form = e.target;
+                const employee = Object.fromEntries(new FormData(form).entries());
+                employee.gender = form.gender.value === 'true';
+                employee.role = form.role.value === 'true';
+                console.log("form data: ", form);
+                console.table(employee);
+                
+                
+                try {
+                    await fetch('/api/employees', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(employee)
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log(data);
+                            if (data.status === 'ok') {
+                                alert('Thêm thành công!');
+                                form.reset();
+                                bootstrap.Modal.getInstance(document.getElementById('themNhanVienModal')).hide();
+                                fetchEmployees();
+                            } else {
+                                alert(data.data);
+                            }
+                        });
+
+                } catch (err) {
+                    alert('Lỗi khi thêm nhân viên!');
+                }
+            }
+
+            // Sửa nhân viên
+            async function editEmployeeHandler(e) {
+                e.preventDefault();
+                const form = e.target;
+                const id = form.employeeId.value;
+                const employee = Object.fromEntries(new FormData(form).entries());
+                employee.gender = form.gender.value === 'true';
+                employee.role = form.role.value === 'true';
+                try {
+                    await fetch(`/api/employees/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(employee)
+                    });
+                    alert('Cập nhật thành công!');
+                    bootstrap.Modal.getInstance(document.getElementById('suaNhanVienModal')).hide();
+                    fetchEmployees();
+                } catch (err) {
+                    alert('Lỗi khi cập nhật nhân viên!');
+                }
+            }
+
+            // Xóa nhân viên
+            async function deleteEmployeeHandler(e) {
+                e.preventDefault();
+                try {
+                    await fetch(`/api/employees/${currentDeleteId}`, { method: 'DELETE' });
+                    alert('Đã chuyển trạng thái nghỉ việc!');
+                    bootstrap.Modal.getInstance(document.getElementById('xoaNhanVienModal')).hide();
+                    fetchEmployees();
+                } catch (err) {
+                    alert('Lỗi khi xóa nhân viên!');
+                }
+            }
+
+            // Mở modal sửa và fill dữ liệu
+            async function openEditModal(id) {
+                // Lấy thông tin nhân viên cần sửa
+                const res = await fetch(`/api/employees/${id}`);
+                const emp = await res.json();
+                // Lấy thông tin user hiện tại
+                const meRes = await fetch('/api/employees/me');
+                const me = await meRes.json();
+                const modal = document.getElementById('suaNhanVienModal');
+
+                // Nếu là quản lý khác thì không cho sửa
+                if (emp.role === true && emp.email !== me.email) {
+                    alert('Bạn không thể chỉnh sửa thông tin của quản lý khác!');
+                    return;
+                }
+                // Nếu là chính mình và là quản lý, disable radio phân quyền
+                if (emp.role === true && emp.email === me.email) {
+                    modal.querySelectorAll('input[name="role"]').forEach(radio => {
+                        radio.disabled = true;
+                    });
+                } else {
+                    modal.querySelectorAll('input[name="role"]').forEach(radio => {
+                        radio.disabled = false;
+                    });
+                }
+                // Fill dữ liệu như cũ
+                modal.querySelector('input[name="employeeId"]').value = emp.employeeId;
+                modal.querySelector('input[name="fullName"]').value = emp.fullName;
+                modal.querySelector('input[name="phoneNumber"]').value = emp.phoneNumber || '';
+                modal.querySelector('input[name="email"]').value = emp.email;
+                modal.querySelector('input[name="password"]').value = emp.password;
+                modal.querySelector('input[name="birthday"]').value = emp.birthday || '';
+                modal.querySelector('input[name="address"]').value = emp.address || '';
+                modal.querySelector('input[name="hireDate"]').value = emp.hireDate || '';
+                modal.querySelector('input[name="citizenId"]').value = emp.citizenId || '';
+                modal.querySelector(`#suaNhanVienModal input[name="gender"][value="${emp.gender}"]`).checked = true;
+                modal.querySelector(`#suaNhanVienModal input[name="role"][value="${emp.role}"]`).checked = true;
+                modal.querySelector('select[name="status"]').value = emp.status;
+                new bootstrap.Modal(modal).show();
+            }
+
+            // Mở modal xóa
+            function openDeleteModal(id, name) {
+                document.getElementById('xoaNhanVienTen').textContent = name;
+                currentDeleteId = id;
+                new bootstrap.Modal(document.getElementById('xoaNhanVienModal')).show();
+            }
+
+            function resetFilter() {
+                document.getElementById('searchTerm').value = '';
+                document.getElementById('status').value = '';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                fetchEmployees();
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                fetchEmployees();
+                document.getElementById('addEmployeeForm').onsubmit = addEmployeeHandler;
+                document.getElementById('editEmployeeForm').onsubmit = editEmployeeHandler;
+                document.getElementById('xoaNhanVienForm').onsubmit = deleteEmployeeHandler;
+            });
+        </script>
+    </th:block>
 </body>
+
 </html>

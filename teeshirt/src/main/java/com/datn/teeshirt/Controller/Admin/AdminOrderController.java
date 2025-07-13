@@ -11,4 +11,9 @@ public class AdminOrderController {
     public String adminOrderPage() {
         return "admin/order/order-management";
     }
+
+    @GetMapping("/counter-sale")
+    public String counterSalePage() {
+        return "admin/order/counter-sale";
+    }
 }
