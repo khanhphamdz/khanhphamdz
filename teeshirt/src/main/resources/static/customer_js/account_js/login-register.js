@@ -37,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await res.json();
-
+            console.log(data);
+            
             if (data.status === "ok") {
                 registerSuccess.textContent = data.message || "Đăng ký thành công!";
                 registerSuccess.style.display = "block";

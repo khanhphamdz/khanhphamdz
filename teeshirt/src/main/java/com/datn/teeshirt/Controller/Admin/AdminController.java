@@ -22,4 +22,13 @@ public class AdminController {
     public String employeesPage() {
         return "admin/account/employee-management";
     }
+
+    @GetMapping("/promotion")
+    public String promotionManagementPage() {
+        return "admin/product/promotion-management";
+    }
+    @GetMapping("/xxx")
+    public String xxx() {
+        return "admin/order/order-detail";
+    }
 }

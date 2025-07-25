@@ -90,8 +90,23 @@ public class EmployeeController {
 
     // Sửa nhân viên
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(employeeService.updateEmployee(id, employeeDTO));
+    public ResponseEntity<ResponseObject> updateEmployee(
+        @PathVariable Long id,
+        @RequestBody @Valid EmployeeDTO employeeDTO,
+        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(err -> {
+                errorMsg.append(err.getDefaultMessage()).append("; ");
+            });
+            return ResponseEntity.ok(new ResponseObject("error", errorMsg.toString(), null));
+        }
+        try {
+            employeeService.updateEmployee(id, employeeDTO);
+            return ResponseEntity.ok(new ResponseObject("ok", "Cập nhật thành công", null));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseObject("error", e.getMessage(), null));
+        }
     }
 
     // Xóa mềm nhân viên

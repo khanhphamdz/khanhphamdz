@@ -36,14 +36,17 @@ function showEditCategoryModal(button) {
 }
 
 function addCategory() {
-    const name = document.getElementById('addCategoryName').value.trim();
+    const name = document.getElementById('addCategoryName').value;
     const parentId = document.getElementById('addCategoryParent').value;
+
+    console.log('name: ', name, ', parentId: ', parentId);
+    
     
     // Clear previous errors
     clearCategoryErrors();
     
     // Validation
-    if (!name) {
+    if (name.length === 0) {
         showCategoryError('addCategoryName', 'Tên danh mục không được để trống');
         return;
     }
@@ -57,6 +60,8 @@ function addCategory() {
         name: name,
         parentId: parentId || null
     };
+    console.log('form data', formData);
+    
 
     fetch('/admin/product/category/api/add', {
         method: 'POST',
@@ -77,6 +82,8 @@ function addCategory() {
         } else {
             showAlert('error', data.message);
             if (data.errors) {
+                console.log(data.errors);
+                
                 data.errors.forEach(error => {
                     if (error.field === 'name') {
                         showCategoryError('addCategoryName', error.defaultMessage);

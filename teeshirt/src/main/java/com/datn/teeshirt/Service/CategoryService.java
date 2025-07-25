@@ -1,5 +1,6 @@
 package com.datn.teeshirt.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,9 +21,12 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public List<CategoryDTO> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(java.util.stream.Collectors.toList());
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryDTO> result = new ArrayList<>();
+        for (Category cat : categories) {
+            result.add(convertToDTO(cat));
+        }
+        return result;
     }
 
     // Tìm kiếm và phân trang

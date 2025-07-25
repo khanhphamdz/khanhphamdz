@@ -1,4 +1,4 @@
-package com.datn.teeshirt.Controller.API;
+package com.datn.teeshirt.Controller.API.AdminAPI;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

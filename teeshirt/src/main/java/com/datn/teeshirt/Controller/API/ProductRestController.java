@@ -52,12 +52,12 @@ public class ProductRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseObject> getProductById(@PathVariable("id") Long id) {
         ProductDTO product = productService.getProductById(id);
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(new ResponseObject("ok", "lấy biến thể thành công", product));
     }
 
     @GetMapping("/variant/{id}")
@@ -243,5 +243,12 @@ public class ProductRestController {
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseObject("error", "Lỗi khi xóa biến thể: " + e.getMessage(), null));
         }
+    }
+
+    // API cho admin: lấy toàn bộ sản phẩm kèm biến thể (không phân trang)
+    @GetMapping("/admin/products-with-variants")
+    public ResponseEntity<List<ProductDTO>> getAllProductsWithVariantsForAdmin() {
+        List<ProductDTO> products = productService.findAll2(); // đã bao gồm variants
+        return ResponseEntity.ok(products);
     }
 }

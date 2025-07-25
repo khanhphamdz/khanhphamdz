@@ -43,8 +43,8 @@ public class Customer {
     @Column(name = "avatar_url", length = 255)
     private String avatarUrl;
 
-    // @Column(name = "phone_number", length = 20)
-    // private String phoneNumber;
+    @Column(name = "phone", length = 15)
+    private String phone;
 
     @OneToMany(mappedBy = "customer")
     private List<CustomerAddress> addresses;

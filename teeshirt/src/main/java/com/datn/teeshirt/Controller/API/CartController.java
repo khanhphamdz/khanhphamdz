@@ -18,13 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.datn.teeshirt.Controller.ResponseObject;
 import com.datn.teeshirt.DTO.CartItemDTO;
 import com.datn.teeshirt.DTO.CartItemRequest;
+import com.datn.teeshirt.DTO.CouponDTO;
 import com.datn.teeshirt.Service.CartService;
+import com.datn.teeshirt.Service.CouponService;
 
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
     @Autowired
     private CartService cartService;
+    @Autowired
+    private CouponService couponService;
 
     // Lấy giỏ hàng của user
     @GetMapping("")
@@ -44,7 +48,7 @@ public class CartController {
     public ResponseEntity<ResponseObject> addToCart(@RequestBody CartItemRequest request,
             Authentication authentication) {
         cartService.addToCart(request, authentication);
-        return ResponseEntity.ok(new ResponseObject("ok", "Thêm sản phẩm vào giỏ thành công", null));
+        return ResponseEntity.ok(new ResponseObject("ok", "Thêm sản phẩm vào giỏ thành công", request));
     }
 
     // Cập nhật số lượng sản phẩm trong giỏ
@@ -69,6 +73,42 @@ public class CartController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseObject("error", "Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng", e.getMessage()));
+        }
+    }
+
+    // Xóa nhiều sản phẩm khỏi giỏ hàng (sau khi đặt hàng thành công)
+    @DeleteMapping("/remove-multiple")
+    public ResponseEntity<ResponseObject> removeMultipleCartItems(@RequestBody List<Long> variantIds, Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()
+                    || authentication.getPrincipal().equals("anonymousUser")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ResponseObject("error", "Bạn chưa đăng nhập", null));
+            }
+            
+            cartService.removeMultipleCartItems(variantIds, authentication);
+            return ResponseEntity.ok(new ResponseObject("ok", "Xóa sản phẩm khỏi giỏ thành công", null));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("error", e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseObject("error", "Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng", e.getMessage()));
+        }
+    }
+
+    // API lấy danh sách mã giảm giá khả dụng cho khách hàng hiện tại
+    @GetMapping("/coupons/available")
+    public ResponseEntity<ResponseObject> getAvailableCoupons(Authentication authentication) {
+        try {
+            // Lấy các coupon đang active, còn hạn, còn lượt sử dụng
+            List<CouponDTO> availableCoupons = couponService.getAvailableCouponsForCustomer(authentication);
+            return ResponseEntity.ok(new ResponseObject("ok", "Lấy mã giảm giá thành công", availableCoupons));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseObject("error", "Có lỗi khi lấy mã giảm giá", null));
         }
     }
 }

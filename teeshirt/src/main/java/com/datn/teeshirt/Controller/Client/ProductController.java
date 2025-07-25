@@ -92,12 +92,13 @@ public class ProductController {
             @RequestParam(required = false) Long sizeId,
             @RequestParam(required = false) java.math.BigDecimal minPrice,
             @RequestParam(required = false) java.math.BigDecimal maxPrice,
+            @RequestParam(required = false) String sort,
             jakarta.servlet.http.HttpServletRequest request) {
 
         try {
             // Lấy sản phẩm với filter đầy đủ
             Page<ProductDTO> products = productService.getProducts(
-                    page, size, keyword, categoryId, colorId, sizeId, minPrice, maxPrice, true);
+                    page, size, keyword, categoryId, colorId, sizeId, minPrice, maxPrice, true, sort);
             model.addAttribute("products", products);
 
             // Lấy dữ liệu cho bộ lọc
@@ -112,12 +113,14 @@ public class ProductController {
             model.addAttribute("currentSizeId", sizeId);
             model.addAttribute("currentMinPrice", minPrice);
             model.addAttribute("currentMaxPrice", maxPrice);
+            model.addAttribute("currentSort", sort);
 
         } catch (Exception e) {
             model.addAttribute("products", Page.empty());
             model.addAttribute("categories", java.util.List.of());
             model.addAttribute("colors", java.util.List.of());
             model.addAttribute("sizes", java.util.List.of());
+            model.addAttribute("currentSort", sort);
         }
 
         // Kiểm tra nếu là AJAX request thì trả về fragment

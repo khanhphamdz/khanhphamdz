@@ -39,6 +39,11 @@ public class PromotionProduct {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("variantId")
+    @JoinColumn(name = "variant_id", nullable = false)
+    private ProductVariant variant;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -48,5 +53,13 @@ public class PromotionProduct {
     public static class PromotionProductId implements java.io.Serializable {
         private Long promotionId;
         private Long productId;
+        private Long variantId;
+
+        public PromotionProductId(Long promotionId, Long productId, Long variantId) {
+            this.promotionId = promotionId;
+            this.productId = productId;
+            this.variantId = variantId;
+        }
+        public PromotionProductId() {}
     }
 } 

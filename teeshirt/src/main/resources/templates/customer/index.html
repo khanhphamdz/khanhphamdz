@@ -53,7 +53,7 @@
                         <!-- Sản phẩm -->
                         <div class="product col">
                             <div class="product-pic hov-img0">
-                                <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
+                                <img th:src="${product.images != null and #lists.size(product.images) > 0 ? product.images[0].imageUrl : '/images/no-image.png'}" alt="IMG-PRODUCT">
                                 <a href="#" class="product-btn">Quick View</a>
                             </div>
                             <div class="product-txt">
@@ -69,8 +69,8 @@
                                 </div>
                                 <div class="product-txt-child2">
                                     <a href="#" class="btn-addwish-b2">
-                                        <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                        <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
+                                        <img class="icon-heart1" src="/images/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2" src="/images/icon-heart-02.png" alt="ICON">
                                     </a>
                                 </div>
                             </div>
@@ -85,7 +85,7 @@
                         <!-- Sản phẩm -->
                         <div class="product col">
                             <div class="product-pic hov-img0">
-                                <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
+                                <img th:src="${product.images != null and #lists.size(product.images) > 0 ? product.images[0].imageUrl : '/images/no-image.png'}" alt="IMG-PRODUCT">
                                 <a href="#" class="product-btn">Quick View</a>
                             </div>
                             <div class="product-txt">
@@ -101,8 +101,8 @@
                                 </div>
                                 <div class="product-txt-child2">
                                     <a href="#" class="btn-addwish-b2">
-                                        <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                        <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
+                                        <img class="icon-heart1" src="/images/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2" src="/images/icon-heart-02.png" alt="ICON">
                                     </a>
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
                         <!-- Sản phẩm -->
                         <div class="product col">
                             <div class="product-pic hov-img0">
-                                <img th:src="${product.images[0]?.imageUrl}" alt="IMG-PRODUCT">
+                                <img th:src="${product.images != null and #lists.size(product.images) > 0 ? product.images[0].imageUrl : '/images/no-image.png'}" alt="IMG-PRODUCT">
                                 <a href="#" class="product-btn">Quick View</a>
                             </div>
                             <div class="product-txt">
@@ -137,8 +137,8 @@
                                 </div>
                                 <div class="product-txt-child2">
                                     <a href="#" class="btn-addwish-b2">
-                                        <img class="icon-heart1" src="images/icon-heart-01.png" alt="ICON">
-                                        <img class="icon-heart2" src="images/icon-heart-02.png" alt="ICON">
+                                        <img class="icon-heart1" src="/images/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2" src="/images/icon-heart-02.png" alt="ICON">
                                     </a>
                                 </div>
                             </div>
@@ -186,7 +186,6 @@
         </section>
     </main>
     <th:block th:fragment="scripts">
-
     </th:block>
 </body>
 

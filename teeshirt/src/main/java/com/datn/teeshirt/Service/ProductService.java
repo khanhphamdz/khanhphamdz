@@ -2,12 +2,14 @@ package com.datn.teeshirt.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,8 @@ import com.datn.teeshirt.Entity.Product;
 import com.datn.teeshirt.Entity.ProductCategory;
 import com.datn.teeshirt.Entity.ProductImage;
 import com.datn.teeshirt.Entity.ProductVariant;
+import com.datn.teeshirt.Entity.Promotion;
+import com.datn.teeshirt.Entity.PromotionProduct;
 import com.datn.teeshirt.Repository.CategoryRepository;
 import com.datn.teeshirt.Repository.ColorRepository;
 import com.datn.teeshirt.Repository.MaterialRepository;
@@ -35,6 +39,7 @@ import com.datn.teeshirt.Repository.ProductCategoryRepository;
 import com.datn.teeshirt.Repository.ProductImageRepository;
 import com.datn.teeshirt.Repository.ProductRepository;
 import com.datn.teeshirt.Repository.ProductVariantRepository;
+import com.datn.teeshirt.Repository.PromotionProductRepository;
 import com.datn.teeshirt.Repository.SizeRepository;
 
 @Service
@@ -57,6 +62,8 @@ public class ProductService {
     private ProductCategoryRepository productCategoryRepository;
     @Autowired
     private CloudinaryService cloudinaryService;
+    @Autowired
+    private PromotionProductRepository promotionProductRepository;
 
     public Page<ProductDTO> findAll(int page) {
         Pageable pageable = PageRequest.of(page, 10);
@@ -88,8 +95,38 @@ public class ProductService {
 
     // 1.2. Lấy danh sách sản phẩm với filter đầy đủ (bao gồm color và size)
     public Page<ProductDTO> getProducts(int page, int size, String keyword, Long categoryId, Long colorId, Long sizeId,
-            BigDecimal minPrice, BigDecimal maxPrice, Boolean status) {
-        Pageable pageable = PageRequest.of(page, size);
+            BigDecimal minPrice, BigDecimal maxPrice, Boolean status, String sort) {
+        Pageable pageable;
+        if (sort != null) {
+            switch (sort) {
+                case "name-asc":
+                    pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+                    break;
+                case "name-desc":
+                    pageable = PageRequest.of(page, size, Sort.by("name").descending());
+                    break;
+                case "price-asc":
+                    pageable = PageRequest.of(page, size, Sort.by("basePrice").ascending());
+                    break;
+                case "price-desc":
+                    pageable = PageRequest.of(page, size, Sort.by("basePrice").descending());
+                    break;
+                case "date-asc":
+                    pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+                    break;
+                case "date-desc":
+                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+                    break;
+                case "newest":
+                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+                    break;
+                default:
+                    pageable = PageRequest.of(page, size);
+                    break;
+            }
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
         if (keyword != null && !keyword.isEmpty()) {
             return productRepository
                     .searchWithFilters(keyword, categoryId, colorId, sizeId, status, null, null, pageable)
@@ -153,7 +190,7 @@ public class ProductService {
 
     // 6. Lấy danh sách biến thể của sản phẩm
     public List<ProductVariantDTO> getVariantsByProductId(Long productId) {
-        return productVariantRepository.findByProduct_ProductId(productId)
+        return productVariantRepository.findByProduct_ProductIdAndDeletedAtIsNull(productId)
                 .stream().map(this::toProductVariantDTO).collect(Collectors.toList());
     }
 
@@ -161,7 +198,7 @@ public class ProductService {
     @Transactional
     public ProductVariantDTO addVariantToProduct(Long productId, ProductVariantDTO variantDTO) {
         if (variantDTO.getColorId() != null && variantDTO.getSizeId() != null) {
-            boolean exists = productVariantRepository.existsByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(
+            boolean exists = productVariantRepository.existsByProduct_ProductIdAndColor_ColorIdAndSize_SizeIdAndDeletedAtIsNull(
                     productId, variantDTO.getColorId(), variantDTO.getSizeId());
             if (exists) {
                 throw new RuntimeException("Đã tồn tại biến thể với màu sắc và kích cỡ này!");
@@ -176,10 +213,10 @@ public class ProductService {
             String barcode;
             do {
                 barcode = generateBarcode();
-            } while (productVariantRepository.existsByBarcode(barcode));
+            } while (productVariantRepository.existsByBarcodeAndDeletedAtIsNull(barcode));
             variant.setBarcode(barcode);
         } else {
-            if (productVariantRepository.existsByBarcode(variantDTO.getBarcode())) {
+            if (productVariantRepository.existsByBarcodeAndDeletedAtIsNull(variantDTO.getBarcode())) {
                 throw new RuntimeException("Barcode đã tồn tại!");
             }
             variant.setBarcode(variantDTO.getBarcode());
@@ -210,11 +247,11 @@ public class ProductService {
             String barcode;
             do {
                 barcode = generateBarcode();
-            } while (productVariantRepository.existsByBarcode(barcode));
+            } while (productVariantRepository.existsByBarcodeAndDeletedAtIsNull(barcode));
             variant.setBarcode(barcode);
         } else {
             if (!variantDTO.getBarcode().equals(variant.getBarcode())
-                    && productVariantRepository.existsByBarcode(variantDTO.getBarcode())) {
+                    && productVariantRepository.existsByBarcodeAndDeletedAtIsNull(variantDTO.getBarcode())) {
                 throw new RuntimeException("Barcode đã tồn tại!");
             }
             variant.setBarcode(variantDTO.getBarcode());
@@ -235,10 +272,28 @@ public class ProductService {
         return toProductVariantDTO(saved);
     }
 
-    // 9. Xóa biến thể
+    // 9. Xóa biến thể (soft delete)
     @Transactional
     public void deleteVariant(Long variantId) {
-        productVariantRepository.deleteById(variantId);
+        // Xóa PromotionProduct liên quan
+        promotionProductRepository.deleteByVariantId(variantId);
+        // Xóa ảnh của các biến thể trước
+        List<ProductImage> images = productImageRepository.findByVariant_VariantId(variantId);
+        for (ProductImage image : images) {
+            try {
+                cloudinaryService.deleteFile(image.getImageUrl());
+            } catch (Exception e) {
+                System.err.println("Lỗi khi xóa ảnh từ Cloudinary: " + e.getMessage());
+            }
+        }
+        productImageRepository.deleteAll(images);
+        // Soft delete biến thể và cập nhật sku/barcode để tránh trùng unique
+        ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow();
+        variant.setDeletedAt(LocalDateTime.now());
+        String suffix = "-deleted-" + System.currentTimeMillis();
+        if (variant.getSku() != null) variant.setSku(variant.getSku() + suffix);
+        if (variant.getBarcode() != null) variant.setBarcode(variant.getBarcode() + suffix);
+        productVariantRepository.save(variant);
     }
 
     // 10. Quản lý ảnh sản phẩm
@@ -469,7 +524,7 @@ public class ProductService {
     }
 
     private ProductVariantDTO toProductVariantDTO(ProductVariant variant) {
-        return ProductVariantDTO.builder()
+        ProductVariantDTO dto = ProductVariantDTO.builder()
                 .variantId(variant.getVariantId())
                 .productId(variant.getProduct() != null ? variant.getProduct().getProductId() : null)
                 .name(variant.getName())
@@ -480,7 +535,7 @@ public class ProductService {
                 .sizeId(variant.getSize() != null ? variant.getSize().getSizeId() : null)
                 .sizeName(variant.getSize() != null ? variant.getSize().getName() : null)
                 .price(variant.getPrice())
-                .discountPrice(variant.getDiscountPrice())
+                .discountPrice(getDynamicDiscountPrice(variant))
                 .discountPriceStartAt(variant.getDiscountPriceStartAt())
                 .discountPriceEndAt(variant.getDiscountPriceEndAt())
                 .quantityInStock(variant.getQuantityInStock())
@@ -489,6 +544,40 @@ public class ProductService {
                 .createdAt(variant.getCreatedAt())
                 .updatedAt(variant.getUpdatedAt())
                 .build();
+        return dto;
+    }
+
+    private BigDecimal getDynamicDiscountPrice(ProductVariant variant) {
+        List<PromotionProduct> activePromotions = promotionProductRepository
+                .findByVariant_VariantId(variant.getVariantId())
+                .stream()
+                .filter(pp -> {
+                    Promotion promo = pp.getPromotion();
+                    LocalDateTime now = LocalDateTime.now();
+                    return promo.getIsActive() != null && promo.getIsActive()
+                            && !now.isBefore(promo.getStartDate())
+                            && !now.isAfter(promo.getEndDate());
+                })
+                .collect(Collectors.toList());
+        if (activePromotions.isEmpty())
+            return null;
+        // Ưu tiên promotion có discount cao nhất
+        Promotion bestPromo = activePromotions.stream()
+                .map(PromotionProduct::getPromotion)
+                .max(Comparator
+                        .comparing(pp -> pp.getDiscountValue() != null ? pp.getDiscountValue() : BigDecimal.ZERO))
+                .orElse(null);
+        if (bestPromo == null)
+            return null;
+        if (bestPromo.getType() == Promotion.PromotionType.PERCENTAGE) {
+            BigDecimal percent = bestPromo.getDiscountValue();
+            BigDecimal discount = variant.getPrice().multiply(percent).divide(BigDecimal.valueOf(100));
+            BigDecimal discountedPrice = variant.getPrice().subtract(discount);
+            return discountedPrice.max(BigDecimal.ZERO).setScale(2, BigDecimal.ROUND_HALF_UP);
+        } else {
+            return variant.getPrice().subtract(bestPromo.getDiscountValue()).max(BigDecimal.ZERO).setScale(2,
+                    BigDecimal.ROUND_HALF_UP);
+        }
     }
 
     private ProductImageDTO toProductImageDTO(ProductImage image) {
@@ -622,7 +711,7 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow();
         List<com.datn.teeshirt.Entity.Color> colors = colorRepository.findAll();
         List<com.datn.teeshirt.Entity.Size> sizes = sizeRepository.findAll();
-        List<ProductVariant> existingVariants = productVariantRepository.findByProduct_ProductId(productId);
+        List<ProductVariant> existingVariants = productVariantRepository.findByProduct_ProductIdAndDeletedAtIsNull(productId);
         List<String> existingCombinations = existingVariants.stream()
                 .map(v -> v.getColor().getColorId() + "-" + v.getSize().getSizeId())
                 .toList();
@@ -684,11 +773,13 @@ public class ProductService {
         productVariantRepository.saveAll(variants);
     }
 
-    // Áp dụng hàng loạt - Xóa biến thể
+    // Áp dụng hàng loạt - Xóa biến thể (soft delete)
     @Transactional
     public void bulkDeleteVariants(List<Long> variantIds) {
-        // Xóa ảnh của các biến thể trước
         for (Long variantId : variantIds) {
+            // Xóa PromotionProduct liên quan
+            promotionProductRepository.deleteByVariantId(variantId);
+            // Xóa ảnh của các biến thể trước
             List<ProductImage> images = productImageRepository.findByVariant_VariantId(variantId);
             for (ProductImage image : images) {
                 try {
@@ -698,10 +789,16 @@ public class ProductService {
                 }
             }
             productImageRepository.deleteAll(images);
+            // Soft delete biến thể và cập nhật sku/barcode để tránh trùng unique
+            ProductVariant variant = productVariantRepository.findById(variantId).orElse(null);
+            if (variant != null) {
+                variant.setDeletedAt(LocalDateTime.now());
+                String suffix = "-deleted-" + System.currentTimeMillis();
+                if (variant.getSku() != null) variant.setSku(variant.getSku() + suffix);
+                if (variant.getBarcode() != null) variant.setBarcode(variant.getBarcode() + suffix);
+                productVariantRepository.save(variant);
+            }
         }
-
-        // Xóa biến thể
-        productVariantRepository.deleteAllById(variantIds);
     }
 
     // Helper methods
@@ -709,7 +806,7 @@ public class ProductService {
         String barcode;
         do {
             barcode = "BC" + System.currentTimeMillis() + (int) (Math.random() * 1000);
-        } while (productVariantRepository.existsByBarcode(barcode));
+        } while (productVariantRepository.existsByBarcodeAndDeletedAtIsNull(barcode));
         return barcode;
     }
 
@@ -726,8 +823,22 @@ public class ProductService {
         Long categoryId = product.getProductCategories().get(0).getCategory().getCategoryId();
         Pageable pageable = PageRequest.of(0, limit);
         List<Product> related = productRepository.filter(categoryId, true, null, null, pageable)
-                .stream().filter(p -> !p.getProductId().equals(productId)).limit(limit).collect(Collectors.toList());
-        return related.stream().map(this::toProductDTO).collect(Collectors.toList());
+                .stream().filter(p -> !p.getProductId().equals(productId)).collect(Collectors.toList());
+        // Nếu chưa đủ số lượng, bổ sung thêm sản phẩm ngẫu nhiên khác
+        if (related.size() < limit) {
+            int remaining = limit - related.size();
+            List<Product> allOtherProducts = productRepository.findAllActiveExcludingCurrent(productId);
+            // Loại bỏ các sản phẩm đã có trong danh sách
+            allOtherProducts = allOtherProducts.stream()
+                    .filter(p -> related.stream().noneMatch(rp -> rp.getProductId().equals(p.getProductId())))
+                    .collect(Collectors.toList());
+            Collections.shuffle(allOtherProducts);
+            int additionalCount = Math.min(remaining, allOtherProducts.size());
+            related.addAll(allOtherProducts.subList(0, additionalCount));
+        }
+        // Random lại toàn bộ danh sách để không có pattern cố định
+        Collections.shuffle(related);
+        return related.stream().limit(limit).map(this::toProductDTO).collect(Collectors.toList());
     }
 
     // Lấy sản phẩm liên quan - ưu tiên cùng danh mục, sau đó random
@@ -788,8 +899,9 @@ public class ProductService {
 
     // Lấy sản phẩm theo barcode
     public ProductDTO getProductByBarcode(String barcode) {
-        ProductVariant variant = productVariantRepository.findByBarcode(barcode).orElse(null);
-        if (variant == null) return null;
+        ProductVariant variant = productVariantRepository.findByBarcodeAndDeletedAtIsNull(barcode).orElse(null);
+        if (variant == null)
+            return null;
         Product product = variant.getProduct();
         return toProductDTO(product);
     }
@@ -801,11 +913,12 @@ public class ProductService {
         // Đây là ví dụ đơn giản, bạn nên tối ưu lại nếu cần
         List<Product> products = productRepository.findAll();
         return products.stream()
-            .filter(p -> (keyword == null || p.getName().toLowerCase().contains(keyword.toLowerCase()))
-                && (categoryId == null || p.getProductCategories().stream().anyMatch(c -> c.getCategory().getCategoryId().equals(categoryId))))
-            .skip(page * size)
-            .limit(size)
-            .map(this::toProductDTO)
-            .collect(Collectors.toList());
+                .filter(p -> (keyword == null || p.getName().toLowerCase().contains(keyword.toLowerCase()))
+                        && (categoryId == null || p.getProductCategories().stream()
+                                .anyMatch(c -> c.getCategory().getCategoryId().equals(categoryId))))
+                .skip(page * size)
+                .limit(size)
+                .map(this::toProductDTO)
+                .collect(Collectors.toList());
     }
 }

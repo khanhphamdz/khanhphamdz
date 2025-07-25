@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM Content Loaded - Product Detail Page');
-
     // Khởi tạo tooltip
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
@@ -79,8 +77,11 @@ function initImageUploadForModal({
         const files = e.dataTransfer.files;
         handleImageFilesGeneric(files, newImagesListId, newImagesContainerId, filesKey);
     });
-    uploadAreaNew.addEventListener('click', function () {
-        fileInputNew.click();
+    uploadAreaNew.addEventListener('click', function (e) {
+        // Chỉ trigger fileInput nếu click KHÔNG phải vào input file
+        if (e.target !== fileInputNew) {
+            fileInputNew.click();
+        }
     });
     fileInputNew.addEventListener('change', function (e) {
         handleImageFilesGeneric(e.target.files, newImagesListId, newImagesContainerId, filesKey);
@@ -186,7 +187,7 @@ function showImagePreview(src, name) {
                 <div class="modal-body text-center">
                     <img src="${src}" class="image-preview" alt="${name}">
                 </div>
-            </div>
+            </div>  
         </div>
     `;
 
@@ -199,18 +200,48 @@ function showImagePreview(src, name) {
     });
 }
 
+// Số lượng ảnh tối đa cho sản phẩm
+const MAX_PRODUCT_IMAGES = 5;
+
+// Cập nhật số lượng ảnh còn lại
+function updateProductImageCount() {
+    const currentImages = document.querySelectorAll('#productImageList .product-image-item[data-type="existing"]').length;
+    const newImages = window.newProductFiles ? window.newProductFiles.length : 0;
+    const total = currentImages + newImages;
+    const remain = MAX_PRODUCT_IMAGES - total;
+    const countDiv = document.getElementById('product-image-count');
+    const fileInput = document.getElementById('productImageInput');
+    const uploadArea = document.querySelector('.product-upload-area');
+
+    if (countDiv) {
+        countDiv.textContent = `Đã chọn ${total}/${MAX_PRODUCT_IMAGES} ảnh. Có thể thêm tối đa ${remain < 0 ? 0 : remain} ảnh nữa.`;
+        // Thêm thông báo nếu đã đủ ảnh
+        if (remain <= 0) {
+            countDiv.textContent += ' (Đã đạt tối đa ảnh)';
+        }
+    }
+    // Disable input và làm mờ vùng upload nếu đủ ảnh
+    if (fileInput && uploadArea) {
+        if (remain <= 0) {
+            fileInput.disabled = true;
+            uploadArea.classList.add('disabled-upload-area');
+            uploadArea.style.opacity = '0.5';
+            uploadArea.style.pointerEvents = 'none';
+        } else {
+            fileInput.disabled = false;
+            uploadArea.classList.remove('disabled-upload-area');
+            uploadArea.style.opacity = '';
+            uploadArea.style.pointerEvents = '';
+        }
+    }
+}
+
 // Khởi tạo xử lý ảnh sản phẩm
 function initProductImageHandling() {
     const uploadArea = document.querySelector('.product-upload-area');
     const fileInput = document.getElementById('productImageInput');
     const newImagesList = document.getElementById('newProductImagesList');
     const newImagesContainer = document.getElementById('newProductImagesContainer');
-
-    // Debug: Kiểm tra xem có tìm thấy element không
-    console.log('Upload area found:', uploadArea);
-    console.log('File input found:', fileInput);
-    console.log('New images list found:', newImagesList);
-    console.log('New images container found:', newImagesContainer);
 
     if (!uploadArea || !fileInput) {
         console.error('Không tìm thấy upload area hoặc file input');
@@ -224,90 +255,87 @@ function initProductImageHandling() {
     uploadArea.addEventListener('dragover', function (e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
-        console.log('Drag over event triggered');
     });
 
     uploadArea.addEventListener('dragleave', function (e) {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
-        console.log('Drag leave event triggered');
     });
 
     uploadArea.addEventListener('drop', function (e) {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
         const files = e.dataTransfer.files;
-        console.log('Drop event triggered with files:', files);
         handleProductImageFiles(files);
     });
 
     // Click to upload
-    uploadArea.addEventListener('click', function () {
-        console.log('Upload area clicked');
-        fileInput.click();
+    uploadArea.addEventListener('click', function (e) {
+        // Chỉ trigger fileInput nếu click KHÔNG phải vào input file
+        if (e.target !== fileInput) {
+            fileInput.click();
+        }
     });
 
     // File input change
     fileInput.addEventListener('change', function (e) {
-        console.log('File input change event triggered:', e.target.files);
         handleProductImageFiles(e.target.files);
     });
+
+    updateProductImageCount();
 }
 
 // Xử lý files ảnh sản phẩm được chọn
 function handleProductImageFiles(files) {
-    console.log('handleProductImageFiles called with:', files);
-
     const newImagesList = document.getElementById('newProductImagesList');
     const newImagesContainer = document.getElementById('newProductImagesContainer');
-
-    console.log('New images list element:', newImagesList);
-    console.log('New images container element:', newImagesContainer);
 
     if (!newImagesList || !newImagesContainer) {
         console.error('Không tìm thấy container elements');
         return;
     }
 
-    // Chỉ xử lý file đầu tiên (1 ảnh thumbnail)
-    const file = files[0];
-    if (file) {
-        console.log('Processing file:', file.name, file.type, file.size);
+    // Đếm tổng số ảnh hiện có (cả cũ và mới)
+    const currentImages = document.querySelectorAll('#productImageList .product-image-item[data-type="existing"]').length;
+    let newFiles = window.newProductFiles || [];
+    let total = currentImages + newFiles.length;
+    let remain = MAX_PRODUCT_IMAGES - total;
 
+    // Lọc file hợp lệ và không vượt quá số lượng còn lại
+    let filesToAdd = [];
+    for (let i = 0; i < files.length; i++) {
+        if (newFiles.length + currentImages + filesToAdd.length >= MAX_PRODUCT_IMAGES) break;
+        const file = files[i];
         if (file.type.startsWith('image/')) {
-            if (file.size > 5 * 1024 * 1024) { // 5MB
+            if (file.size > 5 * 1024 * 1024) {
                 alert(`File ${file.name} quá lớn. Vui lòng chọn file nhỏ hơn 5MB.`);
-                return;
+                continue;
             }
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                console.log('File read successfully:', file.name);
-
-                // Xóa ảnh cũ nếu có
-                newImagesList.innerHTML = '';
-
-                // Lưu file mới
-                window.newProductFiles = [file];
-
-                const imageItem = createProductImageItem(e.target.result, file.name, 0, 'new');
-                newImagesList.appendChild(imageItem);
-                newImagesContainer.style.display = 'block';
-                console.log('Image item created and added to DOM');
-            };
-            reader.onerror = function (e) {
-                console.error('Error reading file:', file.name, e);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            console.log('File is not an image:', file.name, file.type);
-            alert('Vui lòng chọn file ảnh hợp lệ');
+            filesToAdd.push(file);
         }
     }
+    if (filesToAdd.length === 0) {
+        alert('Không thể thêm ảnh. Đã đạt tối đa hoặc không có file hợp lệ.');
+        return;
+    }
+
+    // Thêm file vào mảng và hiển thị
+    filesToAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const fileIndex = window.newProductFiles.length;
+            window.newProductFiles.push(file);
+            const imageItem = createProductImageItem(e.target.result, file.name, fileIndex, 'new');
+            newImagesList.appendChild(imageItem);
+            newImagesContainer.style.display = 'block';
+            updateProductImageCount();
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 // Tạo element ảnh sản phẩm
-function createProductImageItem(src, name, fileIndex = null, type = 'existing', imageId = null, isMain = false) {
+function createProductImageItem(src, name, fileIndex = null, type = 'existing', imageId = null) {
     const imageItem = document.createElement('div');
     imageItem.className = 'product-image-item';
     imageItem.dataset.type = type;
@@ -336,14 +364,6 @@ function createProductImageItem(src, name, fileIndex = null, type = 'existing', 
     imageItem.appendChild(img);
     imageItem.appendChild(deleteBtn);
     imageItem.appendChild(imageInfo);
-
-    // Thêm badge cho ảnh chính
-    if (isMain) {
-        const mainBadge = document.createElement('div');
-        mainBadge.className = 'main-image-badge';
-        mainBadge.textContent = 'Chính';
-        imageItem.appendChild(mainBadge);
-    }
 
     // Click để xem ảnh lớn
     img.addEventListener('click', function () {
@@ -382,7 +402,7 @@ function deleteProductImageItem(imageItem) {
         if (newImagesList.children.length === 0) {
             document.getElementById('newProductImagesContainer').style.display = 'none';
         }
-        updateNewImageCount();
+        updateProductImageCount();
     }
 }
 
@@ -425,24 +445,27 @@ function displayCurrentProductImages() {
         .then(response => {
             if (response.status === 'ok' && response.data && response.data.length > 0) {
                 imagesDiv.innerHTML = '';
-                // Chỉ hiển thị ảnh đầu tiên (thumbnail)
-                const img = response.data[0];
-                const imageItem = createProductImageItem(
-                    img.imageUrl,
-                    `Ảnh thumbnail`,
-                    null,
-                    'existing',
-                    img.imageId,
-                    true // Đây là ảnh chính
-                );
-                imagesDiv.appendChild(imageItem);
+                // Hiển thị tối đa 5 ảnh
+                const img = response.data.slice(0, MAX_PRODUCT_IMAGES);
+                img.forEach(img => {
+                    const imageItem = createProductImageItem(
+                        img.imageUrl,
+                        `Ảnh thumbnail`,
+                        null,
+                        'existing',
+                        img.imageId,
+                    );
+                    imagesDiv.appendChild(imageItem);
+                });
             } else {
                 imagesDiv.innerHTML = '<p class="text-muted">Chưa có ảnh thumbnail</p>';
             }
+            updateProductImageCount();
         })
         .catch(error => {
             console.error('Error fetching product images:', error);
             imagesDiv.innerHTML = '<p class="text-muted">Chưa có ảnh thumbnail</p>';
+            updateProductImageCount();
         });
 }
 
@@ -722,9 +745,11 @@ function uploadNewProductImages() {
     const formData = new FormData();
     formData.append('productId', productId);
 
-    // Thêm ảnh mới vào FormData (chỉ 1 ảnh)
+    // Thêm ảnh mới vào FormData (tối đa 5 ảnh)
     if (window.newProductFiles && window.newProductFiles.length > 0) {
-        formData.append('images', window.newProductFiles[0]);
+        window.newProductFiles.slice(0, MAX_PRODUCT_IMAGES).forEach(file => {
+            formData.append('images', file);
+        });
     }
 
     // Hiển thị loading
@@ -1148,9 +1173,9 @@ function getExistingVariants() {
     fetch(`http://localhost:8080/api/product/${productId}`)
         .then(response => response.json())
         .then(data => {
-            existingVariants = data.variants || [];
-            console.log(existingVariants);
-
+            if (data.status === 'ok') {
+                existingVariants = data.variants || [];
+            }
         })
         .catch(error => {
             console.error('Error fetching existing variants:', error);
@@ -1164,8 +1189,6 @@ function getAllAttributes() {
         .then(response => response.json())
         .then(data => {
             allAttributes = data.data || {};
-            console.log(allAttributes);
-
         })
         .catch(error => {
             console.error('Error fetching all attributes:', error);
@@ -1449,4 +1472,126 @@ document.querySelector('#addVariantBtn').addEventListener('click', async functio
     } finally {
         resetSaveButton(updateBtn, '<i class="fas fa-save me-2"></i>Lưu');
     }
+});
+
+// ========== Render danh sách biến thể động qua API ========== //
+
+function fetchAndRenderVariants() {
+    const productId = document.querySelector('input[name="productId"]').value;
+    const tbody = document.getElementById('variantsList');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Đang tải...</td></tr>';
+    fetch(`/api/product/${productId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'ok' && data.data.variants) {
+                if (data.data.variants.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có biến thể nào</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = '';
+                data.data.variants.forEach(variant => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input variant-checkbox" type="checkbox" value="${variant.variantId}">
+                            </div>
+                        </td>
+                        <td>${variant.name || ''}</td>
+                        <td>${variant.price != null ? Number(variant.price).toLocaleString('vi-VN') : ''}</td>
+                        <td>${variant.quantityInStock != null ? variant.quantityInStock : ''}</td>
+                        <td>
+                            ${variant.isActive ? '<span class="badge bg-success">Đang kích hoạt</span>' : '<span class="badge bg-secondary">Không kích hoạt</span>'}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-primary btn-edit-variant" data-variant-id="${variant.variantId}" data-product-id="${productId}" data-bs-toggle="modal" data-bs-target="#variantDetailModal">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger btn-delete-variant" data-variant-id="${variant.variantId}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                attachVariantRowEvents();
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Lỗi tải biến thể</td></tr>';
+            }
+        })
+        .catch(() => {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối server</td></tr>';
+        });
+}
+
+function attachVariantRowEvents() {
+    // Sửa biến thể
+    document.querySelectorAll('.btn-edit-variant').forEach(button => {
+        button.addEventListener('click', function () {
+            const variantId = this.dataset.variantId;
+            const productId = this.dataset.productId;
+            // Reset form và ảnh
+            resetVariantFormGeneric('variant');
+            // Gọi API để lấy thông tin biến thể
+            fetch(`/api/product/variant/${variantId}`)
+                .then(response => response.json())
+                .then(json => {
+                    if (json.status === 'ok' && json.data && json.data.variant) {
+                        const v = json.data.variant;
+                        // Fill các trường cơ bản
+                        document.getElementById('variantId').value = v.variantId || '';
+                        document.getElementById('variantName').value = v.name || '';
+                        document.getElementById('variantSku').value = v.sku || '';
+                        document.getElementById('variantBarcode').value = v.barcode || '';
+                        document.getElementById('variantPrice').value = v.price || '';
+                        document.getElementById('variantDiscountPrice').value = v.discountPrice || '';
+                        document.getElementById('variantDiscountStart').value = v.discountPriceStartAt ? v.discountPriceStartAt.substring(0, 16) : '';
+                        document.getElementById('variantDiscountEnd').value = v.discountPriceEndAt ? v.discountPriceEndAt.substring(0, 16) : '';
+                        document.getElementById('variantQuantity').value = v.quantityInStock || '';
+                        document.getElementById('variantIsActive').value = v.isActive ? 'true' : 'false';
+                        if (document.getElementById('variantColor'))
+                            document.getElementById('variantColor').value = v.colorName || '';
+                        if (document.getElementById('variantSize'))
+                            document.getElementById('variantSize').value = v.sizeName || '';
+                        displayExistingImages(json.data.images);
+                    } else {
+                        alert(json.message || 'Không lấy được dữ liệu biến thể!');
+                    }
+                })
+                .catch(error => console.error('Error fetching variant:', error));
+        });
+    });
+    // Xóa biến thể
+    document.querySelectorAll('.btn-delete-variant').forEach(button => {
+        button.addEventListener('click', function () {
+            const variantId = this.dataset.variantId;
+            if (confirm('Bạn có chắc muốn xóa biến thể này?')) {
+                fetch(`/api/product/variant/${variantId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 'ok') {
+                            alert('Xóa biến thể thành công!');
+                            fetchAndRenderVariants();
+                        } else {
+                            alert('Lỗi khi xóa biến thể: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting variant:', error);
+                        alert('Lỗi khi xóa biến thể');
+                    });
+            }
+        });
+    });
+    // Gắn lại các event khác nếu cần (checkbox, bulk action...)
+    // ...
+}
+
+// Gọi hàm này khi trang load và sau khi thêm/sửa/xóa biến thể
+
+document.addEventListener('DOMContentLoaded', function () {
+    fetchAndRenderVariants();
 });

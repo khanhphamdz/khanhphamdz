@@ -6,8 +6,13 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,7 +43,8 @@ public class Payment {
     private Order order;
 
     @Column(name = "payment_type", nullable = false, length = 20)
-    private String paymentType;
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
@@ -62,4 +68,22 @@ public class Payment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public enum PaymentType {
+        COD, VNPAY;
+
+        @JsonValue
+        public String getValue() {
+            return this.name();
+        }
+
+        @JsonCreator
+        public static PaymentType fromValue(String value) {
+            try {
+                return PaymentType.valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Payment type không hợp lệ: " + value + ". Các giá trị hợp lệ: COD, VNPAY");
+            }
+        }
+    }
 } 

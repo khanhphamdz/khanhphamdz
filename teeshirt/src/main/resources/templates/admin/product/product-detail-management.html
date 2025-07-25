@@ -266,7 +266,7 @@
 
 <body>
     <main class="product-manage-page w-100 p-4">
-        <div class="page-header d-flex justify-content-between align-items-center">
+        <div class="page-header d-flex justify-content-between align-items-center mb-3">
             <h3 class="page-title mb-0">Sửa sản phẩm</h3>
             <button class="btn btn-success" id="update-product-btn">
                 Cập nhật
@@ -452,51 +452,9 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="variantsList">
-                                                                    <tr th:each="variant : ${product.variants}">
-                                                                        <td>
-                                                                            <div class="form-check">
-                                                                                <input
-                                                                                    class="form-check-input variant-checkbox"
-                                                                                    type="checkbox"
-                                                                                    th:value="${variant.variantId}">
-                                                                            </div>
-                                                                        </td>
-                                                                        <td th:text="${variant.name}"></td>
-                                                                        <td
-                                                                            th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')}">
-                                                                        </td>
-                                                                        <td th:text="${variant.quantityInStock}"></td>
-                                                                        <td>
-                                                                            <span th:if="${variant.isActive}"
-                                                                                class="badge bg-success">Đang kích
-                                                                                hoạt</span>
-                                                                            <span th:unless="${variant.isActive}"
-                                                                                class="badge bg-secondary">Không kích
-                                                                                hoạt</span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <button type="button"
-                                                                                class="btn btn-sm btn-primary btn-edit-variant"
-                                                                                data-bs-toggle="modal"
-                                                                                data-bs-target="#variantDetailModal"
-                                                                                th:attr="data-variant-id=${variant.variantId}, data-product-id=${product.productId}">
-                                                                                <i class="fas fa-edit"></i>
-                                                                            </button>
-                                                                            <button type="button"
-                                                                                class="btn btn-sm btn-danger"
-                                                                                th:onclick="'deleteVariant(' + ${variant.variantId} + ')'">
-                                                                                <i class="fas fa-trash"></i>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>
-                                                    </div>
-                                                    <div class="button-group mt-4">
-                                                        <button class="btn btn-success" onclick="saveVariants()">Lưu
-                                                            biến
-                                                            thể</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -626,13 +584,15 @@
                                     style="background-color: #f8f9fa; min-height: 120px;">
                                     <input type="file"
                                         class="form-control-file position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                                        id="productImageInput" accept="image/*" />
+                                        id="productImageInput" accept="image/*" multiple />
                                     <div class="upload-content">
                                         <i class="fas fa-cloud-upload-alt text-muted fs-3 mb-2"></i>
                                         <p class="mb-1 text-muted fw-medium">Kéo thả hoặc nhấp để tải ảnh lên</p>
-                                        <small class="text-muted">Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB/ảnh)</small>
+                                        <small class="text-muted">Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB/ảnh, tối đa 5 ảnh)</small>
                                     </div>
                                 </div>
+                                <!-- Hiển thị số lượng ảnh còn lại -->
+                                <div id="product-image-count" class="text-muted mb-2"></div>
 
                                 <!-- Danh sách ảnh hiện tại -->
                                 <div class="mb-3">

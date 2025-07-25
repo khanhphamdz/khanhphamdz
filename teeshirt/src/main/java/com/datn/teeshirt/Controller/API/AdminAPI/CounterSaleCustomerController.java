@@ -1,4 +1,4 @@
-package com.datn.teeshirt.Controller.API;
+package com.datn.teeshirt.Controller.API.AdminAPI;
 
 import com.datn.teeshirt.DTO.CustomerDTO;
 import com.datn.teeshirt.Service.CustomerService;

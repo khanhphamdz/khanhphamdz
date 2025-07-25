@@ -72,6 +72,7 @@ public class CustomerService {
                 .customerId(customer.getCustomerId())
                 .name(customer.getName())
                 .email(customer.getEmail())
+				.phone(customer.getPhone())
                 .avatarUrl(customer.getAvatarUrl())
                 .createdAt(customer.getCreatedAt())
                 .updatedAt(customer.getUpdatedAt())
@@ -94,5 +95,10 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
         return toDTO(customer);
+    }
+
+    // Tìm khách hàng theo ID
+    public Customer findById(Long id) {
+        return customerRepository.findById(id).orElse(null);
     }
 }

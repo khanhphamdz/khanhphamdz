@@ -45,8 +45,11 @@
       <div class="col-6">
         <div class="product-info">
           <h1 class="product-title" th:text="${product.name}">TeeShirtVibe Basic Tee</h1>
-          <span class="product-price" id="current-price"
-            th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">299.000 VNĐ</span>
+          <div class="product-price-container">
+            <span class="product-original-price" id="original-price" style="display: none;"></span>
+            <span class="product-price" id="current-price"
+              th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">299.000 VNĐ</span>
+          </div>
 
           <!-- chọn màu DYNAMIC -->
           <div class="color-options" th:if="${availableColors != null and !availableColors.empty}">
@@ -81,11 +84,11 @@
 
           <!-- nút -->
           <div class="action-buttons">
-            <button class="btn btn-primary" id="add-to-cart-btn" onclick="addToCart()">
+            <button class="btn btn-primary" id="add-to-cart-btn">
               <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
             </button>
-            <button class="btn btn-success">
-              <i class="fas fa-heart"></i> Yêu thích
+            <button class="btn btn-success" id="wishlist-btn" th:data-product-id="${product.productId}" onclick="addToWishlist()">
+              <i class="fas fa-heart"></i> <span id="wishlist-text">Yêu thích</span>
             </button>
           </div>
 
@@ -163,134 +166,27 @@
         </form>
       </div>
     </section>
-    <!-- mấy cái tương tự -->
+    <!-- Sản phẩm liên quan -->
     <div class="related-products">
       <h3 class="mb-4">Sản phẩm liên quan</h3>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-        <!-- Sản phẩm -->
-        <div class="product col">
+        <div class="product col" th:each="p : ${relatedProducts}">
           <div class="product-pic">
-            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-              alt="IMG-PRODUCT">
-            <a href="/detail" class="product-btn">
+            <img th:src="${#lists.isEmpty(p.images) ? '/images/no-image.png' : p.images[0].imageUrl}" alt="IMG-PRODUCT">
+            <a th:href="@{/product/detail/{id}(id=${p.productId})}" class="product-btn">
               Quick View
             </a>
           </div>
-
           <div class="product-txt">
             <div class="product-txt-child1 flex-col-l">
-              <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                Esprit Ruffle Shirt
-              </a>
-              <span class="stext-105 cl3">
-                $16.64
-              </span>
+              <a th:href="@{/product/detail/{id}(id=${p.productId})}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
+                 th:text="${p.name}">Tên sản phẩm</a>
+              <span class="stext-105 cl3" th:text="${#numbers.formatDecimal(p.basePrice, 0, 'POINT', 0, 'COMMA')} + '₫'">Giá</span>
             </div>
-
             <div class="product-txt-child2">
               <a href="#" class="btn-addwish-b2">
-                <img class="icon-heart1"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                  alt="ICON">
-                <img class="icon-heart2"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                  alt="ICON">
-              </a>
-            </div>
-          </div>
-        </div>
-        <!-- Sản phẩm -->
-        <div class="product col">
-          <div class="product-pic">
-            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-              alt="IMG-PRODUCT">
-            <a href="/detail" class="product-btn">
-              Quick View
-            </a>
-          </div>
-
-          <div class="product-txt">
-            <div class="product-txt-child1 flex-col-l">
-              <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                Esprit Ruffle Shirt
-              </a>
-              <span class="stext-105 cl3">
-                $16.64
-              </span>
-            </div>
-
-            <div class="product-txt-child2">
-              <a href="#" class="btn-addwish-b2">
-                <img class="icon-heart1"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                  alt="ICON">
-                <img class="icon-heart2"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                  alt="ICON">
-              </a>
-            </div>
-          </div>
-        </div>
-        <!-- Sản phẩm -->
-        <div class="product col">
-          <div class="product-pic">
-            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-              alt="IMG-PRODUCT">
-            <a href="/detail" class="product-btn">
-              Quick View
-            </a>
-          </div>
-
-          <div class="product-txt">
-            <div class="product-txt-child1 flex-col-l">
-              <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                Esprit Ruffle Shirt
-              </a>
-              <span class="stext-105 cl3">
-                $16.64
-              </span>
-            </div>
-
-            <div class="product-txt-child2">
-              <a href="#" class="btn-addwish-b2">
-                <img class="icon-heart1"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                  alt="ICON">
-                <img class="icon-heart2"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                  alt="ICON">
-              </a>
-            </div>
-          </div>
-        </div>
-        <!-- Sản phẩm -->
-        <div class="product col">
-          <div class="product-pic">
-            <img src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747823834/product-01_jblxvh.jpg"
-              alt="IMG-PRODUCT">
-            <a href="/detail" class="product-btn">
-              Quick View
-            </a>
-          </div>
-
-          <div class="product-txt">
-            <div class="product-txt-child1 flex-col-l">
-              <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                Esprit Ruffle Shirt
-              </a>
-              <span class="stext-105 cl3">
-                $16.64
-              </span>
-            </div>
-
-            <div class="product-txt-child2">
-              <a href="#" class="btn-addwish-b2">
-                <img class="icon-heart1"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
-                  alt="ICON">
-                <img class="icon-heart2"
-                  src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854356/icon-heart-02_ey1ost.png"
-                  alt="ICON">
+                <img class="icon-heart1" src="/images/icon-heart-01.png" alt="ICON">
+                <img class="icon-heart2" src="/images/icon-heart-02.png" alt="ICON">
               </a>
             </div>
           </div>
@@ -298,336 +194,18 @@
       </div>
     </div>
   </main>
-  <th:block th:fragment="scripts">
-    <!-- <script src="/customer_js/product_js/product_detail.js"></script> -->
-    <script th:inline="javascript">
-      // Dữ liệu variants từ server 
-      const variants = /*[[${variants}]]*/[];
-      const basePrice = /*[[${product.basePrice}]]*/ 299000;
-
-      // Debug: Kiểm tra dữ liệu variants
-      console.log('Variants data:', variants);
-      console.log('Base price:', basePrice);
-
-      let selectedColorId = null;
-      let selectedSizeId = null;
-      let currentVariant = null;
-
-      // Xử lý chọn màu
-      document.querySelectorAll('input[name="selectedColor"]').forEach(colorInput => {
-        colorInput.addEventListener('change', function () {
-          selectedColorId = this.value;
-          console.log('Selected color ID:', selectedColorId);
-          document.querySelectorAll('.color-circle').forEach(circle => circle.classList.remove('active'));
-          this.nextElementSibling.classList.add('active');
-          updateProductInfo();
-        });
-      });
-
-      // Xử lý chọn size
-      document.querySelectorAll('.size-option').forEach(sizeDiv => {
-        sizeDiv.addEventListener('click', function () {
-          selectedSizeId = this.dataset.sizeId;
-          console.log('Selected size ID:', selectedSizeId);
-          document.querySelectorAll('.size-option').forEach(div => div.classList.remove('active'));
-          this.classList.add('active');
-          updateProductInfo();
-        });
-      });
-
-      // Cập nhật thông tin sản phẩm theo variant
-      function updateProductInfo() {
-        console.log('updateProductInfo called');
-        console.log('Selected color ID:', selectedColorId, typeof selectedColorId);
-        console.log('Selected size ID:', selectedSizeId, typeof selectedSizeId);
-        console.log('Available variants:', variants);
-
-        if (selectedColorId && selectedSizeId) {
-          currentVariant = variants.find(v => {
-            console.log(`Checking variant: colorId=${v.colorId} (${typeof v.colorId}), sizeId=${v.sizeId} (${typeof v.sizeId})`);
-            return v.colorId == selectedColorId && v.sizeId == selectedSizeId;
-          });
-
-          console.log('Found variant:', currentVariant);
-
-          if (currentVariant) {
-            // Cập nhật giá
-            document.getElementById('current-price').textContent =
-              new Intl.NumberFormat('vi-VN').format(currentVariant.price || basePrice) + ' VNĐ';
-
-            // Cập nhật tồn kho
-            console.log('Updating stock quantity:', currentVariant.quantityInStock);
-            document.getElementById('stock-quantity').textContent = currentVariant.quantityInStock || 0;
-
-            // Cập nhật trạng thái nút add to cart
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-            if (currentVariant.quantityInStock > 0) {
-              addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng';
-            } else {
-              addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Hết hàng';
-            }
-
-            // Cập nhật max quantity input
-            document.getElementById('quantity-input').max = currentVariant.quantityInStock;
-          } else {
-            console.log('No variant found for selected color and size');
-            document.getElementById('stock-quantity').textContent = 'Không có sẵn';
-          }
-        } else {
-          // Reset về giá gốc
-          document.getElementById('current-price').textContent =
-            new Intl.NumberFormat('vi-VN').format(basePrice) + ' VNĐ';
-          document.getElementById('stock-quantity').textContent = '--';
-          console.log('Not enough selections - color:', selectedColorId, 'size:', selectedSizeId);
-        }
-      }
-
-      // Validation cho quantity input
-      function validateQuantityInput(input) {
-        // Loại bỏ ký tự không phải số và dấu chấm/phẩy
-        let value = input.value.replace(/[^0-9]/g, '');
-
-        // Nếu rỗng, set về 1
-        if (value === '') {
-          value = '1';
-        }
-
-        // Parse thành số
-        let num = parseInt(value);
-
-        // Đảm bảo min = 1
-        if (num < 1) {
-          num = 1;
-        }
-
-        // Đảm bảo không vượt quá stock nếu có
-        const max = parseInt(input.max) || 999;
-        if (num > max && max !== 999) {
-          num = max;
-          alert(`Chỉ còn ${max} sản phẩm trong kho`);
-        }
-
-        input.value = num;
-      }
-
-      // Validation cho số lượng
-      function isValidQuantity(quantity) {
-        // Kiểm tra rỗng
-        if (!quantity || quantity.toString().trim() === '') {
-          alert('Vui lòng nhập số lượng');
-          return false;
-        }
-
-        // Parse thành số
-        const num = parseInt(quantity);
-
-        // Kiểm tra không phải số
-        if (isNaN(num)) {
-          alert('Số lượng phải là số');
-          return false;
-        }
-
-        // Kiểm tra số âm hoặc 0
-        if (num <= 0) {
-          alert('Số lượng phải lớn hơn 0');
-          return false;
-        }
-
-        // Kiểm tra số thập phân (chứa dấu . hoặc ,)
-        if (quantity.toString().includes('.') || quantity.toString().includes(',')) {
-          alert('Số lượng phải là số nguyên');
-          return false;
-        }
-
-        return true;
-      }
-
-      // Validation cho tồn kho
-      function isStockAvailable(quantity) {
-        if (!currentVariant) {
-          return false;
-        }
-
-        const stock = currentVariant.quantityInStock || 0;
-        const num = parseInt(quantity);
-
-        if (stock <= 0) {
-          alert('Sản phẩm hiện đã hết hàng');
-          return false;
-        }
-
-        if (num > stock) {
-          alert(`Chỉ còn ${stock} sản phẩm trong kho, không thể thêm ${num} sản phẩm`);
-          return false;
-        }
-
-        return true;
-      }
-
-      // Xử lý quantity cải thiện
-      function increaseQuantity() {
-        const input = document.getElementById('quantity-input');
-        const current = parseInt(input.value) || 1;
-        const max = parseInt(input.max) || 999;
-
-        if (current < max) {
-          input.value = current + 1;
-        } else if (max !== 999) {
-          alert(`Chỉ còn ${max} sản phẩm trong kho`);
-        }
-      }
-
-      function decreaseQuantity() {
-        const input = document.getElementById('quantity-input');
-        const current = parseInt(input.value) || 1;
-
-        if (current > 1) {
-          input.value = current - 1;
-        }
-        // Không cho xuống dưới 1
-      }
-
-      async function isUserLoggedIn() {
-        try {
-          const res = await fetch('/api/auth/me', { method: 'GET' })
-          if (!res.ok) {
-            return false;
-          }
-          const data = await res.json()
-          return data;
-        } catch (error) {
-          console.log('error checking login: ', error);
-          return false;
-        }
-      }
-      async function updateCartBadge() {
-        const res = await fetch('/api/cart', { method: 'GET' });
-        const data = await res.json();
-        if (data.status === 'ok') {
-          const cartItemQuantity = data.data.length;
-          const badge = document.querySelector('#cart-badge');
-          if (badge) {
-            badge.textContent = cartItemQuantity;
-            badge.style.display = cartItemQuantity > 0 ? 'inline-block' : 'none';
-          }
-        }
-      }
-      // Hàm hiển thị toast thông báo
-      function showToast(message, type = 'success') {
-        let toast = document.getElementById('custom-toast');
-        if (!toast) {
-          toast = document.createElement('div');
-          toast.id = 'custom-toast';
-          toast.style.position = 'fixed';
-          toast.style.top = '20px';
-          toast.style.right = '20px';
-          toast.style.zIndex = '9999';
-          toast.style.minWidth = '200px';
-          toast.style.padding = '12px 24px';
-          toast.style.borderRadius = '8px';
-          toast.style.color = '#fff';
-          toast.style.fontSize = '16px';
-          toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-          document.body.appendChild(toast);
-        }
-        toast.textContent = message;
-        toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
-        toast.style.display = 'block';
-        setTimeout(() => {
-          toast.style.display = 'none';
-        }, 1800);
-      }
-      // Xử lý add to cart với validation đầy đủ và logic cải thiện
-      async function addToCart() {
-        // 1. Kiểm tra đã chọn màu và size chưa
-        if (!selectedColorId || !selectedSizeId) {
-          alert('Vui lòng chọn màu sắc và kích thước');
-          return;
-        }
-
-        // 2. Kiểm tra variant có tồn tại không (đã chọn đủ màu + size nhưng combination không có)
-        if (!currentVariant) {
-          alert('Màu sắc này hiện tại không có size này');
-          return;
-        }
-
-        // 3. Lấy số lượng
-        const quantity = document.getElementById('quantity-input').value;
-
-        // 4. Validate số lượng
-        if (!isValidQuantity(quantity)) {
-          return; // Dừng nếu số lượng không hợp lệ
-        }
-
-        // 5. Validate tồn kho
-        if (!isStockAvailable(quantity)) {
-          return; // Dừng nếu không đủ hàng
-        }
-
-        // // 6. Thêm vào giỏ hàng (placeholder)
-        // console.log('Add to cart:', {
-        //   variantId: currentVariant.variantId,
-        //   quantity: parseInt(quantity),
-        //   productName: '/*[[${product.name}]]*/',
-        //   price: currentVariant.price || basePrice,
-        //   colorId: selectedColorId,
-        //   sizeId: selectedSizeId
-        // });
-
-        // alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
-
-        const loggedIn = await isUserLoggedIn();
-        console.log(loggedIn);
-
-        if (loggedIn && loggedIn.isLoggedIn === true) {
-          // Đã đăng nhập: gọi API backend
-          const addToCartResp = await fetch('/api/cart/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              variantId: currentVariant.variantId,
-              quantity: quantity
-            })
-          });
-          const respData = await addToCartResp.json()
-          if (respData.status === 'ok') {
-            showToast('Đã thêm vào giỏ hàng!');
-            updateCartBadge()
-          } else {
-            showToast(respData.message);
-          }
-
-        } else {
-          showToast('Vui lòng đăng nhập để sử dụng giỏ hàng!', 'error');
-        }
-      }
-
-      // Auto-select first options if available và hiển thị giá đúng
-      document.addEventListener('DOMContentLoaded', function () {
-        const firstColor = document.querySelector('input[name="selectedColor"]');
-        const firstSize = document.querySelector('.size-option');
-
-        if (firstColor && firstSize) {
-          // Chọn màu và size đầu tiên
-          firstColor.checked = true;
-          selectedColorId = firstColor.value;
-          selectedSizeId = firstSize.dataset.sizeId;
-
-          // Trigger events để cập nhật UI
-          firstColor.dispatchEvent(new Event('change'));
-          firstSize.click();
-
-          // Cập nhật giá ngay lập tức
-          updateProductInfo();
-        } else {
-          // Nếu không có variant, hiển thị thông báo
-          document.getElementById('stock-quantity').textContent = 'Liên hệ';
-          document.getElementById('add-to-cart-btn').innerHTML = '<i class="fas fa-shopping-cart"></i> Liên hệ để đặt hàng';
-        }
-      });
-    </script>
-    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
-  </th:block>
+            <th:block th:fragment="scripts">
+      <script th:inline="javascript">
+        // Truyền dữ liệu từ server vào JavaScript
+        window.productData = {
+          variants: /*[[${variants}]]*/ [],
+          basePrice: /*[[${product.basePrice}]]*/ 299000,
+          productId: /*[[${product.productId}]]*/ 0
+        };
+      </script>
+      <script src="/customer_js/product_js/product_detail.js"></script>
+      <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+    </th:block>
   <style>
     .main-carousel .carousel-cell {
       width: 100%;

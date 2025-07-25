@@ -35,4 +35,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Query("SELECT e FROM Employee e WHERE e.birthday BETWEEN :startDate AND :endDate")
     List<Employee> findByBirthdayBetween(@Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    Employee findByPhoneNumber(String phoneNumber);
 }

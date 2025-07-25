@@ -146,10 +146,25 @@ public class EmployeeService {
 
     // Validate employee data
     private void validateEmployee(EmployeeDTO employeeDTO, Long... id) {
-        if (employeeDTO.getCitizenId() != null) {
+        if (employeeDTO.getFullName() == null || employeeDTO.getFullName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Họ tên không được để trống");
+        }
+        if (employeeDTO.getEmail() == null || !employeeDTO.getEmail().matches("^\\S+@\\S+\\.\\S+$")) {
+            throw new IllegalArgumentException("Email không hợp lệ");
+        }
+        if (employeeDTO.getPassword() == null || employeeDTO.getPassword().length() < 8 || employeeDTO.getPassword().length() > 255) {
+            throw new IllegalArgumentException("Mật khẩu phải từ 8 đến 255 ký tự");
+        }
+        if (employeeDTO.getPhoneNumber() != null && !employeeDTO.getPhoneNumber().isEmpty() && !employeeDTO.getPhoneNumber().matches("^\\d{10}$")) {
+            throw new IllegalArgumentException("Số điện thoại phải đúng 10 số");
+        }
+        if (employeeDTO.getCitizenId() != null && !employeeDTO.getCitizenId().isEmpty() && !employeeDTO.getCitizenId().matches("^\\d{12}$")) {
+            throw new IllegalArgumentException("CCCD phải đúng 12 số");
+        }
+        if (employeeDTO.getCitizenId() != null && !employeeDTO.getCitizenId().isEmpty()) {
             Employee existingByCitizenId = employeeRepository.findByCitizenId(employeeDTO.getCitizenId());
             if (existingByCitizenId != null && (id.length == 0 || !existingByCitizenId.getEmployeeId().equals(id[0]))) {
-                throw new IllegalArgumentException("Citizen ID already exists");
+                throw new IllegalArgumentException("CCCD đã tồn tại");
             }
         }
         if (employeeDTO.getEmail() != null) {
@@ -158,6 +173,12 @@ public class EmployeeService {
                 throw new IllegalArgumentException("Email đã tồn tại");
             }
         }
-}
+        if (employeeDTO.getPhoneNumber() != null && !employeeDTO.getPhoneNumber().isEmpty()) {
+            Employee existingByPhone = employeeRepository.findByPhoneNumber(employeeDTO.getPhoneNumber());
+            if (existingByPhone != null && (id.length == 0 || !existingByPhone.getEmployeeId().equals(id[0]))) {
+                throw new IllegalArgumentException("Số điện thoại đã tồn tại");
+            }
+        }
+    }
 
 }

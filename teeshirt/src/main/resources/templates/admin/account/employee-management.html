@@ -68,7 +68,7 @@
 
         <!-- Modal Thêm nhân viên -->
         <div class="modal fade" id="themNhanVienModal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg"> <!-- mở rộng modal để dễ bố trí -->
                 <div class="modal-content">
                     <form id="addEmployeeForm">
                         <div class="modal-header">
@@ -76,49 +76,77 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-2"><input type="text" class="form-control" name="fullName"
-                                    placeholder="Họ tên" required></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="phoneNumber"
-                                    placeholder="Số điện thoại"></div>
-                            <div class="mb-2"><input type="email" class="form-control" name="email" placeholder="Email"
-                                    required></div>
-                            <div class="mb-2"><input type="password" class="form-control" name="password"
-                                    placeholder="Mật khẩu" required></div>
-                            <div class="mb-2"><input type="date" class="form-control" name="birthday"
-                                    placeholder="Ngày sinh"></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="address"
-                                    placeholder="Địa chỉ"></div>
-                            <div class="mb-2"><input type="date" class="form-control" name="hireDate"
-                                    placeholder="Ngày tuyển dụng"></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="citizenId"
-                                    placeholder="CCCD"></div>
-                            <div class="mb-2">
-                                <label class="form-label">Giới tính:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" value="true" required>
-                                    Nam
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Họ tên</label>
+                                    <input type="text" class="form-control" name="fullName" required>
+                                    <div class="invalid-feedback">Họ tên không được để trống</div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" value="false"> Nữ
+                                <div class="col-md-6">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" name="phoneNumber">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                    <div class="invalid-feedback">Email không hợp lệ</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Mật khẩu</label>
+                                    <input type="password" class="form-control" name="password" required>
+                                    <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" name="birthday">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ngày tuyển dụng</label>
+                                    <input type="date" class="form-control" name="hireDate">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" name="address">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">CCCD</label>
+                                    <input type="text" class="form-control" name="citizenId">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Giới tính</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" value="true"
+                                            required>
+                                        <label class="form-check-label">Nam</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" value="false">
+                                        <label class="form-check-label">Nữ</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phân quyền</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role" value="true" required>
+                                        <label class="form-check-label">Quản lý</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role" value="false">
+                                        <label class="form-check-label">Nhân viên</label>
+                                    </div>
+                                    <div class="invalid-feedback">Vui lòng chọn phân quyền</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Trạng thái</label>
+                                    <select class="form-select" name="status" required>
+                                        <option value="active">Hoạt động</option>
+                                        <option value="inactive">Nghỉ việc</option>
+                                        <option value="terminated">Chấm dứt</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn trạng thái</div>
                                 </div>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label">Phân quyền:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="true" required> Quản
-                                    lý
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="false"> Nhân viên
-                                </div>
-                            </div>
-                            <div class="mb-2">
-                                <select class="form-select" name="status" required>
-                                    <option value="active">Hoạt động</option>
-                                    <option value="inactive">Nghỉ việc</option>
-                                    <option value="terminated">Chấm dứt</option>
-                                </select>
-                            </div>
+                            <div class="form-error text-danger"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -129,9 +157,10 @@
             </div>
         </div>
 
+
         <!-- Modal Sửa nhân viên -->
         <div class="modal fade" id="suaNhanVienModal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <form id="editEmployeeForm">
                         <div class="modal-header">
@@ -140,49 +169,77 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="employeeId">
-                            <div class="mb-2"><input type="text" class="form-control" name="fullName"
-                                    placeholder="Họ tên" required></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="phoneNumber"
-                                    placeholder="Số điện thoại"></div>
-                            <div class="mb-2"><input type="email" class="form-control" name="email" placeholder="Email"
-                                    required></div>
-                            <div class="mb-2"><input type="password" class="form-control" name="password"
-                                    placeholder="Mật khẩu" required></div>
-                            <div class="mb-2"><input type="date" class="form-control" name="birthday"
-                                    placeholder="Ngày sinh"></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="address"
-                                    placeholder="Địa chỉ"></div>
-                            <div class="mb-2"><input type="date" class="form-control" name="hireDate"
-                                    placeholder="Ngày tuyển dụng"></div>
-                            <div class="mb-2"><input type="text" class="form-control" name="citizenId"
-                                    placeholder="CCCD"></div>
-                            <div class="mb-2">
-                                <label class="form-label">Giới tính:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" value="true" required>
-                                    Nam
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Họ tên</label>
+                                    <input type="text" class="form-control" name="fullName" required>
+                                    <div class="invalid-feedback">Họ tên không được để trống</div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" value="false"> Nữ
+                                <div class="col-md-6">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" name="phoneNumber">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                    <div class="invalid-feedback">Email không hợp lệ</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Mật khẩu</label>
+                                    <input type="password" class="form-control" name="password" required>
+                                    <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" name="birthday">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ngày tuyển dụng</label>
+                                    <input type="date" class="form-control" name="hireDate">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" name="address">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">CCCD</label>
+                                    <input type="text" class="form-control" name="citizenId">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Giới tính</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" value="true"
+                                            required>
+                                        <label class="form-check-label">Nam</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" value="false">
+                                        <label class="form-check-label">Nữ</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phân quyền</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role" value="true" required>
+                                        <label class="form-check-label">Quản lý</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role" value="false">
+                                        <label class="form-check-label">Nhân viên</label>
+                                    </div>
+                                    <div class="invalid-feedback">Vui lòng chọn phân quyền</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Trạng thái</label>
+                                    <select class="form-select" name="status" required>
+                                        <option value="active">Hoạt động</option>
+                                        <option value="inactive">Nghỉ việc</option>
+                                        <option value="terminated">Chấm dứt</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn trạng thái</div>
                                 </div>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label">Phân quyền:</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="true" required> Quản
-                                    lý
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="role" value="false"> Nhân viên
-                                </div>
-                            </div>
-                            <div class="mb-2">
-                                <select class="form-select" name="status" required>
-                                    <option value="active">Hoạt động</option>
-                                    <option value="inactive">Nghỉ việc</option>
-                                    <option value="terminated">Chấm dứt</option>
-                                </select>
-                            </div>
+                            <div class="form-error text-danger"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -192,6 +249,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Modal Xóa nhân viên -->
         <div class="modal fade" id="xoaNhanVienModal" tabindex="-1">
@@ -264,10 +322,46 @@
                 const employee = Object.fromEntries(new FormData(form).entries());
                 employee.gender = form.gender.value === 'true';
                 employee.role = form.role.value === 'true';
-                console.log("form data: ", form);
-                console.table(employee);
-                
-                
+                // Xóa lỗi cũ
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                let hasError = false;
+                if (!employee.fullName) {
+                    form.fullName.classList.add('is-invalid');
+                    form.fullName.nextElementSibling.textContent = 'Họ tên không được để trống';
+                    hasError = true;
+                }
+                if (!employee.email || !/^\S+@\S+\.\S+$/.test(employee.email)) {
+                    form.email.classList.add('is-invalid');
+                    form.email.nextElementSibling.textContent = 'Email không hợp lệ';
+                    hasError = true;
+                }
+                if (!employee.password || employee.password.length < 8 || employee.password.length > 255) {
+                    form.password.classList.add('is-invalid');
+                    form.password.nextElementSibling.textContent = 'Mật khẩu phải từ 8 đến 255 ký tự';
+                    hasError = true;
+                }
+                if (employee.phoneNumber && !/^\d{10}$/.test(employee.phoneNumber)) {
+                    form.phoneNumber.classList.add('is-invalid');
+                    form.phoneNumber.nextElementSibling.textContent = 'Số điện thoại phải đúng 10 số';
+                    hasError = true;
+                }
+                if (employee.citizenId && !/^\d{12}$/.test(employee.citizenId)) {
+                    form.citizenId.classList.add('is-invalid');
+                    form.citizenId.nextElementSibling.textContent = 'CCCD phải đúng 12 số';
+                    hasError = true;
+                }
+                if (!form.role.value) {
+                    form.querySelectorAll('input[name="role"]').forEach(r => r.classList.add('is-invalid'));
+                    form.querySelector('input[name="role"]').parentElement.nextElementSibling.textContent = 'Vui lòng chọn phân quyền';
+                    hasError = true;
+                }
+                if (!form.status.value) {
+                    form.status.classList.add('is-invalid');
+                    form.status.nextElementSibling.textContent = 'Vui lòng chọn trạng thái';
+                    hasError = true;
+                }
+                if (hasError) return;
                 try {
                     await fetch('/api/employees', {
                         method: 'POST',
@@ -276,19 +370,17 @@
                     })
                         .then(res => res.json())
                         .then(data => {
-                            console.log(data);
                             if (data.status === 'ok') {
-                                alert('Thêm thành công!');
                                 form.reset();
                                 bootstrap.Modal.getInstance(document.getElementById('themNhanVienModal')).hide();
                                 fetchEmployees();
                             } else {
-                                alert(data.data);
+                                // Hiển thị lỗi trả về từ backend
+                                form.querySelector('.form-error').textContent = data.data || 'Có lỗi xảy ra';
                             }
                         });
-
                 } catch (err) {
-                    alert('Lỗi khi thêm nhân viên!');
+                    form.querySelector('.form-error').textContent = 'Lỗi khi thêm nhân viên!';
                 }
             }
 
@@ -300,17 +392,69 @@
                 const employee = Object.fromEntries(new FormData(form).entries());
                 employee.gender = form.gender.value === 'true';
                 employee.role = form.role.value === 'true';
+                // Xóa lỗi cũ
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                if (form.querySelector('.form-error')) form.querySelector('.form-error').textContent = '';
+                let hasError = false;
+                if (!employee.fullName) {
+                    form.fullName.classList.add('is-invalid');
+                    form.fullName.nextElementSibling.textContent = 'Họ tên không được để trống';
+                    hasError = true;
+                }
+                if (!employee.email || !/^\S+@\S+\.\S+$/.test(employee.email)) {
+                    form.email.classList.add('is-invalid');
+                    form.email.nextElementSibling.textContent = 'Email không hợp lệ';
+                    hasError = true;
+                }
+                if (!employee.password || employee.password.length < 8 || employee.password.length > 255) {
+                    form.password.classList.add('is-invalid');
+                    form.password.nextElementSibling.textContent = 'Mật khẩu phải từ 8 đến 255 ký tự';
+                    hasError = true;
+                }
+                if (employee.phoneNumber && !/^\d{10}$/.test(employee.phoneNumber)) {
+                    form.phoneNumber.classList.add('is-invalid');
+                    form.phoneNumber.nextElementSibling.textContent = 'Số điện thoại phải đúng 10 số';
+                    hasError = true;
+                }
+                if (employee.citizenId && !/^\d{12}$/.test(employee.citizenId)) {
+                    form.citizenId.classList.add('is-invalid');
+                    form.citizenId.nextElementSibling.textContent = 'CCCD phải đúng 12 số';
+                    hasError = true;
+                }
+                if (!form.role.value) {
+                    form.querySelectorAll('input[name="role"]').forEach(r => r.classList.add('is-invalid'));
+                    form.querySelector('input[name="role"]').parentElement.nextElementSibling.textContent = 'Vui lòng chọn phân quyền';
+                    hasError = true;
+                }
+                if (!form.status.value) {
+                    form.status.classList.add('is-invalid');
+                    form.status.nextElementSibling.textContent = 'Vui lòng chọn trạng thái';
+                    hasError = true;
+                }
+                if (hasError) return;
                 try {
-                    await fetch(`/api/employees/${id}`, {
+                    const res = await fetch(`/api/employees/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(employee)
                     });
-                    alert('Cập nhật thành công!');
-                    bootstrap.Modal.getInstance(document.getElementById('suaNhanVienModal')).hide();
-                    fetchEmployees();
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (err) {
+                        data = null;
+                    }
+                    if (data && data.status === 'ok') {
+                        bootstrap.Modal.getInstance(document.getElementById('suaNhanVienModal')).hide();
+                        fetchEmployees();
+                    } else if (data && data.status === 'error') {
+                        if (form.querySelector('.form-error')) form.querySelector('.form-error').textContent = data.message || data.data || 'Có lỗi xảy ra';
+                    } else {
+                        if (form.querySelector('.form-error')) form.querySelector('.form-error').textContent = 'Lỗi không xác định từ server!';
+                    }
                 } catch (err) {
-                    alert('Lỗi khi cập nhật nhân viên!');
+                    if (form.querySelector('.form-error')) form.querySelector('.form-error').textContent = 'Lỗi khi cập nhật nhân viên!';
                 }
             }
 

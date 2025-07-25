@@ -1,36 +1,55 @@
 // Dữ liệu variants từ server 
-const variants = /*[[${variants}]][];
-const basePrice = /*[[${product.basePrice}]]*/ 299000;
+let variants = [];
+let basePrice = 299000;
+let productId = 0;
 
-// Debug: Kiểm tra dữ liệu variants
-console.log('Variants data:', variants);
-console.log('Base price:', basePrice);
+// Lấy dữ liệu từ server khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.productData) {
+        variants = window.productData.variants || [];
+        basePrice = window.productData.basePrice || 299000;
+        productId = window.productData.productId || 0;
+    }
+    
+    // Debug: Kiểm tra dữ liệu variants
+    console.log('Variants data:', variants);
+    console.log('Base price:', basePrice);
+    console.log('Product ID:', productId);
+    
+    // Khởi tạo các event listeners
+    initializeEventListeners();
+    autoSelectFirstOptions();
+    initializeWishlistState();
+});
 
 let selectedColorId = null;
 let selectedSizeId = null;
 let currentVariant = null;
 
-// Xử lý chọn màu
-document.querySelectorAll('input[name="selectedColor"]').forEach(colorInput => {
-    colorInput.addEventListener('change', function () {
-        selectedColorId = this.value;
-        console.log('Selected color ID:', selectedColorId);
-        document.querySelectorAll('.color-circle').forEach(circle => circle.classList.remove('active'));
-        this.nextElementSibling.classList.add('active');
-        updateProductInfo();
+// Khởi tạo event listeners
+function initializeEventListeners() {
+    // Xử lý chọn màu
+    document.querySelectorAll('input[name="selectedColor"]').forEach(colorInput => {
+        colorInput.addEventListener('change', function () {
+            selectedColorId = this.value;
+            console.log('Selected color ID:', selectedColorId);
+            document.querySelectorAll('.color-circle').forEach(circle => circle.classList.remove('active'));
+            this.nextElementSibling.classList.add('active');
+            updateProductInfo();
+        });
     });
-});
 
-// Xử lý chọn size
-document.querySelectorAll('.size-option').forEach(sizeDiv => {
-    sizeDiv.addEventListener('click', function () {
-        selectedSizeId = this.dataset.sizeId;
-        console.log('Selected size ID:', selectedSizeId);
-        document.querySelectorAll('.size-option').forEach(div => div.classList.remove('active'));
-        this.classList.add('active');
-        updateProductInfo();
+    // Xử lý chọn size
+    document.querySelectorAll('.size-option').forEach(sizeDiv => {
+        sizeDiv.addEventListener('click', function () {
+            selectedSizeId = this.dataset.sizeId;
+            console.log('Selected size ID:', selectedSizeId);
+            document.querySelectorAll('.size-option').forEach(div => div.classList.remove('active'));
+            this.classList.add('active');
+            updateProductInfo();
+        });
     });
-});
+}
 
 // Cập nhật thông tin sản phẩm theo variant
 function updateProductInfo() {
@@ -39,6 +58,7 @@ function updateProductInfo() {
     console.log('Selected size ID:', selectedSizeId, typeof selectedSizeId);
     console.log('Available variants:', variants);
 
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
     if (selectedColorId && selectedSizeId) {
         currentVariant = variants.find(v => {
             console.log(`Checking variant: colorId=${v.colorId} (${typeof v.colorId}), sizeId=${v.sizeId} (${typeof v.sizeId})`);
@@ -57,11 +77,12 @@ function updateProductInfo() {
             document.getElementById('stock-quantity').textContent = currentVariant.quantityInStock || 0;
 
             // Cập nhật trạng thái nút add to cart
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
             if (currentVariant.quantityInStock > 0) {
                 addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng';
+                addToCartBtn.disabled = false;
             } else {
                 addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Hết hàng';
+                addToCartBtn.disabled = true;
             }
 
             // Cập nhật max quantity input
@@ -69,12 +90,16 @@ function updateProductInfo() {
         } else {
             console.log('No variant found for selected color and size');
             document.getElementById('stock-quantity').textContent = 'Không có sẵn';
+            addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Hết hàng';
+            addToCartBtn.disabled = true;
         }
     } else {
         // Reset về giá gốc
         document.getElementById('current-price').textContent =
             new Intl.NumberFormat('vi-VN').format(basePrice) + ' VNĐ';
         document.getElementById('stock-quantity').textContent = '--';
+        addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng';
+        addToCartBtn.disabled = true;
         console.log('Not enough selections - color:', selectedColorId, 'size:', selectedSizeId);
     }
 }
@@ -184,7 +209,87 @@ function decreaseQuantity() {
     // Không cho xuống dưới 1
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+// Toggle wishlist (thêm hoặc xóa)
+async function addToWishlist() {
+    if (!productId) {
+        showToast('Không tìm thấy thông tin sản phẩm', 'error');
+        return;
+    }
+    
+    try {
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        const wishlistText = document.getElementById('wishlist-text');
+        
+        // Kiểm tra trạng thái hiện tại
+        const isInWishlist = wishlistBtn.classList.contains('btn-danger');
+        const url = isInWishlist ? `/wishlist/remove/${productId}` : `/wishlist/add/${productId}`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.text();
+        
+        if (result.startsWith('success:')) {
+            if (isInWishlist) {
+                // Xóa khỏi wishlist
+                wishlistBtn.classList.remove('btn-danger');
+                wishlistBtn.classList.add('btn-success');
+                wishlistText.textContent = 'Yêu thích';
+            } else {
+                // Thêm vào wishlist
+                wishlistBtn.classList.remove('btn-success');
+                wishlistBtn.classList.add('btn-danger');
+                wishlistText.textContent = 'Đã yêu thích';
+            }
+            // Cập nhật số lượng wishlist trên header
+            if (typeof updateWishlistCount === 'function') {
+                updateWishlistCount();
+            }
+        } else {
+            showToast(result.replace('error:', ''), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Có lỗi xảy ra', 'error');
+    }
+}
+
+// Khởi tạo trạng thái wishlist từ server
+async function initializeWishlistState() {
+    if (!productId) return;
+    
+    try {
+        console.log('Checking wishlist status for product:', productId);
+        const response = await fetch(`/wishlist/check/${productId}`);
+        
+        if (response.ok) {
+            const isInWishlist = await response.text() === 'true';
+            console.log('Product is in wishlist:', isInWishlist);
+            
+            const wishlistBtn = document.getElementById('wishlist-btn');
+            const wishlistText = document.getElementById('wishlist-text');
+            
+            if (isInWishlist) {
+                wishlistBtn.classList.remove('btn-success');
+                wishlistBtn.classList.add('btn-danger');
+                wishlistText.textContent = 'Đã yêu thích';
+            } else {
+                wishlistBtn.classList.remove('btn-danger');
+                wishlistBtn.classList.add('btn-success');
+                wishlistText.textContent = 'Yêu thích';
+            }
+        }
+    } catch (error) {
+        console.log('Error checking wishlist status:', error);
+    }
+}
+
+// Auto-select first options if available và hiển thị giá đúng
+function autoSelectFirstOptions() {
     const firstColor = document.querySelector('input[name="selectedColor"]');
     const firstSize = document.querySelector('.size-option');
 
@@ -205,12 +310,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('stock-quantity').textContent = 'Liên hệ';
         document.getElementById('add-to-cart-btn').innerHTML = '<i class="fas fa-shopping-cart"></i> Liên hệ để đặt hàng';
     }
-});
+}
 
-document.getElementById('add-to-cart-btn').addEventListener('click',  function () {
-    // Lấy dữ liệu từ giao diện
-    console.log('add to cart');
-
+document.getElementById('add-to-cart-btn').addEventListener('click', function () {
+    if (!currentVariant) {
+        showToast('Vui lòng chọn đầy đủ màu sắc và kích thước!', 'error');
+        return;
+    }
+    if (currentVariant.quantityInStock <= 0) {
+        showToast('Sản phẩm đã hết hàng!', 'error');
+        return;
+    }
+    const quantity = parseInt(document.getElementById('quantity-input').value) || 1;
+    if (!isValidQuantity(quantity) || !isStockAvailable(quantity)) return;
+    addToCart(currentVariant.variantId, quantity);
 });
 async function isUserLoggedIn() {
     try {
@@ -247,20 +360,20 @@ function showToast(message, type = 'success') {
         document.body.appendChild(toast);
     }
     toast.textContent = message;
-    toast.style.background = type === 'success' ? '#28a745' : '#dc3545';
+    toast.style.background = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8';
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';
     }, 1800);
 }
 
-async function addToCart(variantId, sizeId, colorId, quantity, price, img, name, colorName, sizeName) {
+async function addToCart(variantId, quantity) {
     const loggedIn = await isUserLoggedIn();
     console.log("login: ", loggedIn);
 
     if (loggedIn && loggedIn.isLoggedIn === true) {
         // Đã đăng nhập: gọi API backend
-        await fetch('/api/cart/add', {
+        const res = await fetch('/api/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -268,6 +381,8 @@ async function addToCart(variantId, sizeId, colorId, quantity, price, img, name,
                 quantity: quantity
             })
         });
+        console.log(res);
+        
         // Sau khi thêm, lấy lại giỏ hàng từ DB để đồng bộ localStorage
         const response = await fetch('/api/cart', {
             method: 'GET',

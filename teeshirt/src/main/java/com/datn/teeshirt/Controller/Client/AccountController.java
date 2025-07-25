@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,13 +30,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.datn.teeshirt.Controller.ResponseObject;
 import com.datn.teeshirt.DTO.CustomerAddressDTO;
 import com.datn.teeshirt.DTO.CustomerDTO;
+import com.datn.teeshirt.DTO.OrderResponseDTO;
+import com.datn.teeshirt.DTO.OrderStatusDTO;
+import com.datn.teeshirt.DTO.ReturnRequestDTO;
 import com.datn.teeshirt.Entity.Customer;
 import com.datn.teeshirt.Entity.CustomerAddress;
-import com.datn.teeshirt.Entity.WishlistItem;
 import com.datn.teeshirt.Security.CustomUserDetailsService;
 import com.datn.teeshirt.Service.CustomerAddressService;
 import com.datn.teeshirt.Service.CustomerService;
-import com.datn.teeshirt.Service.WishlistService;
+import com.datn.teeshirt.Service.OrderService;
+import com.datn.teeshirt.Service.ReturnRequestService;
 
 @Controller
 @RequestMapping("/account")
@@ -51,7 +55,10 @@ public class AccountController {
     private CustomerAddressService customerAddressService;
 
     @Autowired
-    private WishlistService wishlistService;
+    OrderService orderService;
+
+    @Autowired
+    private ReturnRequestService returnRequestService;
 
     @GetMapping
     public String accountPage(Model model) {
@@ -146,7 +153,7 @@ public class AccountController {
     }
 
     // API: Thêm địa chỉ mới (dùng DTO)
-    @PostMapping("/address/add-dto")
+    @PostMapping("/address/add")
     @ResponseBody
     public ResponseEntity<ResponseObject> addAddressDTO(@ModelAttribute CustomerAddressDTO dto) {
         try {
@@ -156,17 +163,18 @@ public class AccountController {
             return ResponseEntity.ok(new ResponseObject("ok", "Thêm địa chỉ thành công", null));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseObject("false", "Lỗi", e.getMessage()));
-        } 
-        
+        }
+
     }
 
     // API: Sửa địa chỉ (dùng DTO)
     @PutMapping("/address/update-dto/{id}")
     @ResponseBody
-    public ResponseEntity<?> updateAddressDTO(@PathVariable("id") Long addressId, @RequestBody CustomerAddressDTO dto) {
+    public ResponseEntity<?> updateAddressDTO(@PathVariable("id") Long addressId,
+            @ModelAttribute CustomerAddressDTO dto) {
         CustomerAddress address = customerAddressService.findById(addressId);
         if (address == null) {
-            return ResponseEntity.badRequest().body("Không tìm thấy địa chỉ");
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy địa chỉ", null));
         }
         // Cập nhật các trường từ DTO
         address.setName(dto.getName());
@@ -176,7 +184,7 @@ public class AccountController {
         address.setWardId(dto.getWardId());
         address.setSpecificAddress(dto.getSpecificAddress());
         customerAddressService.save(address);
-        return ResponseEntity.ok("Cập nhật địa chỉ thành công");
+        return ResponseEntity.ok(new ResponseObject("ok", "Cập nhật địa chỉ thành công", null));
     }
 
     // API: Xóa địa chỉ (giữ nguyên)
@@ -207,12 +215,206 @@ public class AccountController {
     public String forgotPasswordPage() {
         return "customer/account/forgot-password";
     }
-    @GetMapping("/wishlist")
-    public String WishlistPage(Model model) {
-        Customer customer = customUserDetailsService.getCustomerInfo();
-        List<WishlistItem> wishlistItems = wishlistService.getWishlistItems(customer);
-        model.addAttribute("wishlistItems", wishlistItems != null ? wishlistItems : List.of());
-        return "customer/account/wishlist";
+
+    // API: Lấy tất cả đơn hàng
+    @GetMapping("/orders")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getAllOrders() {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        List<OrderResponseDTO> orders = orderService.getOrdersByCustomerId(currentCustomer.getCustomerId());
+        return ResponseEntity.ok(new ResponseObject("ok", "Lấy danh sách đơn hàng thành công", orders));
     }
-    
+
+    // API: Lấy đơn hàng theo trạng thái
+    @GetMapping("/orders/{status}")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getOrdersByStatus(@PathVariable("status") String status) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        List<OrderResponseDTO> orders = orderService.getOrdersByCustomerAndStatus(currentCustomer.getCustomerId(),
+                status);
+        return ResponseEntity.ok(new ResponseObject("ok", "Lấy đơn hàng thành công", orders));
+    }
+
+    // API: Hủy đơn hàng
+    @PostMapping("/orders/{orderId}/cancel")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> cancelOrder(@PathVariable("orderId") Long orderId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        boolean success = orderService.cancelOrder(orderId, currentCustomer.getCustomerId());
+        if (success) {
+            return ResponseEntity.ok(new ResponseObject("ok", "Hủy đơn hàng thành công", null));
+        } else {
+            return ResponseEntity.ok(new ResponseObject("false", "Không thể hủy đơn hàng này", null));
+        }
+    }
+
+    // API: Lấy chi tiết đơn hàng
+    @GetMapping("/orders/{orderId}/detail")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getOrderDetail(@PathVariable("orderId") Long orderId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        OrderResponseDTO orderDetail = orderService.getOrderDetail(orderId, currentCustomer.getCustomerId());
+        if (orderDetail != null) {
+            return ResponseEntity.ok(new ResponseObject("ok", "Lấy chi tiết đơn hàng thành công", orderDetail));
+        } else {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy đơn hàng", null));
+        }
+    }
+
+    // API: Tạo yêu cầu hoàn trả
+    @PostMapping("/return-request")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> createReturnRequest(
+            @RequestParam("orderId") Long orderId,
+            @RequestParam("reason") String reason,
+            @RequestParam("description") String description,
+            @RequestParam("products") String productsJson,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam("returnType") String returnType) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+        boolean success = returnRequestService.createReturnRequest(orderId, reason, description, productsJson, images,
+                currentCustomer.getCustomerId(), returnType);
+        if (success) {
+            return ResponseEntity.ok(new ResponseObject("ok", "Tạo yêu cầu hoàn trả thành công", null));
+        } else {
+            return ResponseEntity.ok(new ResponseObject("false", "Không thể tạo yêu cầu hoàn trả", null));
+        }
+    }
+
+    // API: Lấy danh sách yêu cầu hoàn trả của khách hàng
+    @GetMapping("/return-requests")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getReturnRequests() {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+        // Lấy danh sách return request (dùng DTO)
+        List<ReturnRequestDTO> returnRequests = returnRequestService
+                .getReturnRequestDTOsByCustomer(currentCustomer.getCustomerId());
+        return ResponseEntity.ok(new ResponseObject("ok", "Lấy danh sách yêu cầu hoàn trả thành công", returnRequests));
+    }
+
+    // API: Lấy return request theo orderId
+    @GetMapping("/return-request/{orderId}")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getReturnRequestByOrderId(@PathVariable("orderId") Long orderId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        ReturnRequestDTO returnRequest = returnRequestService.getReturnRequestByOrderId(orderId,
+                currentCustomer.getCustomerId());
+        if (returnRequest != null) {
+            return ResponseEntity.ok(new ResponseObject("ok", "Lấy yêu cầu hoàn trả thành công", returnRequest));
+        } else {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy yêu cầu hoàn trả", null));
+        }
+    }
+
+    // API: Lấy lịch sử trạng thái đơn hàng
+    @GetMapping("/orders/{orderId}/status-history")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> getOrderStatusHistory(@PathVariable("orderId") Long orderId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+        List<OrderStatusDTO> statusHistory = orderService.getOrderStatusHistoryFullDTO(orderId,
+                currentCustomer.getCustomerId());
+        return ResponseEntity.ok(new ResponseObject("ok", "Lấy lịch sử trạng thái đơn hàng thành công", statusHistory));
+    }
+
+    // API: Hủy return request
+    @PostMapping("/return-request/{orderId}/cancel")
+    @ResponseBody
+    public ResponseEntity<ResponseObject> cancelReturnRequest(@PathVariable("orderId") Long orderId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.ok(new ResponseObject("false", "Không tìm thấy thông tin khách hàng", null));
+        }
+
+        boolean success = returnRequestService.cancelReturnRequest(orderId, currentCustomer.getCustomerId());
+        if (success) {
+            return ResponseEntity.ok(new ResponseObject("ok", "Hủy yêu cầu hoàn trả thành công", null));
+        } else {
+            return ResponseEntity.ok(new ResponseObject("false", "Không thể hủy yêu cầu hoàn trả", null));
+        }
+    }
+
+    /**
+     * API cập nhật thông tin tài khoản
+     * Mọi việc validate dữ liệu được thực hiện ở phía client
+     */
+    @PostMapping("/update-profile")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateProfile(@RequestBody Map<String, String> requestBody) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Lấy dữ liệu từ request
+            String name = requestBody.get("name");
+            String phone = requestBody.get("phone");
+
+            // Lấy thông tin khách hàng đang đăng nhập
+            Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+            if (currentCustomer == null) {
+                response.put("status", "error");
+                response.put("message", "Không tìm thấy thông tin khách hàng");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            // Cập nhật thông tin
+            if (name != null && !name.isEmpty()) {
+                currentCustomer.setName(name);
+            }
+
+            if (phone != null) {
+                currentCustomer.setPhone(phone);
+            }
+
+            // Lưu vào database (sử dụng customerService cho nhất quán)
+            customerService.save(currentCustomer);
+
+            response.put("status", "ok");
+            response.put("message", "Cập nhật thông tin thành công");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("/address/set-default/{id}")
+    @ResponseBody
+    public ResponseEntity<?> setDefaultAddress(@PathVariable("id") Long addressId) {
+        Customer currentCustomer = customUserDetailsService.getCustomerInfo();
+        if (currentCustomer == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin khách hàng");
+        }
+        customerAddressService.setDefaultAddress(currentCustomer.getCustomerId(), addressId);
+        return ResponseEntity.ok("Cập nhật địa chỉ mặc định thành công");
+    }
 }

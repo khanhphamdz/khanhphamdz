@@ -28,7 +28,7 @@
                     <i class="fa-solid fa-arrow-right float-end"></i>
                 </button>
                 <button class="nav-link d-flex align-items-center justify-content-between" id="v-pills-order-history-tab" data-bs-toggle="pill"
-                    data-bs-target="#v-pills-order-history" type="button" role="tab"
+                    data-bs-target="#v-pills-order-history" type="button"
                     aria-controls="v-pills-order-history" aria-selected="false">
                     <span><i class="fa-solid fa-bag-shopping me-2 ps-2 pe-2"></i>Lịch sử đơn hàng</span> 
                     <i class="fa-solid fa-arrow-right float-end"></i>
@@ -56,14 +56,28 @@
                                 </div>
                             </div>
                         </div>
-                        <form>
+                        <form id="inlineProfileForm">
                             <div class="row mb-3 align-items-center">
                                 <label class="col-md-4 col-12 col-form-label fs-5 fw-normal">Họ và tên</label>
-                                <div class="col-md-8 col-12 fs-5" th:text="${customer?.name ?: 'Chưa cập nhật'}">Chưa cập nhật</div>
+                                <div class="col-md-8 col-12">
+                                    <div class="editable-field fs-5" data-field="name">
+                                        <span class="field-text" th:text="${customer?.name ?: 'Chưa cập nhật'}" style="cursor: pointer;" title="Click để chỉnh sửa">Chưa cập nhật</span>
+                                        <div class="field-edit" style="display: none;">
+                                            <input type="text" class="form-control rounded-pill" id="customerName" name="name" th:value="${customer?.name}">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row mb-3 align-items-center">
                                 <label class="col-md-4 col-12 col-form-label fs-5 fw-normal">Số điện thoại</label>
-                                <div class="col-md-8 col-12 fs-5">Chưa cập nhật</div>
+                                <div class="col-md-8 col-12">
+                                    <div class="editable-field fs-5" data-field="phone">
+                                        <span class="field-text" th:text="${customer?.phone ?: 'Chưa cập nhật'}" style="cursor: pointer;" title="Click để chỉnh sửa">Chưa cập nhật</span>
+                                        <div class="field-edit" style="display: none;">
+                                            <input type="tel" class="form-control rounded-pill" id="customerPhone" name="phone" th:value="${customer?.phone}" pattern="^0[0-9]{9}$" title="Số điện thoại phải có 10 số và bắt đầu bằng số 0">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row mb-4 align-items-center">
                                 <label class="col-md-4 col-12 col-form-label fs-5 fw-normal">Email</label>
@@ -72,9 +86,9 @@
                             <div class="row">
                                 <div class="col-md-4"></div>
                                 <div class="col-md-8">
-                                    <button type="button"
-                                        class="btn btn-outline-dark rounded-pill px-5 py-2 fs-4 fw-bold"
-                                        data-bs-toggle="modal" data-bs-target="#profileModal">CẬP NHẬT</button>
+                                    <button type="button" id="updateProfileBtn"
+                                        class="btn btn-outline-dark rounded-pill px-5 py-2 fs-4 fw-bold">
+                                        CẬP NHẬT</button>
                                 </div>
                             </div>
                         </form>
@@ -96,9 +110,10 @@
                                      style="border-bottom:1.4px solid #575757;"
                                      th:attr="data-address-id=${address.addressId}">
                                     <div class="d-flex align-items-center gap-3">
-                                        <input type="radio" name="defaultAddress" class="form-check-input default-address-radio" 
-                                               th:attr="data-address-id=${address.addressId}" 
-                                               style="transform: scale(1.2);">
+                                        <input type="radio" name="defaultAddress" class="form-check-input default-address-radio"
+                                            th:attr="data-address-id=${address.addressId}"
+                                            th:checked="${address.isDefault} ? 'checked' : null"
+                                            style="transform: scale(1.2);">
                                         <div class="address-info flex-grow-1">
                                             <span class="fw-bold" th:text="${address.name}">Tên người nhận</span>
                                             <span class="badge bg-success text-white ms-2 default-badge" style="font-size:1rem; display: none;">
@@ -253,126 +268,89 @@
                         <!-- Sub-tabs for order history -->
                         <ul class="nav nav-tabs mb-4" id="orderHistoryTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="processing-tab" data-bs-toggle="tab"
-                                    data-bs-target="#processing" type="button" role="tab">Đang xử lý</button>
+                                <button class="nav-link active" id="all-tab" data-bs-toggle="tab"
+                                    data-bs-target="#all" type="button" role="tab" data-status="all">Tất cả</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="completed-tab" data-bs-toggle="tab"
-                                    data-bs-target="#completed" type="button" role="tab">Giao thành công</button>
+                                <button class="nav-link" id="pending-tab" data-bs-toggle="tab"
+                                    data-bs-target="#pending" type="button" role="tab" data-status="pending">Chờ xác nhận</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="processing-tab" data-bs-toggle="tab"
+                                    data-bs-target="#processing" type="button" role="tab" data-status="processing">Đang xử lý</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="shipped-tab" data-bs-toggle="tab"
+                                    data-bs-target="#shipped" type="button" role="tab" data-status="shipped">Đang giao</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="delivered-tab" data-bs-toggle="tab"
+                                    data-bs-target="#delivered" type="button" role="tab" data-status="delivered">Đã giao</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab"
+                                    data-bs-target="#cancelled" type="button" role="tab" data-status="cancelled">Đã hủy</button>
                             </li>
                         </ul>
 
                         <!-- Tab content -->
                         <div class="tab-content" id="orderHistoryTabContent">
-                            <!-- Processing Orders Tab -->
-                            <div class="tab-pane fade show active" id="processing" role="tabpanel">
-                                <div class="row gy-4">
-                                    <div class="col-12">
-                                        <div class="card rounded-4 border-0 shadow-sm mb-4">
-                                            <div
-                                                class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <a href="#" class="fw-bold text-white text-decoration-underline"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#orderDetailModal">#41774496694</a>
-                                                    <div class="small text-white-50">22.05.2025</div>
-                                                </div>
-                                                <span
-                                                    class="badge bg-white text-primary fw-semibold px-4 py-2 rounded-pill">Đang
-                                                    chuẩn bị hàng</span>
-                                            </div>
-                                            <div class="card-body bg-warning-subtle d-flex align-items-center gap-4">
-                                                <img src="../images/product-01.jpg" alt="sp1" class="rounded-3 border"
-                                                    width="110" height="110">
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-semibold text-primary mb-1">Quần Shorts Chạy Bộ
-                                                        Economy I</div>
-                                                    <div class="text-secondary small">Cam / M</div>
-                                                    <div class="text-secondary small">x1</div>
-                                                    <div class="fw-bold mt-1">79.000đ</div>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="card-footer bg-light d-flex align-items-center rounded-bottom-4">
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần
-                                                        hỗ trợ</button>
-                                                    <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua
-                                                        lại</button>
-                                                </div>
-                                                <div class="ms-auto fw-bold fs-5">104.000đ</div>
-                                            </div>
-                                        </div>
+                            <!-- All Orders Tab -->
+                            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                                <div class="order-list" id="allOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-list fs-1 mb-3"></i>
+                                        <p>Đang tải tất cả đơn hàng...</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Completed Orders Tab -->
-                            <div class="tab-pane fade" id="completed" role="tabpanel">
-                                <div class="row gy-4">
-                                    <div class="col-12">
-                                        <div class="card rounded-4 border-0 shadow-sm mb-4">
-                                            <div
-                                                class="card-header bg-success text-white rounded-top-4 d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <a href="#" class="fw-bold text-white text-decoration-underline"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#orderDetailModal">#41774496695</a>
-                                                    <div class="small text-white-50">20.05.2025</div>
-                                                </div>
-                                                <span
-                                                    class="badge bg-white text-success fw-semibold px-4 py-2 rounded-pill">Giao
-                                                    thành công</span>
-                                            </div>
-                                            <div class="card-body bg-warning-subtle">
-                                                <div class="d-flex align-items-center gap-4 mb-3">
-                                                    <img src="../images/product-01.jpg" alt="sp1"
-                                                        class="rounded-3 border" width="110" height="110">
-                                                    <div class="flex-grow-1">
-                                                        <div class="fw-semibold text-primary mb-1">Quần Shorts Chạy Bộ
-                                                            Economy I</div>
-                                                        <div class="text-secondary small">Cam / M</div>
-                                                        <div class="text-secondary small">x1</div>
-                                                        <div class="fw-bold mt-1">79.000đ</div>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-4 mb-3">
-                                                    <img src="../images/product-02.jpg" alt="sp2"
-                                                        class="rounded-3 border" width="110" height="110">
-                                                    <div class="flex-grow-1">
-                                                        <div class="fw-semibold text-primary mb-1">Áo Thun Nam Basic
-                                                        </div>
-                                                        <div class="text-secondary small">Đen / L</div>
-                                                        <div class="text-secondary small">x2</div>
-                                                        <div class="fw-bold mt-1">158.000đ</div>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-4">
-                                                    <img src="../images/product-03.jpg" alt="sp3"
-                                                        class="rounded-3 border" width="110" height="110">
-                                                    <div class="flex-grow-1">
-                                                        <div class="fw-semibold text-primary mb-1">Áo Polo Nam Premium
-                                                        </div>
-                                                        <div class="text-secondary small">Xanh Navy / XL</div>
-                                                        <div class="text-secondary small">x1</div>
-                                                        <div class="fw-bold mt-1">199.000đ</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="card-footer bg-light d-flex align-items-center rounded-bottom-4">
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần
-                                                        hỗ trợ</button>
-                                                    <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua
-                                                        lại</button>
-                                                    <button class="btn btn-danger rounded-pill px-4 fw-bold"
-                                                        data-bs-toggle="modal" data-bs-target="#returnModal">Hoàn trả
-                                                        hàng</button>
-                                                </div>
-                                                <div class="ms-auto fw-bold fs-5">436.000đ</div>
-                                            </div>
-                                        </div>
+                            <!-- Pending Orders Tab -->
+                            <div class="tab-pane fade" id="pending" role="tabpanel">
+                                <div class="order-list" id="pendingOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-clock fs-1 mb-3"></i>
+                                        <p>Chưa có đơn hàng nào đang chờ xác nhận</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Processing Orders Tab -->
+                            <div class="tab-pane fade" id="processing" role="tabpanel">
+                                <div class="order-list" id="processingOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-gear fs-1 mb-3"></i>
+                                        <p>Chưa có đơn hàng nào đang xử lý</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shipped Orders Tab -->
+                            <div class="tab-pane fade" id="shipped" role="tabpanel">
+                                <div class="order-list" id="shippedOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-truck fs-1 mb-3"></i>
+                                        <p>Chưa có đơn hàng nào đang giao</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivered Orders Tab -->
+                            <div class="tab-pane fade" id="delivered" role="tabpanel">
+                                <div class="order-list" id="deliveredOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-check-circle fs-1 mb-3"></i>
+                                        <p>Chưa có đơn hàng nào đã giao</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cancelled Orders Tab -->
+                            <div class="tab-pane fade" id="cancelled" role="tabpanel">
+                                <div class="order-list" id="cancelledOrders">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-times-circle fs-1 mb-3"></i>
+                                        <p>Chưa có đơn hàng nào bị hủy</p>
                                     </div>
                                 </div>
                             </div>
@@ -386,98 +364,22 @@
                     <div class="modal-dialog modal-lg modal-dialog-centered">
                         <div class="modal-content rounded-4">
                             <div class="modal-header bg-primary text-white rounded-top-4">
-                                <h5 class="modal-title fw-bold" id="orderDetailModalLabel">Chi tiết đơn hàng
-                                    #41774496694</h5>
+                                <h5 class="modal-title fw-bold" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Đóng"></button>
                             </div>
-                            <div class="modal-body bg-warning-subtle">
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <div class="mb-2"><span class="fw-semibold">Ngày đặt hàng:</span></div>
-                                        <div class="mb-3">22.05.2025</div>
-                                        <div class="mb-2"><span class="fw-semibold">Tên người nhận:</span></div>
-                                        <div class="mb-3">King Of The River</div>
-                                        <div class="mb-2"><span class="fw-semibold">Số điện thoại:</span></div>
-                                        <div class="mb-3">0819470836</div>
-                                        <div class="mb-2"><span class="fw-semibold">Địa chỉ giao hàng:</span></div>
-                                        <div>ngõ 499 đường LNQ, Phường Phan Đình Phùng, Thành phố Thái Nguyên, Thái
-                                            Nguyên</div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2"><span class="fw-semibold">Phương thức thanh toán:</span></div>
-                                        <div class="mb-3">COD</div>
-                                        <div class="mb-2"><span class="fw-semibold">Email:</span></div>
-                                        <div class="mb-3">tenlocreate@gmail.com</div>
-                                        <div class="mb-2"><span class="fw-semibold">Ghi chú:</span></div>
-                                        <div>-</div>
-                                    </div>
-                                </div>
+                            <div class="modal-body bg-warning-subtle" id="orderDetailModalBody">
                                 <div class="mb-4">
                                     <h5 class="fw-bold mb-3">Tình trạng đơn hàng</h5>
+                                    <div id="orderStatusHistory" class="mb-3"></div>
                                     <div class="d-flex flex-wrap gap-2 align-items-center">
-                                        <span class="badge bg-primary fw-semibold px-4 py-2">Đang chuẩn bị hàng</span>
-                                        <span class="text-secondary">22:11 22-05-2025</span>
+                                        <span class="badge bg-primary fw-semibold px-4 py-2">${getStatusLabel(order.status)}</span>
+                                        <span class="text-secondary">${formatDateTime(order.createdAt)}</span>
                                     </div>
-                                    <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-                                        <span class="badge bg-secondary fw-semibold px-4 py-2">Chờ xác nhận</span>
-                                        <span class="text-secondary">22:08 22-05-2025</span>
-                                    </div>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table align-middle bg-white rounded-4 overflow-hidden">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Sản phẩm</th>
-                                                <th>Thuộc tính</th>
-                                                <th>Số lượng</th>
-                                                <th class="text-end">Thành tiền</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="d-flex align-items-center gap-2">
-                                                    <img src="../images/product-01.jpg" alt="sp1"
-                                                        class="rounded-3 border" width="90" height="90">
-                                                    <span class="fw-semibold text-primary">Quần Shorts Chạy Bộ Economy
-                                                        I</span>
-                                                </td>
-                                                <td>Cam / M</td>
-                                                <td>1</td>
-                                                <td class="fw-bold text-end">79.000đ</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="d-flex align-items-center gap-2">
-                                                    <img src="../images/product-02.jpg" alt="sp2"
-                                                        class="rounded-3 border" width="90" height="90">
-                                                    <span class="fw-semibold text-primary">Áo Thun Nam Basic</span>
-                                                </td>
-                                                <td>Đen / L</td>
-                                                <td>2</td>
-                                                <td class="fw-bold text-end">158.000đ</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="d-flex align-items-center gap-2">
-                                                    <img src="../images/product-03.jpg" alt="sp3"
-                                                        class="rounded-3 border" width="90" height="90">
-                                                    <span class="fw-semibold text-primary">Áo Polo Nam Premium</span>
-                                                </td>
-                                                <td>Xanh Navy / XL</td>
-                                                <td>1</td>
-                                                <td class="fw-bold text-end">199.000đ</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
-                            <div
-                                class="modal-footer bg-light rounded-bottom-4 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <button class="btn btn-outline-dark rounded-pill px-4 fw-bold">Cần hỗ trợ</button>
-                                    <button class="btn btn-danger rounded-pill px-4 fw-bold">Huỷ đơn hàng</button>
-                                    <button class="btn btn-dark rounded-pill px-4 fw-bold">Mua lại</button>
-                                </div>
-                                <div class="fw-bold fs-5">Tổng tiền: 237.000đ</div>
+                            <div class="modal-footer bg-light rounded-bottom-4 d-flex justify-content-between align-items-center" id="orderDetailModalFooter">
+                                <!-- Footer sẽ được render động từ JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -500,67 +402,7 @@
                                         <h6 class="fw-bold mb-3">Chọn sản phẩm cần hoàn trả</h6>
                                         <div class="product-selection bg-light rounded-4 p-3">
                                             <div class="row g-3">
-                                                <!-- Product 1 -->
-                                                <div class="col-12">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input product-checkbox" type="checkbox"
-                                                            id="product1" data-price="79000">
-                                                        <label class="form-check-label w-100" for="product1">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <img src="../images/product-01.jpg" alt="sp1"
-                                                                    class="rounded-3 border" width="80" height="80">
-                                                                <div class="flex-grow-1">
-                                                                    <div class="fw-semibold text-primary">Quần Shorts
-                                                                        Chạy Bộ Economy I</div>
-                                                                    <div class="text-secondary small">Cam / M</div>
-                                                                    <div class="text-secondary small">x1</div>
-                                                                    <div class="fw-bold mt-1">79.000đ</div>
-                                                                </div>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <!-- Product 2 -->
-                                                <div class="col-12">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input product-checkbox" type="checkbox"
-                                                            id="product2" data-price="158000">
-                                                        <label class="form-check-label w-100" for="product2">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <img src="../images/product-02.jpg" alt="sp2"
-                                                                    class="rounded-3 border" width="80" height="80">
-                                                                <div class="flex-grow-1">
-                                                                    <div class="fw-semibold text-primary">Áo Thun Nam
-                                                                        Basic</div>
-                                                                    <div class="text-secondary small">Đen / L</div>
-                                                                    <div class="text-secondary small">x2</div>
-                                                                    <div class="fw-bold mt-1">158.000đ</div>
-                                                                </div>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <!-- Product 3 -->
-                                                <div class="col-12">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input product-checkbox" type="checkbox"
-                                                            id="product3" data-price="199000">
-                                                        <label class="form-check-label w-100" for="product3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <img src="../images/product-03.jpg" alt="sp3"
-                                                                    class="rounded-3 border" width="80" height="80">
-                                                                <div class="flex-grow-1">
-                                                                    <div class="fw-semibold text-primary">Áo Polo Nam
-                                                                        Premium</div>
-                                                                    <div class="text-secondary small">Xanh Navy / XL
-                                                                    </div>
-                                                                    <div class="text-secondary small">x1</div>
-                                                                    <div class="fw-bold mt-1">199.000đ</div>
-                                                                </div>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                                    <!-- Danh sách sản phẩm sẽ được render động từ JavaScript -->
                                             </div>
                                             <div class="mt-3 pt-3 border-top">
                                                 <div class="d-flex justify-content-between align-items-center">
@@ -588,31 +430,29 @@
                                                 <textarea class="form-control" rows="4"
                                                     placeholder="Mô tả chi tiết lý do hoàn trả..." required></textarea>
                                             </div>
-
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Phương thức hoàn trả</label>
+                                                <select class="form-select rounded-pill mb-3" id="returnMethod" name="returnMethod" required>
+                                                    <option value="">Chọn phương thức hoàn trả</option>
+                                                    <option value="exchange">Đổi hàng</option>
+                                                    <option value="refund">Hoàn tiền</option>
+                                                </select>
+                                            </div>
                                             <div class="mb-4">
                                                 <label class="form-label fw-bold">Hình ảnh sản phẩm lỗi</label>
-                                                <div class="d-flex gap-3">
-                                                    <div class="border rounded-4 p-3 text-center"
-                                                        style="width: 150px; height: 150px;">
-                                                        <i class="fa-solid fa-plus fs-4 text-secondary"></i>
-                                                        <div class="small text-secondary mt-2">Thêm ảnh</div>
+                                                <div class="image-upload-container">
+                                                    <input type="file" id="returnImages" accept="image/*" multiple style="display: none;">
+                                                    <div id="imagePreviewContainer" class="d-flex gap-3 flex-wrap">
+                                                        <!-- Preview images will be inserted here -->
                                                     </div>
-                                                    <div class="border rounded-4 p-3 text-center"
-                                                        style="width: 150px; height: 150px;">
-                                                        <i class="fa-solid fa-plus fs-4 text-secondary"></i>
-                                                        <div class="small text-secondary mt-2">Thêm ảnh</div>
+                                                    <div class="mt-3">
+                                                        <button type="button" class="btn btn-outline-primary rounded-pill px-4" id="addImageBtn">
+                                                            <i class="fa-solid fa-plus me-2"></i>Thêm ảnh (tối đa 5 ảnh)
+                                                        </button>
+                                                        <div class="small text-muted mt-2">Hỗ trợ: JPG, PNG, GIF. Tối đa 5MB mỗi ảnh.</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="form-label fw-bold">Địa chỉ gửi hàng hoàn trả</label>
-                                        <div class="bg-light p-3 rounded-4">
-                                            <div class="fw-semibold">Tee-Shirt Vibe</div>
-                                            <div class="text-secondary">123 Đường ABC, Quận XYZ, TP. Hà Nội</div>
-                                            <div class="text-secondary">Hotline: 0123456789</div>
                                         </div>
                                     </div>
                                 </form>
@@ -645,60 +485,6 @@
             </div>
         </div>
     </main>
-    <!-- Modal Cập nhật thông tin cá nhân -->
-    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content rounded-4 p-2 p-md-4">
-                <div class="modal-header border-0 pb-0">
-                    <h2 class="modal-title w-100 text-center fw-bold mb-0" id="profileModalLabel"
-                        style="font-size:2.2rem;">Cập nhật thông tin cá nhân</h2>
-                    <button type="button" class="btn-close position-absolute end-0 me-3 mt-3" data-bs-dismiss="modal"
-                        aria-label="Đóng" style="font-size:1.5rem;"></button>
-                </div>
-                <form id="profileForm">
-                    <div class="modal-body pt-2">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-user me-2"></i>Họ và tên</label>
-                            <input type="text" class="form-control rounded-pill" id="profileName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-phone me-2"></i>Số điện thoại</label>
-                            <input type="tel" class="form-control rounded-pill" id="profilePhone" pattern="^0[0-9]{9}$" title="Số điện thoại phải có 10 số và bắt đầu bằng số 0">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
-                            <input type="email" class="form-control rounded-pill" id="profileEmail" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới
-                                tính</label>
-                            <div class="d-flex gap-4 mt-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="profileGender"
-                                        id="profileGenderMale" value="Nam" checked>
-                                    <label class="form-check-label" for="profileGenderMale">Nam</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="profileGender"
-                                        id="profileGenderFemale" value="Nữ">
-                                    <label class="form-check-label" for="profileGenderFemale">Nữ</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
-                                sinh</label>
-                            <input type="date" class="form-control rounded-pill" id="profileBirthday">
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
-                        <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100"
-                            style="max-width:400px;">CẬP NHẬT <i class="fa-solid fa-arrow-right ms-2"></i></button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <th:block th:fragment="scripts">
         <script src="/customer_js/account_js/account.js"></script>
     </th:block>

@@ -20,5 +20,6 @@ public class CustomerAddressDTO {
     private String specificAddress;
     private String phone;
     private String name;
+    private Boolean isDefault;
     private LocalDateTime createdAt;
 } 

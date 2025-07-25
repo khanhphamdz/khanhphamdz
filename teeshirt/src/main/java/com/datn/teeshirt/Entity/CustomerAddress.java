@@ -52,6 +52,9 @@ public class CustomerAddress {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
+    @Column(name = "is_default")
+    private Boolean isDefault;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

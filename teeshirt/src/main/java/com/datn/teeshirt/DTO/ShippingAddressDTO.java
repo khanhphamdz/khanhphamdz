@@ -4,6 +4,9 @@ public class ShippingAddressDTO {
     private String provinceId;
     private String districtId;
     private String wardId;
+    private String provinceName;
+    private String districtName;
+    private String wardName;
     private String specificAddress;
     private String phone;
     private String name;
@@ -15,6 +18,12 @@ public class ShippingAddressDTO {
     public void setDistrictId(String districtId) { this.districtId = districtId; }
     public String getWardId() { return wardId; }
     public void setWardId(String wardId) { this.wardId = wardId; }
+    public String getProvinceName() { return provinceName; }
+    public void setProvinceName(String provinceName) { this.provinceName = provinceName; }
+    public String getDistrictName() { return districtName; }
+    public void setDistrictName(String districtName) { this.districtName = districtName; }
+    public String getWardName() { return wardName; }
+    public void setWardName(String wardName) { this.wardName = wardName; }
     public String getSpecificAddress() { return specificAddress; }
     public void setSpecificAddress(String specificAddress) { this.specificAddress = specificAddress; }
     public String getPhone() { return phone; }

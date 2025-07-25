@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi"
+    th:replace="~{/customer/layout/layout::view(title=~{::title}, content=~{::main}, styles=~{::styles}, scripts=~{::scripts})}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sản phẩm yêu thích | Tee Shirt Vibe</title>
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" href="/customer_css/product_css/style_product_list.css">
+        <link rel="stylesheet" href="/customer_css/wishlist_css/wishlist.css">
+    </th:block>
+</head>
+
+<body>
+    <main class="container mt-4" style="padding-top: 100px;">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Sản phẩm yêu thích</li>
+            </ol>
+        </nav>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Sản phẩm yêu thích</h4>
+                </div>
+
+                <!-- Danh sách sản phẩm yêu thích -->
+                <div th:if="${!#lists.isEmpty(wishlistProducts)}" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+                    <div th:each="product : ${wishlistProducts}" class="product col">
+                        <div class="product-pic">
+                            <img th:src="${product.images != null and !product.images.empty ? product.images[0].imageUrl : '/images/no-image.png'}"
+                                th:alt="${product.name}" alt="IMG-PRODUCT">
+                            <a th:href="@{|/product/detail/${product.productId}|}" class="product-btn">Quick View</a>
+                        </div>
+                        <div class="product-txt">
+                            <div class="product-txt-child1 flex-col-l">
+                                <a th:href="@{|/product/detail/${product.productId}|}"
+                                    class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
+                                    th:text="${product.name}">Tên sản phẩm</a>
+                                <span class="stext-105 cl3" th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá sản phẩm</span>
+                            </div>
+                            
+                            <!-- Action buttons -->
+                            <div class="product-actions mt-2 d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary add-to-cart-btn" 
+                                        th:data-product-id="${product.productId}"
+                                        title="Thêm vào giỏ hàng">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger remove-from-wishlist-btn" 
+                                        th:data-product-id="${product.productId}"
+                                        title="Xóa khỏi danh sách yêu thích">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông báo khi không có sản phẩm yêu thích -->
+                <div th:if="${#lists.isEmpty(wishlistProducts)}" class="text-center py-5">
+                    <div class="empty-wishlist">
+                        <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                        <h5 class="mtext-105">Danh sách yêu thích trống</h5>
+                        <p class="stext-107">Bạn chưa có sản phẩm nào trong danh sách yêu thích.</p>
+                        <a href="/product" class="btn-shop-now">Mua sắm ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+
+    
+    <th:block th:fragment="scripts">
+        <script src="/customer_js/product_js/wishlist.js"></script>
+    </th:block>
+</body>
+
+</html>

@@ -127,6 +127,23 @@ public class CartService {
         cart = cartRepository.findByCustomer(customer).orElse(null);
     }
 
+    @Transactional
+    public void removeMultipleCartItems(List<Long> variantIds, Authentication authentication) {
+        Customer customer = getCustomerFromAuth(authentication);
+        Cart cart = cartRepository.findByCustomer(customer).orElse(null);
+        if (cart == null) {
+            throw new RuntimeException("Không tìm thấy giỏ hàng");
+        }
+        
+        // Xóa nhiều CartItem cùng lúc
+        for (Long variantId : variantIds) {
+            cartItemRepository.deleteByCartIdAndVariantId(cart.getCartId(), variantId);
+        }
+        
+        // Refresh cart để cập nhật danh sách cartItems
+        cart = cartRepository.findByCustomer(customer).orElse(null);
+    }
+
     public void mergeCart(List<CartItemRequest> localCart, Authentication authentication) {
         Customer customer = getCustomerFromAuth(authentication);
         Cart cart = cartRepository.findByCustomer(customer).orElse(null);
@@ -157,6 +174,11 @@ public class CartService {
                 cartItemRepository.save(newItem);
             }
         }
+    }
+
+    public Cart createCartForCustomer(Customer customer) {
+        Cart cart = Cart.builder().customer(customer).build();
+        return cartRepository.save(cart);
     }
 
     // private CartDTO convertToCartDTO(Cart cart) {

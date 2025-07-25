@@ -1,4 +1,4 @@
-package com.datn.teeshirt.Controller.API;
+package com.datn.teeshirt.Controller.API.AdminAPI;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -16,26 +16,28 @@ import com.datn.teeshirt.Entity.Size;
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
 
-    @Query("SELECT pv FROM ProductVariant pv WHERE pv.product.productId = :productId AND pv.isActive = true")
+    @Query("SELECT pv FROM ProductVariant pv WHERE pv.product.productId = :productId AND pv.isActive = true AND pv.deletedAt IS NULL")
     List<ProductVariant> findActiveByProductId(@Param("productId") Long productId);
 
-    @Query("SELECT pv FROM ProductVariant pv WHERE pv.quantityInStock > 0 AND pv.isActive = true")
+    @Query("SELECT pv FROM ProductVariant pv WHERE pv.quantityInStock > 0 AND pv.isActive = true AND pv.deletedAt IS NULL")
     List<ProductVariant> findInStock();
+
+    List<ProductVariant> findByProduct_ProductIdAndDeletedAtIsNull(Long productId);
 
     List<ProductVariant> findByProduct_ProductId(Long productId);
 
     // Lấy biến thể theo màu sắc
-    List<ProductVariant> findByProduct_ProductIdAndColor_ColorId(Long productId, Long colorId);
+    List<ProductVariant> findByProduct_ProductIdAndColor_ColorIdAndDeletedAtIsNull(Long productId, Long colorId);
 
     // Lấy biến thể theo size
-    List<ProductVariant> findByProduct_ProductIdAndSize_SizeId(Long productId, Long sizeId);
+    List<ProductVariant> findByProduct_ProductIdAndSize_SizeIdAndDeletedAtIsNull(Long productId, Long sizeId);
 
     // Kiểm tra biến thể đã tồn tại
-    boolean existsByProductAndColorAndSize(Product product, Color color, Size size);
+    boolean existsByProductAndColorAndSizeAndDeletedAtIsNull(Product product, Color color, Size size);
 
-    boolean existsByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(Long productId, Long colorId, Long sizeId);
+    boolean existsByProduct_ProductIdAndColor_ColorIdAndSize_SizeIdAndDeletedAtIsNull(Long productId, Long colorId, Long sizeId);
 
-    boolean existsByBarcode(String barcode);
+    boolean existsByBarcodeAndDeletedAtIsNull(String barcode);
 
-    Optional<ProductVariant> findByBarcode(String barcode);
+    Optional<ProductVariant> findByBarcodeAndDeletedAtIsNull(String barcode);
 }

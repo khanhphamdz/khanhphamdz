@@ -62,6 +62,7 @@ public class CustomerAddressService {
                 .specificAddress(address.getSpecificAddress())
                 .phone(address.getPhone())
                 .name(address.getName())
+                .isDefault(address.getIsDefault())
                 .createdAt(address.getCreatedAt())
                 .build();
     }
@@ -78,6 +79,7 @@ public class CustomerAddressService {
                 .specificAddress(dto.getSpecificAddress())
                 .phone(dto.getPhone())
                 .name(dto.getName())
+                .isDefault(dto.getIsDefault())
                 .build();
     }
 
@@ -85,5 +87,29 @@ public class CustomerAddressService {
     public List<CustomerAddressDTO> getAddressDTOsByCustomerId(Long customerId) {
         List<CustomerAddress> addresses = customerAddressRepository.findByCustomerCustomerId(customerId);
         return addresses.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    // Lấy địa chỉ mặc định (nếu có), nếu không có thì lấy địa chỉ đầu tiên
+    public CustomerAddressDTO getDefaultAddressDTOByCustomerId(Long customerId) {
+        List<CustomerAddress> addresses = customerAddressRepository.findByCustomerCustomerId(customerId);
+        if (addresses.isEmpty()) return null;
+        CustomerAddress defaultAddr = addresses.stream().filter(a -> Boolean.TRUE.equals(a.getIsDefault())).findFirst().orElse(addresses.get(0));
+        return toDTO(defaultAddr);
+    }    
+    public void setDefaultAddress(Long customerId, Long addressId) {
+        // Unset previous default addresses
+        List<CustomerAddress> addresses = findByCustomerId(customerId);
+        for (CustomerAddress address : addresses) {
+            if (address.getIsDefault() != null && address.getIsDefault()) {
+                address.setIsDefault(false);
+                save(address);
+            }
+        }
+        // Set the new default address
+        CustomerAddress newDefault = findById(addressId);
+        if (newDefault != null && newDefault.getCustomer().getCustomerId().equals(customerId)) {
+            newDefault.setIsDefault(true);
+            save(newDefault);
+        }
     }
 }

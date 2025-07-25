@@ -1,11 +1,10 @@
 // Product List Filter JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing filters...');
     initializeFilters();
     attachFilterEvents();
     attachPaginationEvents();
     attachSortingEvents();
-    console.log('All filters initialized');
+    checkWishlistStatus(); // Kiểm tra trạng thái wishlist khi trang load
 });
 
 // Khởi tạo các bộ lọc
@@ -17,7 +16,6 @@ function initializeFilters() {
     initializeSingleSelectFilter('sizeId');
     
     // Màu sắc có thể chọn nhiều (không cần xử lý đặc biệt)
-    console.log('Filters initialized');
 }
 
 // Khởi tạo filter chỉ chọn 1 giá trị (cho category và size)
@@ -41,27 +39,20 @@ function initializeSingleSelectFilter(filterName) {
 
 // Gắn sự kiện cho các filter inputs
 function attachFilterEvents() {
-    console.log('Attaching filter events...');
     const filterForm = document.getElementById('filterForm');
-    console.log('Filter form found:', filterForm);
     
     if (filterForm) {
         const filterInputs = filterForm.querySelectorAll('input[type="checkbox"], input[type="radio"], select');
-        console.log('Filter inputs found:', filterInputs.length);
         
-        filterInputs.forEach((input, index) => {
-            console.log(`Input ${index}:`, input.name, input.type, input);
+        filterInputs.forEach((input) => {
             // Tránh gắn sự kiện trùng lặp
             if (!input.hasAttribute('data-filter-attached')) {
                 input.addEventListener('change', function() {
-                    console.log('Filter changed:', this.name, this.value, this.checked);
                     submitFilterAjax();
                 });
                 input.setAttribute('data-filter-attached', 'true');
             }
         });
-    } else {
-        console.error('Filter form with ID "filterForm" not found!');
     }
 }
 
@@ -93,13 +84,8 @@ function attachSortingEvents() {
 
 // Gửi AJAX request cho filter
 function submitFilterAjax(customPage) {
-    console.log('submitFilterAjax called with page:', customPage);
-    
     const filterForm = document.getElementById('filterForm');
-    if (!filterForm) {
-        console.error('Filter form not found');
-        return;
-    }
+    if (!filterForm) return;
 
     // Tạo FormData từ form
     const formData = new FormData(filterForm);
@@ -111,9 +97,7 @@ function submitFilterAjax(customPage) {
     params.append('sort', sortValue);
 
     // Thêm tất cả form data vào params
-    console.log('Form data entries:');
     for (const [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
         params.append(key, value);
     }
 
@@ -123,9 +107,8 @@ function submitFilterAjax(customPage) {
     }
 
     const url = '/product/filter?' + params.toString();
-    console.log('Sending request to:', url);
 
-    // Hiển thị loading indicator (optional)
+    // Hiển thị loading indicator
     showLoadingIndicator();
 
     // Gửi AJAX request
@@ -137,28 +120,18 @@ function submitFilterAjax(customPage) {
         }
     })
     .then(response => {
-        console.log('Response status:', response.status);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.text();
     })
     .then(html => {
-        console.log('Received HTML length:', html.length);
-        console.log('HTML preview:', html.substring(0, 200) + '...');
-        
         // Cập nhật nội dung product list
         const productListContainer = document.getElementById('product-list-container');
         if (productListContainer) {
             productListContainer.innerHTML = html;
-            
-            // Gắn lại sự kiện phân trang sau khi load mới
             attachPaginationEvents();
-            
-            // Không scroll, giữ nguyên vị trí hiện tại để UX tốt hơn
-            console.log('Product list updated successfully');
-        } else {
-            console.error('Product list container not found!');
+            attachSortingEvents();
         }
     })
     .catch(error => {
@@ -253,9 +226,83 @@ function hasActiveFilters() {
     return checkedInputs.length > 0 || selectedSelects.length > 0;
 }
 
+// Toggle wishlist cho sản phẩm trong danh sách
+async function toggleWishlistProduct(element, event) {
+    event.preventDefault();
+    const productId = element.dataset.productId;
+    if (!productId) return;
+    try {
+        const isInWishlist = element.classList.contains('active');
+        const url = isInWishlist ? `/wishlist/remove/${productId}` : `/wishlist/add/${productId}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.text();
+        if (result.startsWith('success:')) {
+            if (isInWishlist) {
+                element.classList.remove('active');
+            } else {
+                element.classList.add('active');
+            }
+            if (typeof updateWishlistCount === 'function') updateWishlistCount();
+        }
+    } catch (error) {}
+}
+
+// Kiểm tra trạng thái wishlist cho tất cả sản phẩm
+async function checkWishlistStatus() {
+    try {
+        const wishlistButtons = document.querySelectorAll('.btn-addwish-b2');
+        for (let button of wishlistButtons) {
+            const productId = button.dataset.productId;
+            if (productId) {
+                const response = await fetch(`/wishlist/check/${productId}`);
+                if (response.ok) {
+                    const isInWishlist = await response.text() === 'true';
+                    if (isInWishlist) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                }
+            }
+        }
+    } catch (error) {}
+}
+
+// Hàm hiển thị toast thông báo
+function showToast(message, type = 'success') {
+    let toast = document.getElementById('custom-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'custom-toast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '20px';
+        toast.style.zIndex = '9999';
+        toast.style.minWidth = '200px';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.color = '#fff';
+        toast.style.fontSize = '16px';
+        toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.background = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8';
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 1800);
+}
+
 // Export functions for external use (nếu cần)
 window.productListFilter = {
     submitFilter: submitFilterAjax,
     resetFilters: resetAllFilters,
     hasActiveFilters: hasActiveFilters
 };
+
+window.toggleWishlistProduct = toggleWishlistProduct;
+window.checkWishlistStatus = checkWishlistStatus;

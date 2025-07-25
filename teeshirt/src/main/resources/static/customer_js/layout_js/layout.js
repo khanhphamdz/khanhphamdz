@@ -158,3 +158,43 @@ function updateCartBadge() {
         badge.style.display = count > 0 ? 'inline-block' : 'none';
     }
 }
+
+// Layout JavaScript - Xử lý header và các thành phần chung
+document.addEventListener('DOMContentLoaded', function() {
+    updateWishlistCount();
+    updateCartBadge();
+});
+
+// Cập nhật số lượng wishlist trên header
+async function updateWishlistCount() {
+    try {
+        const response = await fetch('/wishlist/count');
+        if (response.ok) {
+            const count = await response.text();
+            const wishlistBadge = document.getElementById('wishlist-badge');
+            if (wishlistBadge) {
+                wishlistBadge.textContent = count;
+            }
+        }
+    } catch (error) {
+        console.log('Error updating wishlist count:', error);
+    }
+}
+
+// Cập nhật số lượng cart trên header
+async function updateCartBadge() {
+    try {
+        const cartBadge = document.getElementById('cart-badge');
+        if (cartBadge) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            cartBadge.textContent = totalItems;
+        }
+    } catch (error) {
+        console.log('Error updating cart badge:', error);
+    }
+}
+
+// Export functions để sử dụng từ các file khác
+window.updateWishlistCount = updateWishlistCount;
+window.updateCartBadge = updateCartBadge;

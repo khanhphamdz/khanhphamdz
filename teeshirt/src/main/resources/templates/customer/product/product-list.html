@@ -106,13 +106,13 @@
                         <h4>Danh sách sản phẩm</h4>
                         <div class="sort-options">
                             <label for="sortSelect" class="me-2">Sắp xếp theo:</label>
-                            <select id="sortSelect" class="form-select" style="width: auto; display: inline-block;">
-                                <option value="default">Mặc định</option>
-                                <option value="price-asc">Giá: Thấp đến Cao</option>
-                                <option value="price-desc">Giá: Cao đến Thấp</option>
-                                <option value="name-asc">Tên: A-Z</option>
-                                <option value="name-desc">Tên: Z-A</option>
-                                <option value="newest">Mới nhất</option>
+                            <select id="sortSelect" class="form-select" name="sort" style="width: auto; display: inline-block;">
+                                <option value="default" th:selected="${currentSort == null or currentSort == 'default'}">Mặc định</option>
+                                <option value="price-asc" th:selected="${currentSort == 'price-asc'}">Giá: Thấp đến Cao</option>
+                                <option value="price-desc" th:selected="${currentSort == 'price-desc'}">Giá: Cao đến Thấp</option>
+                                <option value="name-asc" th:selected="${currentSort == 'name-asc'}">Tên: A-Z</option>
+                                <option value="name-desc" th:selected="${currentSort == 'name-desc'}">Tên: Z-A</option>
+                                <option value="newest" th:selected="${currentSort == 'newest'}">Mới nhất</option>
                             </select>
                         </div>
                     </div>
@@ -120,10 +120,9 @@
                     <div class="row mt-2 row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
                         <div th:each="product : ${products.content}" class="product col">
                             <div class="product-pic">
-                                <img th:src="${product.images != null and !product.images.empty ? product.images[0].imageUrl : ''}"
+                                <img th:src="${product.images != null and !product.images.empty ? product.images[0].imageUrl : '/images/no-image.png'}"
                                     th:alt="${product.name}" alt="IMG-PRODUCT">
-                                <a th:href="@{|/product/detail/${product.productId}|}" class="product-btn">Quick
-                                    View</a>
+                                <a th:href="@{|/product/detail/${product.productId}|}" class="product-btn">Quick View</a>
                             </div>
                             <div class="product-txt">
                                 <div class="product-txt-child1 flex-col-l">
@@ -131,11 +130,10 @@
                                         class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
                                         th:text="${product.name}">Tên sản phẩm</a>
                                     <span class="stext-105 cl3"
-                                        th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá
-                                        sản phẩm</span>
+                                        th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá sản phẩm</span>
                                 </div>
                                 <div class="product-txt-child2">
-                                    <a href="#" class="btn-addwish-b2">
+                                    <a href="#" class="btn-addwish-b2" th:data-product-id="${product.productId}" onclick="toggleWishlistProduct(this, event)">
                                         <img class="icon-heart1"
                                             src="https://res.cloudinary.com/dzfxd7vnz/image/upload/v1747854343/icon-heart-01_slk5hs.png"
                                             alt="ICON">
@@ -158,7 +156,7 @@
                             <ul class="pagination">
                                 <li th:class="${products.first} ? 'page-item disabled' : 'page-item'">
                                     <a class="page-link"
-                                        th:href="@{/product(page=${products.number - 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:href="@{/product(page=${products.number - 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice}, sort=${currentSort})}"
                                         th:unless="${products.first}">
                                         <span>&laquo;</span>
                                     </a>
@@ -168,13 +166,13 @@
                                 <li th:each="pageNum : ${#numbers.sequence(0, products.totalPages - 1)}"
                                     th:class="${pageNum == products.number} ? 'page-item active' : 'page-item'">
                                     <a class="page-link"
-                                        th:href="@{/product(page=${pageNum}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:href="@{/product(page=${pageNum}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice}, sort=${currentSort})}"
                                         th:text="${pageNum + 1}">1</a>
                                 </li>
 
                                 <li th:class="${products.last} ? 'page-item disabled' : 'page-item'">
                                     <a class="page-link"
-                                        th:href="@{/product(page=${products.number + 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice})}"
+                                        th:href="@{/product(page=${products.number + 1}, size=${products.size}, keyword=${currentKeyword}, categoryId=${currentCategoryId}, colorId=${currentColorId}, sizeId=${currentSizeId}, minPrice=${currentMinPrice}, maxPrice=${currentMaxPrice}, sort=${currentSort})}"
                                         th:unless="${products.last}">
                                         <span>&raquo;</span>
                                     </a>

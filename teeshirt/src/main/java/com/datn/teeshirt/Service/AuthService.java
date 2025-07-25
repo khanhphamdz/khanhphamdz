@@ -1,7 +1,6 @@
 package com.datn.teeshirt.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.datn.teeshirt.DTO.AuthRequestDTO;
@@ -17,10 +16,13 @@ public class AuthService {
         private CustomerRepository customerRepository;
 
         @Autowired
-        private PasswordEncoder passwordEncoder;
+        EmailService emailService;
 
         @Autowired
-        EmailService emailService;
+        CartService cartService;
+
+        @Autowired
+        WishlistService wishlistService;
 
         public CustomerDTO register(CustomerRegisterDTO dto) {
                 if (customerRepository.existsByEmail(dto.getEmail())) {
@@ -29,10 +31,14 @@ public class AuthService {
                 Customer customer = Customer.builder()
                                 .name(dto.getName())
                                 .email(dto.getEmail())
-                                .password(passwordEncoder.encode(dto.getPassword()))
+                                .password(dto.getPassword())
                                 .avatarUrl(null)
                                 .build();
                 Customer savedCustomer = customerRepository.save(customer);
+
+                // Tạo Cart và Wishlist cho customer mới
+                cartService.createCartForCustomer(savedCustomer);
+                wishlistService.getOrCreateWishlist(savedCustomer);
 
                 // gửi email cho khách hàng
                 String subject = "Chào mừng bạn đến với TeeShirtVibe!";
