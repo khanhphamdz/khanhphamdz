@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.teeshirt.Controller.ResponseObject;
@@ -21,6 +22,11 @@ import com.datn.teeshirt.DTO.CartItemRequest;
 import com.datn.teeshirt.DTO.CouponDTO;
 import com.datn.teeshirt.Service.CartService;
 import com.datn.teeshirt.Service.CouponService;
+<<<<<<< HEAD
+=======
+import com.datn.teeshirt.Entity.Coupon;
+import com.datn.teeshirt.Repository.CouponRepository;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 @RestController
 @RequestMapping("/api/cart")
@@ -29,6 +35,11 @@ public class CartController {
     private CartService cartService;
     @Autowired
     private CouponService couponService;
+<<<<<<< HEAD
+=======
+    @Autowired
+    private CouponRepository couponRepository;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
     // Lấy giỏ hàng của user
     @GetMapping("")

@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+<<<<<<< HEAD
+=======
+import java.util.Objects;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -87,10 +91,18 @@ public class ProductService {
     public Page<ProductDTO> getProducts(int page, int size, String keyword, Long categoryId, BigDecimal minPrice,
             BigDecimal maxPrice, Boolean status) {
         Pageable pageable = PageRequest.of(page, size);
-        if (keyword != null && !keyword.isEmpty()) {
-            return productRepository.search2(keyword, pageable).map(this::toProductDTO);
-        }
-        return productRepository.filter(categoryId, status, minPrice, maxPrice, pageable).map(this::toProductDTO);
+        // Lấy tất cả sản phẩm có ít nhất 1 variant active
+        Page<Product> products = productRepository.findAll(pageable);
+        // Lọc lại ở tầng service: chỉ lấy sản phẩm có ít nhất 1 variant active
+        List<Product> filtered = products.getContent().stream()
+            .filter(p -> p.getVariants() != null && p.getVariants().stream().anyMatch(v -> v.getIsActive() != null && v.getIsActive()))
+            .toList();
+        Page<ProductDTO> result = new org.springframework.data.domain.PageImpl<>(
+            filtered.stream().map(this::toProductDTO).toList(),
+            pageable,
+            products.getTotalElements()
+        );
+        return result;
     }
 
     // 1.2. Lấy danh sách sản phẩm với filter đầy đủ (bao gồm color và size)
@@ -498,7 +510,13 @@ public class ProductService {
                             .build())
                     .collect(Collectors.toList());
         }
-
+        // Luôn trả về variants (kể cả không active)
+        List<ProductVariantDTO> variants = product.getVariants() != null
+                ? product.getVariants().stream().map(this::toProductVariantDTO).collect(Collectors.toList())
+                : new ArrayList<>();
+        // Tìm giá nhỏ nhất sau giảm (nếu có)
+        BigDecimal minDiscountedPrice = getMinDiscountedPrice(variants);
+        BigDecimal minOriginalPrice = getMinOriginalPrice(variants);
         return ProductDTO.builder()
                 .productId(product.getProductId())
                 .name(product.getName())
@@ -510,9 +528,7 @@ public class ProductService {
                 .materialName(product.getMaterial() != null ? product.getMaterial().getName() : null)
                 .categories(productCategories)
                 .images(getAllProductImage(product.getProductId()))
-                .variants(product.getVariants() != null
-                        ? product.getVariants().stream().map(this::toProductVariantDTO).collect(Collectors.toList())
-                        : new ArrayList<>())
+                .variants(variants)
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .averageRating(
@@ -520,11 +536,35 @@ public class ProductService {
                                 ? product.getReviews().stream()
                                         .mapToDouble(r -> r.getRating() != null ? r.getRating() : 0).average().orElse(0)
                                 : null)
+                // Thêm 2 trường giá nhỏ nhất để hiển thị ngoài list
+                .minDiscountedPrice(minDiscountedPrice)
+                .minOriginalPrice(minOriginalPrice)
                 .build();
     }
 
     private ProductVariantDTO toProductVariantDTO(ProductVariant variant) {
+<<<<<<< HEAD
         ProductVariantDTO dto = ProductVariantDTO.builder()
+=======
+        // Lấy giá sau giảm động (nếu có promotion)
+        BigDecimal dynamicDiscountPrice = getDynamicDiscountPrice(variant);
+        BigDecimal discountPrice = null;
+        LocalDateTime now = LocalDateTime.now();
+        if (variant.getDiscountPrice() != null) {
+            boolean valid = true;
+            if (variant.getDiscountPriceStartAt() != null && now.isBefore(variant.getDiscountPriceStartAt())) {
+                valid = false;
+            }
+            if (variant.getDiscountPriceEndAt() != null && now.isAfter(variant.getDiscountPriceEndAt())) {
+                valid = false;
+            }
+            if (valid) {
+                discountPrice = variant.getDiscountPrice();
+            }
+        }
+        if (discountPrice == null) discountPrice = dynamicDiscountPrice;
+        return ProductVariantDTO.builder()
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 .variantId(variant.getVariantId())
                 .productId(variant.getProduct() != null ? variant.getProduct().getProductId() : null)
                 .name(variant.getName())
@@ -535,7 +575,11 @@ public class ProductService {
                 .sizeId(variant.getSize() != null ? variant.getSize().getSizeId() : null)
                 .sizeName(variant.getSize() != null ? variant.getSize().getName() : null)
                 .price(variant.getPrice())
+<<<<<<< HEAD
                 .discountPrice(getDynamicDiscountPrice(variant))
+=======
+                .discountPrice(discountPrice)
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 .discountPriceStartAt(variant.getDiscountPriceStartAt())
                 .discountPriceEndAt(variant.getDiscountPriceEndAt())
                 .quantityInStock(variant.getQuantityInStock())
@@ -577,6 +621,36 @@ public class ProductService {
         } else {
             return variant.getPrice().subtract(bestPromo.getDiscountValue()).max(BigDecimal.ZERO).setScale(2,
                     BigDecimal.ROUND_HALF_UP);
+        }
+    }
+
+    private BigDecimal getDynamicDiscountPrice(ProductVariant variant) {
+        List<PromotionProduct> activePromotions = promotionProductRepository
+            .findByVariant_VariantId(variant.getVariantId())
+            .stream()
+            .filter(pp -> {
+                Promotion promo = pp.getPromotion();
+                if (promo == null) return false; // Nếu promotion đã bị xóa thì bỏ qua
+                LocalDateTime now = LocalDateTime.now();
+                return promo.getIsActive() != null && promo.getIsActive()
+                    && !now.isBefore(promo.getStartDate())
+                    && !now.isAfter(promo.getEndDate());
+            })
+            .collect(Collectors.toList());
+        if (activePromotions.isEmpty()) return null;
+        // Ưu tiên promotion có discount cao nhất
+        Promotion bestPromo = activePromotions.stream()
+            .map(PromotionProduct::getPromotion)
+            .filter(Objects::nonNull)
+            .max(Comparator.comparing(Promotion::getDiscountValue))
+            .orElse(null);
+        if (bestPromo == null) return null;
+        if (bestPromo.getType() == Promotion.PromotionType.PERCENTAGE) {
+            return variant.getPrice().multiply(
+                BigDecimal.valueOf(1 - bestPromo.getDiscountValue().doubleValue() / 100)
+            ).setScale(2, BigDecimal.ROUND_HALF_UP);
+        } else {
+            return variant.getPrice().subtract(bestPromo.getDiscountValue()).max(BigDecimal.ZERO).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
     }
 
@@ -920,5 +994,22 @@ public class ProductService {
                 .limit(size)
                 .map(this::toProductDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Helper: Lấy giá nhỏ nhất sau giảm của các variant
+    private BigDecimal getMinDiscountedPrice(List<ProductVariantDTO> variants) {
+        return variants.stream()
+            .map(v -> v.getDiscountPrice() != null ? v.getDiscountPrice() : v.getPrice())
+            .filter(Objects::nonNull)
+            .min(BigDecimal::compareTo)
+            .orElse(null);
+    }
+    // Helper: Lấy giá gốc nhỏ nhất
+    private BigDecimal getMinOriginalPrice(List<ProductVariantDTO> variants) {
+        return variants.stream()
+            .map(ProductVariantDTO::getPrice)
+            .filter(Objects::nonNull)
+            .min(BigDecimal::compareTo)
+            .orElse(null);
     }
 }

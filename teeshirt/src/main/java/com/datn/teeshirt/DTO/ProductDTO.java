@@ -30,4 +30,7 @@ public class ProductDTO {
     private Long materialId;
     private String materialName;
     private Double averageRating;
+    // Thêm 2 trường giá nhỏ nhất để hiển thị ngoài list
+    private java.math.BigDecimal minDiscountedPrice;
+    private java.math.BigDecimal minOriginalPrice;
 }

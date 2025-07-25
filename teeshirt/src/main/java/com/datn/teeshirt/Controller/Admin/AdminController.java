@@ -27,8 +27,15 @@ public class AdminController {
     public String promotionManagementPage() {
         return "admin/product/promotion-management";
     }
+<<<<<<< HEAD
     @GetMapping("/xxx")
     public String xxx() {
         return "admin/order/order-detail";
+=======
+
+    @GetMapping("/refund-management")
+    public String refundManagementPage() {
+        return "admin/product/refund-management";
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     }
 }

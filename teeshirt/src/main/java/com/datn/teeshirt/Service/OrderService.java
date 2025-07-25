@@ -29,7 +29,11 @@ public class OrderService {
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private CouponRepository couponRepository;
     @Autowired private ProductVariantRepository productVariantRepository;
+<<<<<<< HEAD
     @Autowired private EmailService emailService;
+=======
+    @Autowired private CustomerAddressRepository customerAddressRepository;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
     // 1. Tạo đơn hàng mới
     @Transactional
@@ -61,17 +65,27 @@ public class OrderService {
         order.setUpdatedAt(LocalDateTime.now());
         Order savedOrder = orderRepository.save(order);
 
+<<<<<<< HEAD
         // Nếu có coupon, tăng usageCount (chỉ nếu là COD/cash)
         boolean isCOD = false;
         if (requestDTO.getPayment() != null && requestDTO.getPayment().getPaymentType() != null) {
             isCOD = requestDTO.getPayment().getPaymentType() == Payment.PaymentType.COD;
         }
         if (order.getCoupon() != null && isCOD) {
+=======
+        // Nếu có coupon, tăng usageCount
+        if (order.getCoupon() != null) {
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             Coupon coupon = order.getCoupon();
             if (coupon.getUsageCount() == null) coupon.setUsageCount(0);
             coupon.setUsageCount(coupon.getUsageCount() + 1);
             couponRepository.save(coupon);
         }
+<<<<<<< HEAD
+=======
+
+        // Lưu Order_Items
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemDTO itemDTO : requestDTO.getItems()) {
             ProductVariant variant = productVariantRepository.findById(itemDTO.getProductVariantId()).orElse(null);
@@ -79,9 +93,16 @@ public class OrderService {
             item.setOrder(savedOrder);
             item.setVariant(variant);
             item.setQuantity(itemDTO.getQuantity());
+<<<<<<< HEAD
             java.math.BigDecimal price = variant.getDiscountPrice() != null ? variant.getDiscountPrice() : variant.getPrice();
             item.setPrice(price);
             item.setPriceAtPurchase(itemDTO.getPrice());
+=======
+            // Lấy giá giảm nếu có, nếu không lấy giá gốc
+            java.math.BigDecimal price = variant.getDiscountPrice() != null ? variant.getDiscountPrice() : variant.getPrice();
+            item.setPrice(price);
+            item.setPriceAtPurchase(price);
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             orderItems.add(orderItemRepository.save(item));
             // Trừ tồn kho chỉ nếu là COD/cash
             if (isCOD) {
@@ -261,7 +282,18 @@ public class OrderService {
         // Shipping Address
         ShippingAddress address = shippingAddressRepository.findByOrder_OrderId(order.getOrderId());
         if (address != null) {
+<<<<<<< HEAD
             ShippingAddressDTO addrDTO = convertShippingAddressToDTO(address);
+=======
+            ShippingAddressDTO addrDTO = new ShippingAddressDTO();
+            addrDTO.setProvinceId(address.getProvinceId());
+            addrDTO.setDistrictId(address.getDistrictId());
+            addrDTO.setWardId(address.getWardId());
+            addrDTO.setSpecificAddress(address.getSpecificAddress());
+            addrDTO.setPhone(address.getPhone());
+            addrDTO.setName(address.getName());
+            addrDTO.setNote(address.getNote());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             dto.setShippingAddress(addrDTO);
         }
         // Order Items (detailed)
@@ -343,6 +375,7 @@ public class OrderService {
         dto.setPhone(shippingAddress.getPhone());
         dto.setName(shippingAddress.getName());
         dto.setNote(shippingAddress.getNote());
+<<<<<<< HEAD
         
         // Lấy tên đầy đủ của địa chỉ
         populateAddressNames(dto);
@@ -388,6 +421,10 @@ public class OrderService {
             System.err.println("Error fetching address names: " + e.getMessage());
         }
     }
+=======
+        return dto;
+    }
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
     // 4. Cập nhật trạng thái đơn hàng
     @Transactional

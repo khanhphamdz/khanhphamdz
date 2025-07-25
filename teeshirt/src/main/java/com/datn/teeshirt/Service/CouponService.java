@@ -11,10 +11,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
+<<<<<<< HEAD
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import org.springframework.security.core.Authentication;
 import java.util.List;
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 @Service
 public class CouponService {
@@ -41,15 +44,38 @@ public class CouponService {
     // Tạo mới coupon
     @Transactional
     public CouponDTO create(CouponDTO dto) {
+<<<<<<< HEAD
         Coupon coupon = toEntity(dto);
         coupon.setUsageCount(dto.getUsageCount() != null ? dto.getUsageCount() : 0);
         coupon.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+=======
+        // Check hạn mức %
+        if ("percentage".equalsIgnoreCase(dto.getType())) {
+            if (dto.getDiscountValue() == null || dto.getDiscountValue().doubleValue() <= 0 || dto.getDiscountValue().doubleValue() > 99) {
+                throw new IllegalArgumentException("Giá trị phần trăm giảm giá phải lớn hơn 0 và không vượt quá 99%!");
+            }
+        }
+        Coupon coupon = toEntity(dto);
+        coupon.setUsageCount(dto.getUsageCount() != null ? dto.getUsageCount() : 0);
+        coupon.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        // Tự động xác định type nếu chưa set
+        if (dto.getType() == null || dto.getType().isEmpty()) {
+            if (dto.getDiscountValue() != null && dto.getDiscountValue().doubleValue() <= 1.0) {
+                coupon.setType("percentage");
+            } else {
+                coupon.setType("fixed");
+            }
+        } else {
+            coupon.setType(dto.getType());
+        }
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         return toDTO(couponRepository.save(coupon));
     }
 
     // Cập nhật coupon
     @Transactional
     public CouponDTO update(Long id, CouponDTO dto) {
+<<<<<<< HEAD
         Coupon coupon = couponRepository.findById(id).orElseThrow();
         boolean hasUsage = coupon.getUsageCount() != null && coupon.getUsageCount() > 0;
         if (!hasUsage) {
@@ -60,6 +86,18 @@ public class CouponService {
         }
         // Các trường cơ bản luôn cho phép cập nhật
         coupon.setDescription(dto.getDescription());
+=======
+        // Check hạn mức %
+        if ("percentage".equalsIgnoreCase(dto.getType())) {
+            if (dto.getDiscountValue() == null || dto.getDiscountValue().doubleValue() <= 0 || dto.getDiscountValue().doubleValue() > 99) {
+                throw new IllegalArgumentException("Giá trị phần trăm giảm giá phải lớn hơn 0 và không vượt quá 99%!");
+            }
+        }
+        Coupon coupon = couponRepository.findById(id).orElseThrow();
+        coupon.setCode(dto.getCode());
+        coupon.setDescription(dto.getDescription());
+        coupon.setDiscountValue(dto.getDiscountValue());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         coupon.setMinOrderValue(dto.getMinOrderValue());
         coupon.setStartDate(dto.getStartDate());
         coupon.setEndDate(dto.getEndDate());
@@ -67,6 +105,19 @@ public class CouponService {
         coupon.setUsageCount(dto.getUsageCount());
         coupon.setIsActive(dto.getIsActive());
         coupon.setApplyToCustomer(dto.getApplyToCustomer());
+<<<<<<< HEAD
+=======
+        // Tự động xác định type nếu chưa set
+        if (dto.getType() == null || dto.getType().isEmpty()) {
+            if (dto.getDiscountValue() != null && dto.getDiscountValue().doubleValue() <= 1.0) {
+                coupon.setType("percentage");
+            } else {
+                coupon.setType("fixed");
+            }
+        } else {
+            coupon.setType(dto.getType());
+        }
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         return toDTO(couponRepository.save(coupon));
     }
 
@@ -84,6 +135,7 @@ public class CouponService {
         return toDTO(couponRepository.save(coupon));
     }
 
+<<<<<<< HEAD
     // Kiểm tra hợp lệ mã giảm giá
     public CouponDTO validateCoupon(String code, Long customerId, java.math.BigDecimal orderValue, boolean isNewCustomer) {
         Coupon coupon = couponRepository.findByCode(code)
@@ -229,6 +281,8 @@ public class CouponService {
             .collect(Collectors.toList());
     }
 
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     // Chuyển đổi Entity -> DTO
     private CouponDTO toDTO(Coupon coupon) {
         CouponDTO dto = new CouponDTO();
@@ -261,7 +315,11 @@ public class CouponService {
                 .usageCount(dto.getUsageCount())
                 .isActive(dto.getIsActive())
                 .applyToCustomer(dto.getApplyToCustomer())
+<<<<<<< HEAD
                 .type(dto.getType())
+=======
+                .type(dto.getType() != null ? dto.getType() : "fixed")
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 .build();
     }
 } 

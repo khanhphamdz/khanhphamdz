@@ -369,6 +369,7 @@
                                     aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body bg-warning-subtle" id="orderDetailModalBody">
+<<<<<<< HEAD
                                 <div class="mb-4">
                                     <h5 class="fw-bold mb-3">Tình trạng đơn hàng</h5>
                                     <div id="orderStatusHistory" class="mb-3"></div>
@@ -377,6 +378,9 @@
                                         <span class="text-secondary">${formatDateTime(order.createdAt)}</span>
                                     </div>
                                 </div>
+=======
+                                <!-- Nội dung sẽ được render động từ JavaScript -->
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                             </div>
                             <div class="modal-footer bg-light rounded-bottom-4 d-flex justify-content-between align-items-center" id="orderDetailModalFooter">
                                 <!-- Footer sẽ được render động từ JavaScript -->
@@ -417,6 +421,19 @@
                                     <div class="mb-4">
                                         <h6 class="fw-bold mb-3">Thông tin hoàn trả</h6>
                                         <div class="bg-light rounded-4 p-4">
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Loại yêu cầu</label>
+                                                <div class="d-flex gap-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="returnType" id="returnTypeRefund" value="REFUND" checked>
+                                                        <label class="form-check-label" for="returnTypeRefund">Hoàn tiền</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="returnType" id="returnTypeExchange" value="EXCHANGE">
+                                                        <label class="form-check-label" for="returnTypeExchange">Đổi hàng</label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="mb-4">
                                                 <label class="form-label fw-bold">Lý do hoàn trả</label>
                                                 <select class="form-select rounded-pill mb-3" required>
@@ -485,6 +502,45 @@
             </div>
         </div>
     </main>
+<<<<<<< HEAD
+=======
+    <!-- Modal Cập nhật thông tin cá nhân -->
+    <!-- Modal has been removed since we no longer need it -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                            <input type="email" class="form-control rounded-pill" id="profileEmail" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-venus-mars me-2"></i>Giới
+                                tính</label>
+                            <div class="d-flex gap-4 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="profileGender"
+                                        id="profileGenderMale" value="Nam" checked>
+                                    <label class="form-check-label" for="profileGenderMale">Nam</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="profileGender"
+                                        id="profileGenderFemale" value="Nữ">
+                                    <label class="form-check-label" for="profileGenderFemale">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2"></i>Ngày
+                                sinh</label>
+                            <input type="date" class="form-control rounded-pill" id="profileBirthday">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fs-5 fw-bold w-100"
+                            style="max-width:400px;">CẬP NHẬT <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     <th:block th:fragment="scripts">
         <script src="/customer_js/account_js/account.js"></script>
     </th:block>

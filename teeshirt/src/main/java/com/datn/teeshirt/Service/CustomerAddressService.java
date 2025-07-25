@@ -89,6 +89,7 @@ public class CustomerAddressService {
         return addresses.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+<<<<<<< HEAD
     // Lấy địa chỉ mặc định (nếu có), nếu không có thì lấy địa chỉ đầu tiên
     public CustomerAddressDTO getDefaultAddressDTOByCustomerId(Long customerId) {
         List<CustomerAddress> addresses = customerAddressRepository.findByCustomerCustomerId(customerId);
@@ -96,6 +97,8 @@ public class CustomerAddressService {
         CustomerAddress defaultAddr = addresses.stream().filter(a -> Boolean.TRUE.equals(a.getIsDefault())).findFirst().orElse(addresses.get(0));
         return toDTO(defaultAddr);
     }    
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     public void setDefaultAddress(Long customerId, Long addressId) {
         // Unset previous default addresses
         List<CustomerAddress> addresses = findByCustomerId(customerId);

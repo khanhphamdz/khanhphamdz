@@ -17,10 +17,13 @@ public interface PromotionProductRepository extends JpaRepository<PromotionProdu
     @Query("DELETE FROM PromotionProduct pp WHERE pp.promotion.promotionId = :promotionId")
     void deleteByPromotionId(@Param("promotionId") Long promotionId);
 
+<<<<<<< HEAD
     @Modifying
     @Transactional
     @Query("DELETE FROM PromotionProduct pp WHERE pp.variant.variantId = :variantId")
     void deleteByVariantId(@Param("variantId") Long variantId);
 
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     List<PromotionProduct> findByVariant_VariantId(Long variantId);
 } 

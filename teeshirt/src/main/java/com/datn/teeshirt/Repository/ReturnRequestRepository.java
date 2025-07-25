@@ -22,7 +22,11 @@ public interface ReturnRequestRepository extends JpaRepository<ReturnRequest, Lo
 
     long countByReturnStatus(ReturnRequest.ReturnStatus status);
 
+<<<<<<< HEAD
     // Tìm ki?m và phân trang theo tr?ng thái, t? khóa (orderId, customer name, phone)
+=======
+    // TÃ¬m kiáº¿m vÃ  phÃ¢n trang theo tráº¡ng thÃ¡i, tá»« khÃ³a (orderId, customer name, phone)
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     @Query("SELECT r FROM ReturnRequest r WHERE (:status IS NULL OR r.returnStatus = :status) " +
            "AND (:keyword IS NULL OR CAST(r.order.orderId AS string) LIKE %:keyword% " +
            "OR LOWER(r.customer.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +

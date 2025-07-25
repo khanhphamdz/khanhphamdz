@@ -130,7 +130,25 @@
                                         class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
                                         th:text="${product.name}">Tên sản phẩm</a>
                                     <span class="stext-105 cl3"
+<<<<<<< HEAD
                                         th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá sản phẩm</span>
+=======
+                                          th:if="${product.minDiscountedPrice != null}">
+                                        <span style="color: #e53935; font-size: 1.2em; font-weight: bold;"
+                                              th:text="${#numbers.formatDecimal(product.minDiscountedPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                        <del style="color: #888; font-size: 0.95em; margin-left: 6px;"
+                                             th:if="${product.minOriginalPrice != null && product.minOriginalPrice.compareTo(product.minDiscountedPrice) > 0}"
+                                             th:text="${#numbers.formatDecimal(product.minOriginalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></del>
+                                    </span>
+                                    <span class="stext-105 cl3"
+                                          th:if="${product.minDiscountedPrice == null && product.minOriginalPrice != null}">
+                                        <span style="color: #222; font-size: 1.1em; font-weight: 500;"
+                                              th:text="${#numbers.formatDecimal(product.minOriginalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    </span>
+                                    <span class="stext-105 cl3" th:if="${product.minDiscountedPrice == null && product.minOriginalPrice == null}">
+                                        Liên hệ
+                                    </span>
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                                 </div>
                                 <div class="product-txt-child2">
                                     <a href="#" class="btn-addwish-b2" th:data-product-id="${product.productId}" onclick="toggleWishlistProduct(this, event)">

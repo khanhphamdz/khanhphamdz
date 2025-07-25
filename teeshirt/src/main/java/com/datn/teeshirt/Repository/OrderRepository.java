@@ -9,8 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -38,6 +41,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.customer.customerId = :customerId AND o.coupon.couponId = :couponId")
     long countByCustomerIdAndCouponId(@Param("customerId") Long customerId, @Param("couponId") Long couponId);
+<<<<<<< HEAD
 
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderStatuses WHERE o.orderId = :orderId AND o.customer.customerId = :customerId")
     Optional<Order> findByOrderIdAndCustomerIdWithStatuses(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
@@ -54,4 +58,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         @Param("createdDate") java.time.LocalDate createdDate,
         Pageable pageable
     );
+=======
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 }

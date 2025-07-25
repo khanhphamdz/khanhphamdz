@@ -6,10 +6,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+=======
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 import com.datn.teeshirt.DTO.ReturnRequestDTO;
 import com.datn.teeshirt.Entity.Customer;
@@ -23,12 +30,24 @@ import com.datn.teeshirt.Repository.CustomerRepository;
 import com.datn.teeshirt.Repository.OrderItemRepository;
 import com.datn.teeshirt.Repository.OrderRepository;
 import com.datn.teeshirt.Repository.ProductImageRepository;
+<<<<<<< HEAD
 import com.datn.teeshirt.Repository.ProductVariantRepository;
 import com.datn.teeshirt.Repository.ReturnRequestItemRepository;
 import com.datn.teeshirt.Repository.ReturnRequestRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
+=======
+import com.datn.teeshirt.Repository.ProductRepository;
+import com.datn.teeshirt.Repository.ProductVariantRepository;
+import com.datn.teeshirt.Repository.ReturnRequestItemRepository;
+import com.datn.teeshirt.Repository.ReturnRequestRepository;
+import com.datn.teeshirt.Repository.EmployeeRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.multipart.MultipartFile;
+import com.datn.teeshirt.Entity.Employee;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
 
 @Service
 @Transactional
@@ -51,6 +70,13 @@ public class ReturnRequestService {
     @Autowired
     private OrderItemRepository orderItemRepository;
     @Autowired
+<<<<<<< HEAD
+=======
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     private ProductVariantRepository productVariantRepository;
 
     public boolean createReturnRequest(ReturnRequestDTO returnRequestDTO, Long customerId) {
@@ -98,12 +124,20 @@ public class ReturnRequestService {
                 }
             }
 
+<<<<<<< HEAD
+=======
+            // Parse returnType từ DTO (String)
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             ReturnRequest.ReturnType type = ReturnRequest.ReturnType.REFUND;
             if (returnRequestDTO.getReturnType() != null) {
                 try {
                     type = ReturnRequest.ReturnType.valueOf(returnRequestDTO.getReturnType().toUpperCase());
+<<<<<<< HEAD
                 } catch (Exception ignored) {
                 }
+=======
+                } catch (Exception ignored) {}
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             }
             ReturnRequest returnRequest = ReturnRequest.builder()
                     .order(order)
@@ -145,9 +179,15 @@ public class ReturnRequestService {
 
                         if (itemDTO.getProductCondition() != null) {
                             try {
+<<<<<<< HEAD
                                 // Sửa: parse enum từ string (in hoa)
                                 productCondition = ReturnRequestItem.ProductCondition
                                         .valueOf(itemDTO.getProductCondition().toUpperCase());
+=======
+                                // Thử parse enum từ string
+                                productCondition = ReturnRequestItem.ProductCondition
+                                        .valueOf(itemDTO.getProductCondition());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                             } catch (IllegalArgumentException e) {
                                 // Nếu không parse được, mặc định là DAMAGED và ghi vào reason
                                 productCondition = ReturnRequestItem.ProductCondition.DAMAGED;
@@ -192,6 +232,7 @@ public class ReturnRequestService {
     }
 
     // Overload cho multipart/form-data
+<<<<<<< HEAD
     public boolean createReturnRequest(Long orderId, String reason, String description, String productsJson,
             List<MultipartFile> images, Long customerId, String returnType) {
         try {
@@ -200,11 +241,19 @@ public class ReturnRequestService {
             List<ReturnRequestDTO.ReturnRequestItemDTO> items = mapper.readValue(productsJson,
                     new TypeReference<List<ReturnRequestDTO.ReturnRequestItemDTO>>() {
                     });
+=======
+    public boolean createReturnRequest(Long orderId, String reason, String description, String productsJson, List<MultipartFile> images, Long customerId) {
+        try {
+            // Parse productsJson thành List<ReturnRequestDTO.ReturnRequestItemDTO>
+            ObjectMapper mapper = new ObjectMapper();
+            List<ReturnRequestDTO.ReturnRequestItemDTO> items = mapper.readValue(productsJson, new TypeReference<List<ReturnRequestDTO.ReturnRequestItemDTO>>(){});
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             ReturnRequestDTO dto = new ReturnRequestDTO();
             dto.setOrderId(orderId);
             dto.setReturnReason(reason);
             dto.setReturnNote(description);
             dto.setReturnItems(items);
+<<<<<<< HEAD
             dto.setReturnType(returnType);
             // Xử lý ảnh nếu có
             if (images != null && !images.isEmpty()) {
@@ -215,6 +264,18 @@ public class ReturnRequestService {
                 }
                 if (sb.length() > 0)
                     sb.setLength(sb.length() - 1);
+=======
+            // Xử lý ảnh nếu có
+            if (images != null && !images.isEmpty()) {
+              
+                StringBuilder sb = new StringBuilder();
+                for (MultipartFile file : images) {
+                    String fileName = file.getOriginalFilename();
+                  
+                    sb.append("/images/return/").append(fileName).append(",");
+                }
+                if (sb.length() > 0) sb.setLength(sb.length() - 1);
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 dto.setReturnImages(sb.toString());
             }
             return createReturnRequest(dto, customerId);
@@ -240,6 +301,7 @@ public class ReturnRequestService {
 
     // Chuyển đổi entity sang DTO
     public ReturnRequestDTO toDTO(ReturnRequest entity) {
+<<<<<<< HEAD
         ReturnRequestDTO dto = new ReturnRequestDTO();
         dto.setOrderId(entity.getOrder().getOrderId());
         dto.setReturnReason(entity.getReturnReason());
@@ -296,6 +358,27 @@ public class ReturnRequestService {
         return false;
     }
 
+=======
+        if (entity == null) return null;
+        ReturnRequestDTO dto = new ReturnRequestDTO();
+        dto.setReturnId(entity.getReturnId());
+        dto.setOrderId(entity.getOrder() != null ? entity.getOrder().getOrderId() : null);
+        dto.setCustomerId(entity.getCustomer() != null ? entity.getCustomer().getCustomerId() : null);
+        dto.setReturnReason(entity.getReturnReason());
+        dto.setReturnStatus(entity.getReturnStatus() != null ? entity.getReturnStatus().name() : null);
+        dto.setReturnType(entity.getReturnType() != null ? entity.getReturnType().name() : null);
+        dto.setRefundAmount(entity.getRefundAmount());
+        dto.setRefundStatus(entity.getRefundStatus() != null ? entity.getRefundStatus().name() : null);
+        dto.setReturnQuantity(entity.getReturnQuantity());
+        dto.setRequestDate(entity.getRequestDate() != null ? entity.getRequestDate().toString() : null);
+        dto.setReturnNote(entity.getReturnNote());
+        dto.setReturnImages(entity.getReturnImages());
+        // Map return items nếu cần
+        // (Bổ sung nếu entity có getReturnRequestItems)
+        return dto;
+    }
+
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
     // Admin duyệt yêu cầu trả hàng
     public boolean approveReturnRequest(Long id, String adminNote) {
         Optional<ReturnRequest> opt = returnRequestRepository.findById(id);
@@ -306,12 +389,20 @@ public class ReturnRequestService {
                 req.setReturnStatus(ReturnRequest.ReturnStatus.APPROVED);
                 req.setAdminNote(adminNote);
                 req.setProcessedDate(LocalDateTime.now());
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 // Cập nhật trạng thái refund
                 if (req.getReturnType() == ReturnRequest.ReturnType.REFUND) {
                     req.setRefundStatus(ReturnRequest.RefundStatus.PENDING);
                 }
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 returnRequestRepository.save(req);
                 return true;
             }
@@ -351,7 +442,12 @@ public class ReturnRequestService {
                 req.setRefundStatus(ReturnRequest.RefundStatus.COMPLETED);
             }
             if (adminNote != null && !adminNote.trim().isEmpty()) {
+<<<<<<< HEAD
                 req.setAdminNote(req.getAdminNote() != null ? req.getAdminNote() + " | " + adminNote : adminNote);
+=======
+                req.setAdminNote(req.getAdminNote() != null ?
+                    req.getAdminNote() + " | " + adminNote : adminNote);
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             }
             returnRequestRepository.save(req);
             return true;
@@ -404,8 +500,12 @@ public class ReturnRequestService {
 
     public ReturnRequestDTO getReturnRequestDTODetail(Long id) {
         ReturnRequest entity = getReturnRequestDetail(id);
+<<<<<<< HEAD
         if (entity == null)
             return null;
+=======
+        if (entity == null) return null;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         return toDTO(entity);
     }
 
@@ -415,8 +515,12 @@ public class ReturnRequestService {
     public java.util.Map<String, Object> getReturnRequestDetailFull(Long id) {
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         ReturnRequest rr = getReturnRequestDetail(id);
+<<<<<<< HEAD
         if (rr == null)
             return null;
+=======
+        if (rr == null) return null;
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         // Thông tin cơ bản
         result.put("returnId", rr.getReturnId());
         result.put("orderId", rr.getOrder().getOrderId());
@@ -449,8 +553,12 @@ public class ReturnRequestService {
         result.put("orderFinalAmount", order.getFinalAmount());
         // Sản phẩm hoàn trả (theo từng item)
         java.util.List<java.util.Map<String, Object>> items = new java.util.ArrayList<>();
+<<<<<<< HEAD
         java.util.List<ReturnRequestItem> returnItems = returnRequestItemRepository
                 .findByReturnRequestId(rr.getReturnId());
+=======
+        java.util.List<ReturnRequestItem> returnItems = returnRequestItemRepository.findByReturnRequestId(rr.getReturnId());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         for (ReturnRequestItem item : returnItems) {
             java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
             ProductVariant variant = item.getVariant();
@@ -460,8 +568,12 @@ public class ReturnRequestService {
             itemMap.put("color", variant.getColor() != null ? variant.getColor().getName() : null);
             itemMap.put("size", variant.getSize() != null ? variant.getSize().getName() : null);
             itemMap.put("returnQuantity", item.getReturnQuantity());
+<<<<<<< HEAD
             itemMap.put("productCondition",
                     item.getProductCondition() != null ? item.getProductCondition().name() : null);
+=======
+            itemMap.put("productCondition", item.getProductCondition() != null ? item.getProductCondition().name() : null);
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             itemMap.put("returnReason", item.getReturnReason());
             // Lấy giá mua từ OrderItem
             java.util.List<OrderItem> orderItems = orderItemRepository.findByOrder_OrderId(order.getOrderId());
@@ -475,15 +587,23 @@ public class ReturnRequestService {
             itemMap.put("priceAtPurchase", price);
             // Hình ảnh sản phẩm (lấy theo variant, nếu không có thì lấy theo product)
             java.util.List<String> images = new java.util.ArrayList<>();
+<<<<<<< HEAD
             java.util.List<com.datn.teeshirt.Entity.ProductImage> variantImgs = productImageRepository
                     .findByVariant_VariantId(variant.getVariantId());
+=======
+            java.util.List<com.datn.teeshirt.Entity.ProductImage> variantImgs = productImageRepository.findByVariant_VariantId(variant.getVariantId());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
             if (variantImgs != null && !variantImgs.isEmpty()) {
                 for (com.datn.teeshirt.Entity.ProductImage img : variantImgs) {
                     images.add(img.getImageUrl());
                 }
             } else {
+<<<<<<< HEAD
                 java.util.List<com.datn.teeshirt.Entity.ProductImage> productImgs = productImageRepository
                         .findByProduct_ProductId(product.getProductId());
+=======
+                java.util.List<com.datn.teeshirt.Entity.ProductImage> productImgs = productImageRepository.findByProduct_ProductId(product.getProductId());
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
                 for (com.datn.teeshirt.Entity.ProductImage img : productImgs) {
                     images.add(img.getImageUrl());
                 }
@@ -510,10 +630,19 @@ public class ReturnRequestService {
         if (status != null && !status.isEmpty()) {
             try {
                 st = ReturnRequest.ReturnStatus.valueOf(status.toUpperCase());
+<<<<<<< HEAD
             } catch (Exception ignored) {
             }
+=======
+            } catch (Exception ignored) {}
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
         }
         Page<ReturnRequest> page = returnRequestRepository.searchByStatusAndKeyword(st, keyword, pageable);
         return page.map(this::toDTO);
     }
+<<<<<<< HEAD
 }
+=======
+}
+
+>>>>>>> b701f766cc9f1669099fbfcef74506c420c14a05
