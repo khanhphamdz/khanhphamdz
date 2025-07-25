@@ -244,4 +244,11 @@ public class ProductRestController {
             return ResponseEntity.ok(new ResponseObject("error", "Lỗi khi xóa biến thể: " + e.getMessage(), null));
         }
     }
+
+    // API cho admin: lấy toàn bộ sản phẩm kèm biến thể (không phân trang)
+    @GetMapping("/admin/products-with-variants")
+    public ResponseEntity<List<ProductDTO>> getAllProductsWithVariantsForAdmin() {
+        List<ProductDTO> products = productService.findAll2(); // đã bao gồm variants
+        return ResponseEntity.ok(products);
+    }
 }

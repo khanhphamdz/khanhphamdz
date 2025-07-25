@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -27,14 +27,14 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // @Autowired
+    // private PasswordEncoder passwordEncoder;
 
-    // @SuppressWarnings("deprecation")
-    // @Bean
-    // public PasswordEncoder noPasswordEncoder() {
-    // return NoOpPasswordEncoder.getInstance();
-    // }
+    @SuppressWarnings("deprecation")
+    @Bean
+    public PasswordEncoder noPasswordEncoder() {
+    return NoOpPasswordEncoder.getInstance();
+    }
 
     @Bean
     public LogoutSuccessHandler customerLogoutSuccessHandler() {
@@ -62,7 +62,7 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
+        authProvider.setPasswordEncoder(noPasswordEncoder());
         return authProvider;
     }
 

@@ -68,7 +68,8 @@
                 Thời gian tạo: <span id="createdTime"></span>
               </div>
               <div class="col-6 text-end">
-                <select class="form-select form-select-sm w-auto d-inline list-employee" id="createdBy" style="min-width: 150px">
+                <select class="form-select form-select-sm w-auto d-inline list-employee" id="createdBy"
+                  style="min-width: 150px">
                   <option value="Nguyễn Văn A">Nguyễn Văn A</option>
                   <option value="Trần Thị B">Trần Thị B</option>
                   <option value="Lê Văn C">Lê Văn C</option>
@@ -131,11 +132,30 @@
                     <!-- Option địa chỉ sẽ render động -->
                   </select>
                 </div>
-                <div class="mb-2">
-                  <label class="form-label fw-semibold">Địa chỉ giao hàng:</label>
-                  <textarea class="form-control" id="deliveryAddress" rows="2"
-                    placeholder="Nhập địa chỉ giao hàng"></textarea>
+                <!-- Bổ sung form nhập địa chỉ mới -->
+                <div class="mb-2" id="provinceDistrictWardBox" style="display:none;">
+                  <input id="shippingName" class="form-control mb-2" placeholder="Tên người nhận" />
+                  <input id="shippingPhone" class="form-control mb-2" placeholder="Số điện thoại người nhận" />
+                  <div class="row g-2">
+                    <div class="col-md-4 mb-2">
+                      <select id="provinceSelect" class="form-select" onchange="fetchDistricts()">
+                        <option value="">Chọn tỉnh/thành</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                      <select id="districtSelect" class="form-select" onchange="fetchWards()">
+                        <option value="">Chọn quận/huyện</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                      <select id="wardSelect" class="form-select">
+                        <option value="">Chọn phường/xã</option>
+                      </select>
+                    </div>
+                  </div>
+                  <input id="addressDetail" class="form-control mb-2" placeholder="Số nhà, tên đường..." />
                 </div>
+                <!-- XÓA textarea cũ nhập địa chỉ giao hàng -->
               </div>
             </div>
             <!-- Thanh toán -->
@@ -411,13 +431,15 @@
           cart.items.push({
             productId: item.productId,
             variantId: item.variantId,
-            name: item.name,
+            productName: item.productName || item.name || '',
+            size: item.size || '',
+            color: item.color || '',
             price: item.price,
             quantity: 1,
             imageUrl: item.imageUrl,
             quantityInStock: maxQty,
-            size: item.size,
-            color: item.color
+            // Lưu thêm mô tả biến thể nếu có
+            variantName: (item.size && item.color) ? (item.size + ' - ' + item.color) : (item.variantName || ''),
           });
         }
         renderCart();
@@ -490,49 +512,78 @@
 
       // Sửa completeTransaction để gửi dữ liệu về backend
       async function completeTransaction() {
-        if (carts[activeOrder].items.length === 0) {
+        if (!carts[activeOrder].items || carts[activeOrder].items.length === 0) {
           showToast("Giỏ hàng trống!", "danger");
           return;
         }
-
         const cart = carts[activeOrder];
-        const items = cart.items.map(item => ({
-          productVariantId: item.variantId,
-          quantity: item.quantity,
-          price: item.price
-        }));
-
-        const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        const finalAmount = total - discountAmount;
+        console.log(cart);
+        
+        // Lấy số tiền khách trả
         const customerPayment = parseFloat(document.getElementById("customerPayment").value) || 0;
+        // Tính lại finalAmount
+        const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const finalAmount = total - discountAmount;
         if (customerPayment < finalAmount) {
           showToast("Số tiền khách trả chưa đủ!", "danger");
           return;
         }
-
+        const change = customerPayment - finalAmount;
+        const items = cart.items.map(item => ({
+          productVariantId: item.variantId,
+          quantity: item.quantity,
+          price: item.price,
+          productName: item.productName,
+          size: item.size,
+          color: item.color,
+          variantName: item.variantName,
+          imageUrl: item.imageUrl
+        }));
         const payment = {
           paymentType: document.getElementById("paymentMethod").value === "cash" ? "COD" : "BANK",
           amount: finalAmount,
           paymentStatus: "completed"
         };
-
+        // Xử lý địa chỉ giao hàng
+        let shippingAddress = null;
+        let shippingAddressId = null;
+        if (document.getElementById("isDelivery").checked) {
+          const selectVal = document.getElementById('customerAddressSelect') ? document.getElementById('customerAddressSelect').value : null;
+          if (selectVal) {
+            // Địa chỉ đã lưu
+            shippingAddressId = selectVal;
+          } else {
+            // Nhập mới
+            shippingAddress = {
+              name: document.getElementById("shippingName").value,
+              phone: document.getElementById("shippingPhone").value,
+              specificAddress: document.getElementById("addressDetail").value,
+              provinceId: document.getElementById("provinceSelect").value,
+              districtId: document.getElementById("districtSelect").value,
+              wardId: document.getElementById("wardSelect").value
+            };
+            if (!shippingAddress.name || !shippingAddress.phone || !shippingAddress.specificAddress || !shippingAddress.provinceId || !shippingAddress.districtId || !shippingAddress.wardId) {
+              showToast('Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng!', 'danger');
+              return;
+            }
+          }
+        }
         const orderData = {
           customerId: selectedCustomer ? selectedCustomer.customerId : null,
           employeeId: currentEmployeeId,
-          shippingAddress: document.getElementById("isDelivery").checked ? {
-            specificAddress: document.getElementById("deliveryAddress").value
-            // Có thể bổ sung các trường khác nếu có
-          } : null,
+          shippingAddressId: shippingAddressId,
+          shippingAddress: shippingAddress,
           items,
           payment,
           finalAmount: finalAmount,
           discountAmount: discountAmount,
-          couponId: appliedCoupon,
+          couponId: appliedCoupon ? Number(appliedCoupon) : null, // Đảm bảo là số
           shippingFee: 0,
           note: "",
-          orderType: "offline"
+          orderType: "offline",
+          customerPayment: customerPayment,
+          change: change
         };
-
         try {
           const res = await fetch('/api/counter-sale/orders', {
             method: 'POST',
@@ -542,10 +593,10 @@
           const result = await res.json();
           if (res.ok && result && result.orderId) {
             showToast('Thanh toán thành công!');
-            // Reset giỏ hàng, render lại, show hóa đơn...
             carts[activeOrder] = {};
             renderCart();
-            // Có thể gọi showInvoice(result) nếu muốn show hóa đơn từ backend
+            const invoiceData = { ...orderData, ...result, items };
+            showInvoice(invoiceData);
           } else {
             showToast(result.message || 'Lỗi khi lưu hóa đơn!', 'danger');
           }
@@ -554,128 +605,104 @@
         }
       }
 
-      function showInvoice() {
-        const cart = carts[activeOrder];
-        const now = new Date();
+      // Sửa showInvoice để hiển thị hóa đơn chi tiết, rõ ràng địa chỉ giao hàng
+      function showInvoice(order) {
+        console.log(order);
+        
+        const now = new Date(order.createdAt || Date.now());
         const pad = (n) => n.toString().padStart(2, "0");
-        const dateStr = `${pad(now.getDate())}/${pad(
-          now.getMonth() + 1
-        )}/${now.getFullYear()} ${pad(now.getHours())}:${pad(
-          now.getMinutes()
-        )}`;
+        const dateStr = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-        // Tính toán tổng tiền và giảm giá
-        const subtotal = cart.items.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        );
-        const discount = discountAmount; // Có thể thêm logic tính giảm giá ở đây
-        const total = subtotal - discount;
-        const customerPayment =
-          parseFloat(document.getElementById("customerPayment").value) || 0;
-        const change = customerPayment - total;
+        // Xử lý thông tin giao hàng
+        let shippingInfo = '';
+        if (order.shippingAddressId || order.shippingAddress) {
+          if (order.shippingAddress) {
+            shippingInfo = `
+        <div><strong>Người nhận:</strong> ${order.shippingAddress.name || 'Khách lẻ'}</div>
+        <div><strong>SĐT:</strong> ${order.shippingAddress.phone || '---'}</div>
+        <div><strong>Địa chỉ:</strong> ${order.shippingAddress.specificAddress || ''}${order.shippingAddress.wardName ? ', ' + order.shippingAddress.wardName : ''
+              }${order.shippingAddress.districtName ? ', ' + order.shippingAddress.districtName : ''}${order.shippingAddress.provinceName ? ', ' + order.shippingAddress.provinceName : ''
+              }</div>
+      `;
+          } else {
+            shippingInfo = '<div><strong>Khách lẻ (Nhận tại quầy)</strong></div>';
+          }
+        } else {
+          shippingInfo = '<div><strong>Khách lẻ</strong></div>';
+        }
 
-        // Tạo nội dung hóa đơn
+        // Xử lý danh sách sản phẩm
+        const items = order.items || [];
+        const itemRows = items.length > 0
+          ? items.map(item => `
+        <tr>
+          <td>
+            ${item.productName || item.productName || 'Sản phẩm không xác định'}
+            ${item.variantName ? `<span style='font-size:90%;color:#555;'> (${item.variantName})</span>` : ''}
+          </td>
+          <td class="text-end">${item.quantity || 0}</td>
+          <td class="text-end">${item.price ? item.price.toLocaleString('vi-VN') : '0'}đ</td>
+          <td class="text-end">${item.price && item.quantity ? (item.price * item.quantity).toLocaleString('vi-VN') : '0'}đ</td>
+        </tr>
+      `).join('')
+          : '<tr><td colspan="4" class="text-center">Không có sản phẩm</td></tr>';
+
+        // Tính toán giá trị mặc định nếu thiếu
+        const subtotal = order.subtotal || (items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0));
+        const finalAmount = order.finalAmount || (subtotal - (order.discountAmount || 0));
+        const customerPayment = order.customerPayment || 0;
+        const change = customerPayment - finalAmount;
+
         let invoiceHTML = `
-            <div class="p-4">
-                <div class="invoice-header">
-                    <h3>TeeShirtVibe</h3>
-                </div>
-                
-                <div class="invoice-info">
-                    <p>HÓA ĐƠN BÁN HÀNG</p>
-                    <p>Mã hóa đơn: HD${Date.now().toString().slice(-6)}</p>
-                    <p>Ngày: ${dateStr}</p>
-                    <p>Nhân viên: ${document.getElementById("createdBy").value
-          }</p>
-                </div>
-                
-                <div class="invoice-info">
-                    <h6>Thông tin khách hàng:</h6>
-                    <p>
-                        ${document.getElementById("selectCustomer").checked
-            ? document.getElementById("customerSearchInput")
-              .value
-            : "Khách lẻ"
-          }
-                    </p>
-                    ${document.getElementById("isDelivery").checked
-            ? `<p>Địa chỉ giao hàng: ${document.getElementById("deliveryAddress").value
-            }</p>`
-            : ""
-          }
-                </div>
-                
-                <div class="table-responsive invoice-table">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Sản phẩm</th>
-                                <th class="text-end">SL</th>
-                                <th class="text-end">Đơn giá</th>
-                                <th class="text-end">Thành tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${cart.items
-            .map(
-              (item) => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td class="text-end">${item.quantity}</td>
-                                    <td class="text-end">${item.price.toLocaleString(
-                "vi-VN"
-              )}đ</td>
-                                    <td class="text-end">${(
-                  item.price * item.quantity
-                ).toLocaleString("vi-VN")}đ</td>
-                                </tr>
-                            `
-            )
-            .join("")}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="invoice-total">
-                    <p>
-                        <span>Tạm tính:</span>
-                        <span>${subtotal.toLocaleString("vi-VN")}đ</span>
-                    </p>
-                    <p>
-                        <span>Giảm giá:</span>
-                        <span>${discount.toLocaleString("vi-VN")}đ</span>
-                    </p>
-                    <p class="total-amount">
-                        <span>Tổng cộng:</span>
-                        <span>${total.toLocaleString("vi-VN")}đ</span>
-                    </p>
-                </div>
-                
-                <div class="invoice-info">
-                    <h6>Thông tin thanh toán:</h6>
-                    <p>Phương thức: ${document.getElementById("paymentMethod").options[
-            document.getElementById("paymentMethod").selectedIndex
-          ].text
-          }</p>
-                    <p>Khách trả: ${customerPayment.toLocaleString(
-            "vi-VN"
-          )}đ</p>
-                    <p>Tiền thối: ${change.toLocaleString("vi-VN")}đ</p>
-                </div>
-                
-                <div class="invoice-footer">
-                    <p class="thank-you">Cảm ơn quý khách đã mua hàng!</p>
-                    <p>Hẹn gặp lại quý khách</p>
-                </div>
-            </div>
-        `;
+    <div class="p-4">
+      <div class="invoice-header">
+        <h3>TeeShirtVibe</h3>
+      </div>
+      <div class="invoice-info">
+        <p>HÓA ĐƠN BÁN HÀNG</p>
+        <p>Mã hóa đơn: ${order.orderCode || ('HD' + (order.orderId || Date.now().toString().slice(-6)))}</p>
+        <p>Ngày: ${dateStr}</p>
+        <p>Nhân viên: ${order.employeeName || document.getElementById("createdBy").value || '---'}</p>
+      </div>
+      <div class="invoice-info">
+        <h6>Thông tin giao hàng:</h6>
+        ${shippingInfo}
+      </div>
+      <div class="table-responsive invoice-table">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th class="text-end">SL</th>
+              <th class="text-end">Đơn giá</th>
+              <th class="text-end">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemRows}
+          </tbody>
+        </table>
+      </div>
+      <div class="invoice-total">
+        <p><span>Tạm tính:</span><span>${subtotal.toLocaleString('vi-VN')}đ</span></p>
+        <p><span>Giảm giá:</span><span>${(order.discountAmount || 0).toLocaleString('vi-VN')}đ</span></p>
+        <p class="total-amount"><span>Tổng cộng:</span><span>${finalAmount.toLocaleString('vi-VN')}đ</span></p>
+      </div>
+      <div class="invoice-info">
+        <h6>Thông tin thanh toán:</h6>
+        <p>Phương thức: ${order.paymentType === 'BANK' ? 'Chuyển khoản' : 'Tiền mặt' || '---'}</p>
+        <p>Khách trả: ${customerPayment.toLocaleString('vi-VN')}đ</p>
+        <p>Tiền thối: ${change >= 0 ? change.toLocaleString('vi-VN') : '0'}đ</p>
+      </div>
+      <div class="invoice-footer">
+        <p class="thank-you">Cảm ơn quý khách đã mua hàng!</p>
+        <p>Hẹn gặp lại quý khách</p>
+      </div>
+    </div>
+  `;
 
-        // Hiển thị modal
         document.getElementById("invoiceModalContent").innerHTML = invoiceHTML;
-        const modal = new bootstrap.Modal(
-          document.getElementById("invoiceModal")
-        );
+        const modal = new bootstrap.Modal(document.getElementById("invoiceModal"));
         modal.show();
       }
 
@@ -709,62 +736,69 @@
           y
         );
 
-        // Thông tin khách hàng
+        // Thông tin khách hàng/giao hàng
         y += 10;
         doc.setFontSize(11);
-        doc.text("Thông tin khách hàng:", 14, y);
+        doc.text("Thông tin giao hàng:", 14, y);
         y += 7;
         doc.setFontSize(10);
-        const customerInfo = document.querySelector(".invoice-info p");
-        if (customerInfo) {
-          doc.text(customerInfo.textContent.trim(), 14, y);
-          y += 7;
+        const shippingInfo = document.querySelectorAll(".invoice-info")[1];
+        if (shippingInfo) {
+          const shippingText = Array.from(shippingInfo.querySelectorAll("div, p")).map(
+            (p) => p.textContent.trim()
+          );
+          doc.text(shippingText, 14, y);
+          y += shippingText.length * 7;
         }
 
         // Bảng sản phẩm
-        const cart = carts[activeOrder];
-        const rows = [
-          ["Sản phẩm", "SL", "Đơn giá", "Thành tiền"],
-          ...cart.items.map(item => [
-            item.name,
-            item.quantity.toString(),
-            item.price.toLocaleString("vi-VN") + "đ",
-            (item.price * item.quantity).toLocaleString("vi-VN") + "đ"
-          ])
-        ];
-        doc.autoTable({
-          startY: y + 5,
-          head: [rows[0]],
-          body: rows.slice(1),
-          theme: "grid",
-          styles: {
-            fontSize: 9,
-            cellPadding: 2,
-          },
-          headStyles: {
-            fillColor: [0, 0, 0],
-            textColor: 255,
-            fontStyle: "bold",
-          },
-        });
+        const invoiceTable = document.querySelector(".invoice-table table");
+        if (invoiceTable) {
+          const rows = Array.from(invoiceTable.querySelectorAll("tr")).map(tr =>
+            Array.from(tr.querySelectorAll("th,td")).map(td => td.textContent.trim())
+          );
+          if (rows.length > 1) {
+            doc.autoTable({
+              startY: y + 5,
+              head: [rows[0]],
+              body: rows.slice(1),
+              theme: "grid",
+              styles: {
+                fontSize: 9,
+                cellPadding: 2,
+              },
+              headStyles: {
+                fillColor: [0, 0, 0],
+                textColor: 255,
+                fontStyle: "bold",
+              },
+            });
+            y = doc.lastAutoTable.finalY;
+          }
+        }
 
         // Thông tin thanh toán
-        const paymentInfo = document.querySelector(".invoice-info:last-child");
-        const paymentText = Array.from(paymentInfo.querySelectorAll("p")).map(
-          (p) => p.textContent.trim()
-        );
-        doc.text(paymentText, 14, doc.lastAutoTable.finalY + 10);
+        const invoiceInfos = document.querySelectorAll(".invoice-info");
+        let paymentText = [];
+        if (invoiceInfos.length > 2) {
+          const paymentInfo = invoiceInfos[invoiceInfos.length - 1];
+          paymentText = Array.from(paymentInfo.querySelectorAll("p")).map(
+            (p) => p.textContent.trim()
+          );
+          doc.text(paymentText, 14, y + 10);
+        }
 
         // Lời cảm ơn
         const thankYou = document.querySelector(".invoice-footer");
-        doc.setFontSize(11);
         if (thankYou) {
+          doc.setFontSize(11);
+          const thankText = Array.from(thankYou.querySelectorAll("p")).map((p) =>
+            p.textContent.trim()
+          );
           doc.text(
-            Array.from(thankYou.querySelectorAll("p")).map((p) =>
-              p.textContent.trim()
-            ),
+            thankText,
             105,
-            doc.lastAutoTable.finalY + 30,
+            y + 30,
             { align: "center" }
           );
         }
@@ -958,9 +992,73 @@
         const deliveryForm = document.getElementById("deliveryForm");
         deliveryForm.style.display = isDelivery ? "block" : "none";
         if (!isDelivery) {
-          document.getElementById("deliveryAddress").value = "";
+          document.getElementById('addressSelectBox').style.display = 'none';
+          document.getElementById('provinceDistrictWardBox').style.display = 'none';
+          document.getElementById('shippingName').value = '';
+          document.getElementById('shippingPhone').value = '';
+          document.getElementById('addressDetail').value = '';
+          document.getElementById('provinceSelect').value = '';
+          document.getElementById('districtSelect').value = '';
+          document.getElementById('wardSelect').value = '';
+        } else {
+          // Nếu đã chọn khách hàng thì load địa chỉ
+          if (selectedCustomer && selectedCustomer.customerId) {
+            fetch(`/api/counter-sale/customers/${selectedCustomer.customerId}/addresses`)
+              .then(res => res.json())
+              .then(addresses => {
+                customerAddresses = addresses;
+                renderCustomerAddresses();
+              });
+          } else {
+            document.getElementById('addressSelectBox').style.display = 'none';
+            document.getElementById('provinceDistrictWardBox').style.display = '';
+            fetchProvinces();
+          }
         }
       }
+
+      // --- Bổ sung các hàm lấy tỉnh/thành, quận/huyện, phường/xã ---
+      function fetchProvinces() {
+        fetch("https://provinces.open-api.vn/api/p/")
+          .then((res) => res.json())
+          .then((data) => {
+            const select = document.getElementById("provinceSelect");
+            select.innerHTML =
+              '<option value="">Chọn tỉnh/thành</option>' +
+              data.map((p) => `<option value="${p.code}">${p.name}</option>`).join("");
+            document.getElementById("districtSelect").innerHTML =
+              '<option value="">Chọn quận/huyện</option>';
+            document.getElementById("wardSelect").innerHTML =
+              '<option value="">Chọn phường/xã</option>';
+          });
+      }
+      function fetchDistricts() {
+        const provinceCode = document.getElementById("provinceSelect").value;
+        if (!provinceCode) return;
+        fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+          .then((res) => res.json())
+          .then((data) => {
+            const select = document.getElementById("districtSelect");
+            select.innerHTML =
+              '<option value="">Chọn quận/huyện</option>' +
+              data.districts.map((d) => `<option value="${d.code}">${d.name}</option>`).join("");
+            document.getElementById("wardSelect").innerHTML =
+              '<option value="">Chọn phường/xã</option>';
+          });
+      }
+      function fetchWards() {
+        const districtCode = document.getElementById("districtSelect").value;
+        if (!districtCode) return;
+        fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+          .then((res) => res.json())
+          .then((data) => {
+            const select = document.getElementById("wardSelect");
+            select.innerHTML =
+              '<option value="">Chọn phường/xã</option>' +
+              data.wards.map((w) => `<option value="${w.code}">${w.name}</option>`).join("");
+          });
+      }
+
       function renderCart() {
         let cart = carts[activeOrder];
         if (!cart.items) cart.items = [];
@@ -1135,7 +1233,7 @@
             const me = await res.json();
             currentEmployeeId = me.employeeId;
           }
-        } catch (e) {}
+        } catch (e) { }
       });
 
       function filterProducts() {
@@ -1168,7 +1266,7 @@
           <img src="${(product.images && product.images[0] && product.images[0].imageUrl) || ''}" class="card-img-top" alt="Product" />
           <div class="card-body text-center">
             <h6 class="card-title">${product.name}</h6>
-            <p class="">${product.basePrice.toLocaleString()}đ</p>
+            <p class="">${product.variants && product.variants[0] && product.variants[0].discountPrice != null ? `<span style='text-decoration:line-through;color:#888;'>${product.basePrice.toLocaleString()}đ</span> <span class='text-danger fw-bold'>${product.variants[0].discountPrice.toLocaleString()}đ</span>` : `${product.basePrice.toLocaleString()}đ`}</p>
             <p class=" text-muted">Tổng tồn kho: ${productQuantity || 0}</p>
           </div>
         </div>
@@ -1203,15 +1301,15 @@
                             <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
                           </div>
                           <div class='modal-body'>`;
-                          product.variants.forEach(variant => {
-                            html += `<div class='form-check'>
+        product.variants.forEach(variant => {
+          html += `<div class='form-check'>
                                         <input class='form-check-input' type='radio' name='variantRadio' id='variant${variant.variantId}' value='${variant.variantId}'>
                                         <label class='form-check-label' for='variant${variant.variantId}'>
-                                          ${variant.sizeName || ''} - ${variant.colorName || ''} - Giá: ${variant.price.toLocaleString()}đ - Tồn: ${variant.quantityInStock}
+                                          ${variant.sizeName || ''} - ${variant.colorName || ''} - Giá: ${variant.discountPrice != null ? `<span style='text-decoration:line-through;color:#888;'>${variant.price.toLocaleString()}đ</span> <span class='text-danger fw-bold'>${variant.discountPrice.toLocaleString()}đ</span>` : `${variant.price.toLocaleString()}đ`} - Tồn: ${variant.quantityInStock}
                                         </label>
                                       </div>`;
-                                          });
-                          html += `</div>
+        });
+        html += `</div>
                           <div class='modal-footer'>
                             <button type='button' class='btn btn-primary' onclick='confirmVariantAddToCart(${JSON.stringify(product)})'>Thêm vào giỏ</button>
                           </div>
@@ -1237,12 +1335,13 @@
         addToCart({
           productId: product.productId,
           variantId: variant.variantId,
-          name: product.name + ' ' + (variant.sizeName || '') + ' ' + (variant.colorName || ''),
-          price: variant.price,
+          productName: product.name,
+          variantName: (variant.sizeName || '') + (variant.colorName ? ' - ' + variant.colorName : ''),
+          size: variant.sizeName,
+          color: variant.colorName,
+          price: variant.discountPrice != null ? variant.discountPrice : variant.price,
           quantityInStock: variant.quantityInStock,
           imageUrl: (product.images && product.images[0] && product.images[0].imageUrl) || '',
-          size: variant.sizeName,
-          color: variant.colorName
         });
         var modal = bootstrap.Modal.getInstance(document.getElementById('variantModal'));
         modal.hide();
@@ -1293,7 +1392,12 @@
         document.getElementById('customerSearchInput').value = '';
         document.getElementById('customerAutoCompleteList').innerHTML = '';
         document.getElementById('addressSelectBox').style.display = 'none';
-        document.getElementById('deliveryAddress').value = '';
+        document.getElementById('shippingName').value = '';
+        document.getElementById('shippingPhone').value = '';
+        document.getElementById('addressDetail').value = '';
+        document.getElementById('provinceSelect').value = '';
+        document.getElementById('districtSelect').value = '';
+        document.getElementById('wardSelect').value = '';
       }
 
       function renderCustomerAddresses() {
@@ -1302,18 +1406,63 @@
         if (customerAddresses.length > 0) {
           addressSelectBox.style.display = 'block';
           addressSelect.innerHTML = customerAddresses.map(addr =>
-            `<option value="${addr.specificAddress}">${addr.specificAddress}</option>`
+            `<option value="${addr.shippingAddressId}">${addr.specificAddress}</option>`
           ).join('') + '<option value="">Nhập địa chỉ mới</option>';
-          document.getElementById('deliveryAddress').value = customerAddresses[0].specificAddress;
+          addressSelect.selectedIndex = 0;
+          document.getElementById('shippingName').value = customerAddresses[0].name || '';
+          document.getElementById('shippingPhone').value = customerAddresses[0].phone || '';
+          document.getElementById('addressDetail').value = customerAddresses[0].specificAddress || '';
+          document.getElementById('provinceSelect').value = customerAddresses[0].provinceId || '';
+          fetchDistricts();
+          setTimeout(() => {
+            document.getElementById('districtSelect').value = customerAddresses[0].districtId || '';
+            fetchWards();
+            setTimeout(() => {
+              document.getElementById('wardSelect').value = customerAddresses[0].wardId || '';
+            }, 200);
+          }, 200);
         } else {
           addressSelectBox.style.display = 'none';
-          document.getElementById('deliveryAddress').value = '';
+          document.getElementById('shippingName').value = '';
+          document.getElementById('shippingPhone').value = '';
+          document.getElementById('addressDetail').value = '';
+          document.getElementById('provinceSelect').value = '';
+          document.getElementById('districtSelect').value = '';
+          document.getElementById('wardSelect').value = '';
         }
       }
 
       function onSelectCustomerAddress() {
         const val = document.getElementById('customerAddressSelect').value;
-        document.getElementById('deliveryAddress').value = val;
+        if (val) {
+          // Chọn địa chỉ đã lưu
+          const addr = customerAddresses.find(a => a.shippingAddressId == val);
+          if (addr) {
+            document.getElementById('shippingName').value = addr.name || '';
+            document.getElementById('shippingPhone').value = addr.phone || '';
+            document.getElementById('addressDetail').value = addr.specificAddress || '';
+            document.getElementById('provinceSelect').value = addr.provinceId || '';
+            fetchDistricts();
+            setTimeout(() => {
+              document.getElementById('districtSelect').value = addr.districtId || '';
+              fetchWards();
+              setTimeout(() => {
+                document.getElementById('wardSelect').value = addr.wardId || '';
+              }, 200);
+            }, 200);
+          }
+          document.getElementById('provinceDistrictWardBox').style.display = '';
+        } else {
+          // Nhập địa chỉ mới
+          document.getElementById('shippingName').value = '';
+          document.getElementById('shippingPhone').value = '';
+          document.getElementById('addressDetail').value = '';
+          document.getElementById('provinceSelect').value = '';
+          document.getElementById('districtSelect').value = '';
+          document.getElementById('wardSelect').value = '';
+          document.getElementById('provinceDistrictWardBox').style.display = '';
+          fetchProvinces();
+        }
       }
 
       function toggleCustomerSelection() {
@@ -1321,7 +1470,12 @@
         document.getElementById("customerSearchBox").style.display = isSelect ? "block" : "none";
         document.getElementById("customerInfoBox").style.display = "none";
         document.getElementById('addressSelectBox').style.display = "none";
-        document.getElementById('deliveryAddress').value = '';
+        document.getElementById('shippingName').value = '';
+        document.getElementById('shippingPhone').value = '';
+        document.getElementById('addressDetail').value = '';
+        document.getElementById('provinceSelect').value = '';
+        document.getElementById('districtSelect').value = '';
+        document.getElementById('wardSelect').value = '';
         selectedCustomer = null;
       }
 
@@ -1335,7 +1489,7 @@
         const form = document.getElementById('addCustomerForm');
         const formData = new FormData(form);
         const customerData = Object.fromEntries(formData.entries());
-        
+
         try {
           const res = await fetch('/api/counter-sale/customers', {
             method: 'POST',
@@ -1367,8 +1521,16 @@
       async function applyCoupon() {
         const code = document.getElementById('couponCode').value.trim();
         if (!code) return;
-        // Gọi API kiểm tra mã giảm giá
-        const res = await fetch(`/api/coupons/validate?code=${encodeURIComponent(code)}`);
+        // Lấy tổng tiền hiện tại trong giỏ hàng
+        let cart = carts[activeOrder];
+        if (!cart.items) cart.items = [];
+        const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        // Lấy userId nếu có khách hàng
+        let userId = selectedCustomer && selectedCustomer.customerId ? selectedCustomer.customerId : '';
+        let url = `/api/coupons/validate?code=${encodeURIComponent(code)}&total=${total}`;
+        if (userId) url += `&userId=${userId}`;
+        // Gọi API kiểm tra mã giảm giá, truyền cả tổng tiền
+        const res = await fetch(url);
         const data = await res.json();
         if (data && data.valid) {
           appliedCoupon = data.couponId;
@@ -1378,7 +1540,7 @@
         } else {
           appliedCoupon = null;
           discountAmount = 0;
-          document.getElementById('couponMessage').textContent = 'Mã giảm giá không hợp lệ!';
+          document.getElementById('couponMessage').textContent = data.message || 'Mã giảm giá không hợp lệ!';
         }
       }
     </script>

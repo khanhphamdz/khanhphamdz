@@ -4,61 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liên Hệ - Tee Shirt Vibe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <th:block th:fragment="styles">
         <!-- If there are page specific styles, add them here -->
     </th:block>
+    <style>
+        body, .contact-container, .faq, .contact-info, .glass-card, .btn, .form-control, label, h2, h3, h5, .gradient-text {
+            font-family: 'Poppins', Arial, sans-serif !important;
+        }
+    </style>
 </head>
 <body>
-    <main class="container" style="padding-top: 120px;">
-        <h2>Gửi Tin Nhắn Cho Chúng Tôi</h2>
-        <div class="row g-5">
-            <div class="col-md-6">
-                <form id="contactForm">
-                    <div class="mb-4">
-                        <label for="name" class="form-label">Họ Tên</label>
-                        <input type="text" class="form-control" id="name" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="message" class="form-label">Tin Nhắn</label>
-                        <textarea class="form-control" id="message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Gửi Tin Nhắn</button>
-                </form>
+    <main class="container contact-container" style="padding-top: 120px; max-width: 1280px;">
+        <div class="row g-5 align-items-stretch">
+            <div class="col-lg-7 order-lg-2 d-flex flex-column justify-content-between">
+                <div class="map animate__animated animate__fadeInRight mb-4 glass-card" style="height: 440px; border-radius: 32px; overflow: hidden; box-shadow: 0 12px 40px rgba(44,44,44,0.16); border: 3px solid #ffb347;">
+                    <iframe style="width:100%; height:100%; min-height:440px; border:0; border-radius:32px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=21.595053,105.811857&z=16&output=embed"></iframe>
+                </div>
+                <div class="contact-info mt-4 p-4 shadow rounded bg-white animate__animated animate__fadeInUp glass-card info-hover" style="border-left: 6px solid #ffb347;">
+                    <div class="mb-3"><strong><i class="fa fa-phone fa-bounce"></i> Hotline:</strong> <span class="ms-2">+84 961 436 885</span></div>
+                    <div class="mb-3"><strong><i class="fa fa-envelope fa-beat"></i> Email:</strong> <span class="ms-2">lienhe@teeshirtvibe.vn</span></div>
+                    <div class="mb-3"><strong><i class="fa fa-map-marker fa-shake"></i> Địa Chỉ:</strong> <span class="ms-2">30 Phường Quyết Thắng, Thái Nguyên</span></div>
+                    <div class="mb-3"><strong><i class="fa fa-clock-o fa-spin"></i> Giờ Mở Cửa:</strong> <span class="ms-2">8:00 - 21:30, Thứ 2 - Chủ Nhật</span></div>
+                    <div class="mb-3"><strong><i class="fa fa-facebook-square"></i> Facebook:</strong> <a href="https://facebook.com/teeshirtvibe" target="_blank" class="ms-2">facebook.com/teeshirtvibe</a></div>
+                    <div class="mb-3"><strong><i class="fa fa-zalo"></i> Zalo:</strong> <span class="ms-2">0961 436 885</span></div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <div class="map animate__animated animate__fadeInRight">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447614078541!2d106.6980896146228!3d10.7763899923177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f38f747b7b7%3A0xb7e7f40f8c9b3b9!2sHo%20Chi%20Minh%20City%2C%20Vietnam!5e0!3m2!1sen!2sus!4v1634567890123"></iframe>
-                </div>
-                <div class="contact-info mt-4">
-                    <div class="animate__animated animate__fadeInUp"><strong>Điện Thoại:</strong> +84 123 456 7890</div>
-                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.2s;"><strong>Email:</strong> lienhe@teeshirtvibe.vn</div>
-                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.4s;"><strong>Địa Chỉ:</strong> 123 Đường Lê Lợi, Quận 1, TP.HCM</div>
-                    <div class="animate__animated animate__fadeInUp" style="animation-delay: 0.6s;"><strong>Giờ Mở Cửa:</strong> 9:00 - 21:00, Thứ 2 - Chủ Nhật</div>
-                </div>
+            <div class="col-lg-5 order-lg-1 d-flex align-items-center">
+                <form id="contactForm" class="p-5 shadow rounded glass-card w-100 animate__animated animate__fadeInLeft" style="border-top: 6px solid #ffb347;">
+                    <h2 class="mb-4 text-center gradient-text animate__animated animate__pulse animate__infinite" style="font-weight:700; color:#2c2c2c;"><i class="fa fa-envelope"></i> Liên hệ với chúng tôi</h2>
+                    <div id="contactAlert" style="display:none;"></div>
+                    <div class="mb-4 floating-label-group">
+                        <input type="text" class="form-control" id="name" required>
+                        <label for="name">Họ tên của bạn</label>
+                        <span class="input-icon"><i class="fa fa-user"></i></span>
+                    </div>
+                    <div class="mb-4 floating-label-group">
+                        <input type="email" class="form-control" id="email" required>
+                        <label for="email">Email liên hệ</label>
+                        <span class="input-icon"><i class="fa fa-envelope"></i></span>
+                    </div>
+                    <div class="mb-4 floating-label-group">
+                        <textarea class="form-control" id="message" rows="5" required></textarea>
+                        <label for="message">Nội dung tin nhắn</label>
+                        <span class="input-icon"><i class="fa fa-comment"></i></span>
+                    </div>
+                    <button type="submit" class="btn btn-gradient w-100 py-3 ripple" style="font-size:1.2rem;"><i class="fa fa-paper-plane"></i> Gửi Tin Nhắn</button>
+                </form>
             </div>
         </div>
         <div class="mt-5 faq">
-            <h3>Câu Hỏi Thường Gặp</h3>
-            <div class="faq-item animate__animated animate__slideInLeft">
-                <h5 >Làm thế nào để chọn kích thước phù hợp?</h5>
-                <p>Vui lòng tham khảo bảng kích thước trên trang sản phẩm hoặc liên hệ chúng tôi để được tư vấn.</p>
+            <h3 class="text-center mb-4 gradient-text animate__animated animate__fadeInDown" style="font-weight:600;"><i class="fa fa-question-circle"></i> Câu Hỏi Thường Gặp</h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Làm thế nào để chọn kích thước phù hợp?</h5>
+                        <p>Vui lòng tham khảo bảng kích thước trên trang sản phẩm hoặc liên hệ chúng tôi để được tư vấn chi tiết về size phù hợp với bạn.</p>
+                    </div>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Tôi có thể đổi trả sản phẩm như thế nào?</h5>
+                        <p>Bạn có thể đổi trả sản phẩm trong vòng 30 ngày nếu sản phẩm còn nguyên vẹn, chưa qua sử dụng. Liên hệ hotline để được hướng dẫn chi tiết.</p>
+                    </div>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Shop có hỗ trợ giao hàng toàn quốc không?</h5>
+                        <p>Chúng tôi giao hàng toàn quốc với nhiều hình thức vận chuyển nhanh/chậm tùy nhu cầu khách hàng.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Tôi có thể thanh toán bằng những hình thức nào?</h5>
+                        <p>Bạn có thể thanh toán khi nhận hàng (COD), chuyển khoản ngân hàng hoặc qua ví điện tử.</p>
+                    </div>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Làm sao để kiểm tra tình trạng đơn hàng?</h5>
+                        <p>Bạn có thể kiểm tra tình trạng đơn hàng qua tài khoản trên website hoặc liên hệ hotline/zalo để được hỗ trợ nhanh nhất.</p>
+                    </div>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Shop có chương trình ưu đãi nào không?</h5>
+                        <p>Chúng tôi thường xuyên có các chương trình khuyến mãi, giảm giá. Theo dõi fanpage hoặc đăng ký nhận tin để không bỏ lỡ ưu đãi!</p>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-4">
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Tôi muốn đặt áo đồng phục/số lượng lớn?</h5>
+                        <p>Chúng tôi nhận thiết kế và sản xuất áo đồng phục, áo nhóm với giá ưu đãi. Liên hệ trực tiếp để nhận báo giá nhanh nhất.</p>
             </div>
-            <div class="faq-item animate__animated animate__slideInLeft" style="animation-delay: 0.2s;">
-                <h5 >Chính sách đổi trả là gì?</h5>
-                <p>Chúng tôi hỗ trợ đổi trả miễn phí trong 30 ngày nếu sản phẩm còn nguyên vẹn và chưa qua sử dụng.</p>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Sản phẩm có bảo hành không?</h5>
+                        <p>Chúng tôi bảo hành đường may, chất liệu vải trong 6 tháng. Nếu có lỗi, bạn sẽ được đổi mới miễn phí.</p>
+        </div>
+                    <div class="faq-item animate__animated animate__zoomIn mb-4 accordion-faq">
+                        <h5><i class="fa fa-chevron-right faq-arrow"></i> Tôi muốn nhận tư vấn riêng?</h5>
+                        <p>Gọi hotline, nhắn zalo hoặc gửi form liên hệ, đội ngũ tư vấn viên sẽ hỗ trợ bạn tận tình, nhanh chóng nhất.</p>
             </div>
-            <div class="faq-item animate__animated animate__slideInLeft" style="animation-delay: 0.4s;">
-                <h5 >Có hỗ trợ giao hàng quốc tế không?</h5>
-                <p>Hiện tại, chúng tôi giao hàng trong Việt Nam. Liên hệ để biết thêm về giao hàng quốc tế trong tương lai.</p>
+            </div>
             </div>
         </div>
     </main>
     <th:block th:fragment="scripts">
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <script>
+            // Floating label effect
+            document.querySelectorAll('.floating-label-group input, .floating-label-group textarea').forEach(function(input) {
+                input.addEventListener('focus', function() {
+                    input.parentElement.classList.add('focused');
+                });
+                input.addEventListener('blur', function() {
+                    if (!input.value) input.parentElement.classList.remove('focused');
+                });
+                if (input.value) input.parentElement.classList.add('focused');
+            });
+            // FAQ accordion effect: chỉ hiện câu hỏi, click mới trượt xuống câu trả lời
+            document.querySelectorAll('.accordion-faq h5').forEach(function(h) {
+                h.addEventListener('click', function() {
+                    var item = h.parentElement;
+                    var arrow = h.querySelector('.faq-arrow');
+                    var answer = item.querySelector('p');
+                    if (item.classList.contains('active')) {
+                        // Đang mở, đóng lại
+                        answer.style.maxHeight = '0px';
+                        answer.style.opacity = 0;
+                        item.classList.remove('active');
+                        if (arrow) arrow.classList.remove('fa-rotate-90');
+                    } else {
+                        // Đang đóng, mở ra
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        answer.style.opacity = 1;
+                        item.classList.add('active');
+                        if (arrow) arrow.classList.add('fa-rotate-90');
+                    }
+                });
+                // Ẩn hết câu trả lời ban đầu
+                var answer = h.parentElement.querySelector('p');
+                answer.style.maxHeight = '0px';
+                answer.style.overflow = 'hidden';
+                answer.style.transition = 'max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s';
+                answer.style.opacity = 0;
+            });
+            // Hiệu ứng gửi form liên hệ qua AJAX
+            document.getElementById('contactForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const message = document.getElementById('message').value.trim();
+                const alertBox = document.getElementById('contactAlert');
+                alertBox.style.display = 'none';
+                alertBox.className = '';
+                if (!name || !email || !message) {
+                    alertBox.textContent = 'Vui lòng nhập đầy đủ thông tin.';
+                    alertBox.className = 'alert alert-danger animate__animated animate__shakeX';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/contact/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, message })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'ok') {
+                        alertBox.textContent = 'Gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm.';
+                        alertBox.className = 'alert alert-success animate__animated animate__fadeInDown';
+                        alertBox.style.display = 'block';
+                        document.getElementById('contactForm').reset();
+                        document.querySelectorAll('.floating-label-group').forEach(g=>g.classList.remove('focused'));
+                    } else {
+                        alertBox.textContent = data.message || 'Gửi tin nhắn thất bại. Vui lòng thử lại.';
+                        alertBox.className = 'alert alert-danger animate__animated animate__shakeX';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                    alertBox.className = 'alert alert-danger animate__animated animate__shakeX';
+                    alertBox.style.display = 'block';
+                }
+            });
+            // Nút ripple effect
+            document.querySelectorAll('.ripple').forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    let circle = document.createElement('span');
+                    circle.className = 'ripple-effect';
+                    let rect = btn.getBoundingClientRect();
+                    circle.style.left = (e.clientX - rect.left) + 'px';
+                    circle.style.top = (e.clientY - rect.top) + 'px';
+                    btn.appendChild(circle);
+                    setTimeout(()=>circle.remove(), 600);
+                });
+            });
+        </script>
     </th:block>
 </body>
 </html>

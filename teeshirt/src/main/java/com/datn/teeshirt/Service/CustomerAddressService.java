@@ -86,4 +86,21 @@ public class CustomerAddressService {
         List<CustomerAddress> addresses = customerAddressRepository.findByCustomerCustomerId(customerId);
         return addresses.stream().map(this::toDTO).collect(Collectors.toList());
     }
+
+    public void setDefaultAddress(Long customerId, Long addressId) {
+        // Unset previous default addresses
+        List<CustomerAddress> addresses = findByCustomerId(customerId);
+        for (CustomerAddress address : addresses) {
+            if (address.getIsDefault() != null && address.getIsDefault()) {
+                address.setIsDefault(false);
+                save(address);
+            }
+        }
+        // Set the new default address
+        CustomerAddress newDefault = findById(addressId);
+        if (newDefault != null && newDefault.getCustomer().getCustomerId().equals(customerId)) {
+            newDefault.setIsDefault(true);
+            save(newDefault);
+        }
+    }
 }

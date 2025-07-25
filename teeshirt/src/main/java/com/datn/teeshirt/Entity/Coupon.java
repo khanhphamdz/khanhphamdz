@@ -54,6 +54,9 @@ public class Coupon {
     @Column(name = "max_usage")
     private Integer maxUsage;
 
+    @Column(name = "type", nullable = false, length = 20)
+    private String type; // 'percentage' hoặc 'fixed'
+
     @Default
     @Column(name = "usage_count")
     private Integer usageCount = 0;

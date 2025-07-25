@@ -45,8 +45,17 @@
       <div class="col-6">
         <div class="product-info">
           <h1 class="product-title" th:text="${product.name}">TeeShirtVibe Basic Tee</h1>
-          <span class="product-price" id="current-price"
-            th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">299.000 VNĐ</span>
+          <!-- Giá sản phẩm: Thay thế đoạn này -->
+          <span class="product-price" id="original-price"
+                th:if="${product.variants != null and !product.variants.empty and product.variants[0].discountPrice != null}"
+                style="text-decoration: line-through; color: #888;"
+                th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá sản phẩm</span>
+          <span class="product-discount-price" id="discount-price" style="color:red; font-weight:bold; margin-left:8px"
+                th:if="${product.variants != null and !product.variants.empty and product.variants[0].discountPrice != null}"
+                th:text="${#numbers.formatDecimal(product.variants[0].discountPrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá giảm</span>
+          <span class="product-price" id="original-price"
+                th:if="${product.variants == null or product.variants.empty or product.variants[0].discountPrice == null}"
+                th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Giá sản phẩm</span>
 
           <!-- chọn màu DYNAMIC -->
           <div class="color-options" th:if="${availableColors != null and !availableColors.empty}">
@@ -337,48 +346,59 @@
 
       // Cập nhật thông tin sản phẩm theo variant
       function updateProductInfo() {
-        console.log('updateProductInfo called');
-        console.log('Selected color ID:', selectedColorId, typeof selectedColorId);
-        console.log('Selected size ID:', selectedSizeId, typeof selectedSizeId);
-        console.log('Available variants:', variants);
-
         if (selectedColorId && selectedSizeId) {
-          currentVariant = variants.find(v => {
-            console.log(`Checking variant: colorId=${v.colorId} (${typeof v.colorId}), sizeId=${v.sizeId} (${typeof v.sizeId})`);
-            return v.colorId == selectedColorId && v.sizeId == selectedSizeId;
-          });
+          currentVariant = variants.find(v => v.colorId == selectedColorId && v.sizeId == selectedSizeId);
 
-          console.log('Found variant:', currentVariant);
+          const originalPriceEl = document.getElementById('original-price');
+          const discountPriceEl = document.getElementById('discount-price');
+          const addToCartBtn = document.getElementById('add-to-cart-btn');
 
           if (currentVariant) {
-            // Cập nhật giá
-            document.getElementById('current-price').textContent =
-              new Intl.NumberFormat('vi-VN').format(currentVariant.price || basePrice) + ' VNĐ';
+            // Hiển thị giá
+            if (currentVariant.discountPrice && currentVariant.discountPrice < currentVariant.price) {
+              originalPriceEl.innerHTML = `<span style="text-decoration:line-through">${new Intl.NumberFormat('vi-VN').format(currentVariant.price)} VNĐ</span>`;
+              discountPriceEl.textContent = `${new Intl.NumberFormat('vi-VN').format(currentVariant.discountPrice)} VNĐ`;
+              discountPriceEl.style.display = '';
+            } else {
+              originalPriceEl.textContent = `${new Intl.NumberFormat('vi-VN').format(currentVariant.price)} VNĐ`;
+              discountPriceEl.style.display = 'none';
+            }
 
             // Cập nhật tồn kho
-            console.log('Updating stock quantity:', currentVariant.quantityInStock);
             document.getElementById('stock-quantity').textContent = currentVariant.quantityInStock || 0;
 
             // Cập nhật trạng thái nút add to cart
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-            if (currentVariant.quantityInStock > 0) {
+            if (currentVariant.quantityInStock > 0 && currentVariant.available !== false) {
+              addToCartBtn.disabled = false;
               addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng';
+              addToCartBtn.classList.remove('btn-disabled');
             } else {
+              addToCartBtn.disabled = true;
               addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Hết hàng';
+              addToCartBtn.classList.add('btn-disabled');
             }
 
             // Cập nhật max quantity input
             document.getElementById('quantity-input').max = currentVariant.quantityInStock;
           } else {
-            console.log('No variant found for selected color and size');
+            // Không tìm thấy variant
+            originalPriceEl.textContent = `${new Intl.NumberFormat('vi-VN').format(basePrice)} VNĐ`;
+            discountPriceEl.style.display = 'none';
             document.getElementById('stock-quantity').textContent = 'Không có sẵn';
+            addToCartBtn.disabled = true;
+            addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Không có sẵn';
+            addToCartBtn.classList.add('btn-disabled');
           }
         } else {
           // Reset về giá gốc
-          document.getElementById('current-price').textContent =
-            new Intl.NumberFormat('vi-VN').format(basePrice) + ' VNĐ';
+          document.getElementById('original-price').textContent =
+            `${new Intl.NumberFormat('vi-VN').format(basePrice)} VNĐ`;
+          document.getElementById('discount-price').style.display = 'none';
           document.getElementById('stock-quantity').textContent = '--';
-          console.log('Not enough selections - color:', selectedColorId, 'size:', selectedSizeId);
+          const addToCartBtn = document.getElementById('add-to-cart-btn');
+          addToCartBtn.disabled = true;
+          addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Chọn biến thể';
+          addToCartBtn.classList.add('btn-disabled');
         }
       }
 
@@ -608,21 +628,19 @@
         const firstSize = document.querySelector('.size-option');
 
         if (firstColor && firstSize) {
-          // Chọn màu và size đầu tiên
           firstColor.checked = true;
           selectedColorId = firstColor.value;
           selectedSizeId = firstSize.dataset.sizeId;
-
-          // Trigger events để cập nhật UI
           firstColor.dispatchEvent(new Event('change'));
           firstSize.click();
-
-          // Cập nhật giá ngay lập tức
+          // Gọi lại để cập nhật giá và nút
           updateProductInfo();
         } else {
-          // Nếu không có variant, hiển thị thông báo
           document.getElementById('stock-quantity').textContent = 'Liên hệ';
-          document.getElementById('add-to-cart-btn').innerHTML = '<i class="fas fa-shopping-cart"></i> Liên hệ để đặt hàng';
+          const addToCartBtn = document.getElementById('add-to-cart-btn');
+          addToCartBtn.disabled = true;
+          addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Liên hệ để đặt hàng';
+          addToCartBtn.classList.add('btn-disabled');
         }
       });
     </script>

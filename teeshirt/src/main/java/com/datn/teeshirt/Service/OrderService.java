@@ -23,6 +23,7 @@ public class OrderService {
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private CouponRepository couponRepository;
     @Autowired private ProductVariantRepository productVariantRepository;
+    @Autowired private CustomerAddressRepository customerAddressRepository;
 
     // 1. Tạo đơn hàng mới
     @Transactional
@@ -54,16 +55,26 @@ public class OrderService {
         order.setUpdatedAt(LocalDateTime.now());
         Order savedOrder = orderRepository.save(order);
 
+        // Nếu có coupon, tăng usageCount
+        if (order.getCoupon() != null) {
+            Coupon coupon = order.getCoupon();
+            if (coupon.getUsageCount() == null) coupon.setUsageCount(0);
+            coupon.setUsageCount(coupon.getUsageCount() + 1);
+            couponRepository.save(coupon);
+        }
+
         // Lưu Order_Items
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemDTO itemDTO : requestDTO.getItems()) {
             ProductVariant variant = productVariantRepository.findById(itemDTO.getProductVariantId()).orElse(null);
             OrderItem item = new OrderItem();
             item.setOrder(savedOrder);
-            item.setVariant(variant);;
+            item.setVariant(variant);
             item.setQuantity(itemDTO.getQuantity());
-            item.setPrice(itemDTO.getPrice());
-            item.setPriceAtPurchase(itemDTO.getPrice());
+            // Lấy giá giảm nếu có, nếu không lấy giá gốc
+            java.math.BigDecimal price = variant.getDiscountPrice() != null ? variant.getDiscountPrice() : variant.getPrice();
+            item.setPrice(price);
+            item.setPriceAtPurchase(price);
             orderItems.add(orderItemRepository.save(item));
             // Trừ tồn kho
             variant.setQuantityInStock(variant.getQuantityInStock() - itemDTO.getQuantity());
@@ -133,6 +144,146 @@ public class OrderService {
         return orderRepository.findAll().stream().map(this::mapOrderToResponseDTO).collect(Collectors.toList());
     }
 
+    // --- GỘP CÁC HÀM LẤY ĐƠN HÀNG THEO CUSTOMER, STATUS, CHI TIẾT, HỦY ĐƠN ---
+    public List<OrderResponseDTO> getOrdersByCustomerId(Long customerId) {
+        List<Order> orders = orderRepository.findByCustomerCustomerIdOrderByCreatedAtDesc(customerId);
+        return orders.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
+    }
+    public List<OrderResponseDTO> getOrdersByCustomerAndStatus(Long customerId, String status) {
+        List<Order> orders = orderRepository.findByCustomerCustomerIdAndStatusOrderByCreatedAtDesc(customerId, status);
+        return orders.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public OrderResponseDTO getOrderDetail(Long orderId, Long customerId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null || !order.getCustomer().getCustomerId().equals(customerId)) {
+            return null;
+        }
+        return convertToResponseDTO(order);
+    }
+    public boolean cancelOrder(Long orderId, Long customerId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null || !order.getCustomer().getCustomerId().equals(customerId)) {
+            return false;
+        }
+        if (!"pending".equals(order.getStatus()) && !"processing".equals(order.getStatus())) {
+            return false;
+        }
+        order.setStatus("cancelled");
+        orderRepository.save(order);
+        return true;
+    }
+    // --- HÀM MAPPING DTO CHI TIẾT ---
+    private OrderResponseDTO convertToResponseDTO(Order order) {
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setOrderId(order.getOrderId());
+        dto.setCustomerId(order.getCustomer() != null ? order.getCustomer().getCustomerId() : null);
+        dto.setEmployeeId(order.getEmployee() != null ? order.getEmployee().getEmployeeId() : null);
+        dto.setCouponId(order.getCoupon() != null ? order.getCoupon().getCouponId() : null);
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setShippingFee(order.getShippingFee());
+        dto.setDiscountAmount(order.getDiscountAmount());
+        dto.setFinalAmount(order.getFinalAmount());
+        dto.setOrderType(order.getOrderType());
+        dto.setStatus(order.getStatus());
+        dto.setNote(order.getNote());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setUpdatedAt(order.getUpdatedAt());
+        // Shipping Address
+        ShippingAddress address = shippingAddressRepository.findByOrder_OrderId(order.getOrderId());
+        if (address != null) {
+            ShippingAddressDTO addrDTO = new ShippingAddressDTO();
+            addrDTO.setProvinceId(address.getProvinceId());
+            addrDTO.setDistrictId(address.getDistrictId());
+            addrDTO.setWardId(address.getWardId());
+            addrDTO.setSpecificAddress(address.getSpecificAddress());
+            addrDTO.setPhone(address.getPhone());
+            addrDTO.setName(address.getName());
+            addrDTO.setNote(address.getNote());
+            dto.setShippingAddress(addrDTO);
+        }
+        // Order Items (detailed)
+        List<OrderItem> items = orderItemRepository.findByOrder_OrderId(order.getOrderId());
+        List<OrderItemDTO> itemDTOs = items.stream().map(this::convertOrderItemToDTO).collect(Collectors.toList());
+        dto.setItems(itemDTOs);
+        // Status history (nếu có)
+        List<OrderStatus> statusHistory = orderStatusRepository.findByOrder_OrderId(order.getOrderId());
+        if (statusHistory != null) {
+            List<OrderStatusDTO> statusDTOs = statusHistory.stream().map(s -> {
+                OrderStatusDTO sDto = new OrderStatusDTO();
+                sDto.setStatusName(s.getStatusName());
+                sDto.setCreatedAt(s.getCreatedAt());
+                return sDto;
+            }).collect(Collectors.toList());
+            dto.setStatusHistory(statusDTOs);
+        }
+        // Payment (nếu có)
+        List<Payment> payments = paymentRepository.findByOrder_OrderId(order.getOrderId());
+        if (payments != null && !payments.isEmpty()) {
+            Payment payment = payments.get(0);
+            PaymentDTO payDTO = new PaymentDTO();
+            payDTO.setPaymentType(payment.getPaymentType());
+            payDTO.setAmount(payment.getAmount());
+            payDTO.setPaymentStatus(payment.getPaymentStatus());
+            payDTO.setPaymentDate(payment.getPaymentDate());
+            payDTO.setTransactionId(payment.getTransactionId());
+            payDTO.setPaymentDetails(payment.getPaymentDetails());
+            dto.setPayment(payDTO);
+        }
+        return dto;
+    }
+    private OrderItemDTO convertOrderItemToDTO(com.datn.teeshirt.Entity.OrderItem orderItem) {
+        ProductVariantDTO variantDTO = null;
+        if (orderItem.getVariant() != null) {
+            com.datn.teeshirt.Entity.ProductVariant variant = orderItem.getVariant();
+            String productName = variant.getProduct() != null ? variant.getProduct().getName() : "";
+            String colorName = variant.getColor() != null ? variant.getColor().getName() : "";
+            String sizeName = variant.getSize() != null ? variant.getSize().getName() : "";
+            List<ProductImageDTO> images = null;
+            if (variant.getProduct() != null && variant.getProduct().getImages() != null) {
+                images = variant.getProduct().getImages().stream()
+                        .map(img -> {
+                            ProductImageDTO imgDto = new ProductImageDTO();
+                            imgDto.setImageId(img.getImageId());
+                            imgDto.setImageUrl(img.getImageUrl());
+                            return imgDto;
+                        })
+                        .collect(Collectors.toList());
+            }
+            variantDTO = new ProductVariantDTO();
+            variantDTO.setVariantId(variant.getVariantId());
+            variantDTO.setProductId(variant.getProduct() != null ? variant.getProduct().getProductId() : null);
+            variantDTO.setName(productName);
+            variantDTO.setSku(variant.getSku());
+            variantDTO.setColorId(variant.getColor() != null ? variant.getColor().getColorId() : null);
+            variantDTO.setColorName(colorName);
+            variantDTO.setSizeId(variant.getSize() != null ? variant.getSize().getSizeId() : null);
+            variantDTO.setSizeName(sizeName);
+            variantDTO.setPrice(variant.getPrice());
+            variantDTO.setQuantityInStock(variant.getQuantityInStock());
+            variantDTO.setIsActive(variant.getIsActive());
+            variantDTO.setImages(images);
+        }
+        OrderItemDTO dto = new OrderItemDTO();
+        dto.setOrderItemId(orderItem.getOrderItemId());
+        dto.setPrice(orderItem.getPrice());
+        dto.setQuantity(orderItem.getQuantity());
+        dto.setPriceAtPurchase(orderItem.getPriceAtPurchase());
+        dto.setVariant(variantDTO);
+        return dto;
+    }
+    private ShippingAddressDTO convertShippingAddressToDTO(com.datn.teeshirt.Entity.ShippingAddress shippingAddress) {
+        ShippingAddressDTO dto = new ShippingAddressDTO();
+        dto.setProvinceId(shippingAddress.getProvinceId());
+        dto.setDistrictId(shippingAddress.getDistrictId());
+        dto.setWardId(shippingAddress.getWardId());
+        dto.setSpecificAddress(shippingAddress.getSpecificAddress());
+        dto.setPhone(shippingAddress.getPhone());
+        dto.setName(shippingAddress.getName());
+        dto.setNote(shippingAddress.getNote());
+        return dto;
+    }
+
     // 4. Cập nhật trạng thái đơn hàng
     @Transactional
     public void updateOrderStatus(Long orderId, String newStatus, String note) {
@@ -149,33 +300,7 @@ public class OrderService {
         orderStatusRepository.save(status);
     }
 
-    // 5. Hủy đơn hàng
-    @Transactional
-    public void cancelOrder(Long orderId, String note) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
-        if (order.getStatus().equals("cancelled")) {
-            throw new IllegalStateException("Đơn hàng đã bị hủy trước đó");
-        }
-        // Hoàn kho
-        List<OrderItem> items = orderItemRepository.findByOrder_OrderId(orderId);
-        for (OrderItem item : items) {
-            ProductVariant variant = item.getVariant();
-            variant.setQuantityInStock(variant.getQuantityInStock() + item.getQuantity());
-            productVariantRepository.save(variant);
-        }
-        // Cập nhật trạng thái
-        order.setStatus("cancelled");
-        order.setUpdatedAt(LocalDateTime.now());
-        orderRepository.save(order);
-        // Lưu lịch sử trạng thái
-        OrderStatus status = new OrderStatus();
-        status.setOrder(order);
-        status.setStatusName("cancelled");
-        status.setCreatedAt(LocalDateTime.now());
-        orderStatusRepository.save(status);
-    }
-
-    // 6. Thanh toán đơn hàng
+    // 5. Thanh toán đơn hàng
     @Transactional
     public void payOrder(Long orderId, PaymentDTO paymentDTO) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
@@ -240,16 +365,9 @@ public class OrderService {
             addrDTO.setNote(address.getNote());
             dto.setShippingAddress(addrDTO);
         }
-        // Order Items
+        // Order Items (detailed)
         List<OrderItem> items = orderItemRepository.findByOrder_OrderId(order.getOrderId());
-        List<OrderItemDTO> itemDTOs = items.stream().map(item -> {
-            OrderItemDTO i = new OrderItemDTO();
-            i.setProductVariantId(item.getVariant() != null ? item.getVariant().getVariantId() : null);
-            i.setQuantity(item.getQuantity());
-            i.setPrice(item.getPrice());
-            i.setPrice(item.getPriceAtPurchase());
-            return i;
-        }).collect(Collectors.toList());
+        List<OrderItemDTO> itemDTOs = items.stream().map(this::convertOrderItemToDTO).collect(Collectors.toList());
         dto.setItems(itemDTOs);
         // Status History
         List<OrderStatus> statusList = orderStatusRepository.findByOrder_OrderId(order.getOrderId());

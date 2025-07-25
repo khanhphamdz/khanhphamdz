@@ -3,10 +3,12 @@ package com.datn.teeshirt.Repository;
 import com.datn.teeshirt.Entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -24,4 +26,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE FUNCTION('DATE', o.createdAt) = FUNCTION('DATE', :date)")
     long countByDate(LocalDateTime date);
+
+    List<Order> findByCustomerCustomerIdAndStatusOrderByCreatedAtDesc(Long customerId, String status);
+
+    List<Order> findByCustomerCustomerIdOrderByCreatedAtDesc(Long customerId);
+
+    @Query("SELECT o FROM Order o WHERE o.orderId = :orderId AND o.customer.customerId = :customerId")
+    Optional<Order> findByOrderIdAndCustomerId(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.customer.customerId = :customerId AND o.coupon.couponId = :couponId")
+    long countByCustomerIdAndCouponId(@Param("customerId") Long customerId, @Param("couponId") Long couponId);
 }

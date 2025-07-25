@@ -42,7 +42,11 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         try {
-            Page<ProductDTO> products = productService.getProducts(page, size, null, null, null, null, true);
+            Page<ProductDTO> products = productService.getProducts(page, size, null, null, null, null, null);
+            System.out.println("Số sản phẩm trả về: " + products.getContent().size());
+            for (var p : products.getContent()) {
+                System.out.println("Product: id=" + p.getProductId() + ", name=" + p.getName());
+            }
             model.addAttribute("products", products);
             // Lấy dữ liệu cho bộ lọc
             model.addAttribute("categories", categoryService.getAllCategories());
